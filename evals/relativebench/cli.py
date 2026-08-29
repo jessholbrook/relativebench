@@ -8,7 +8,7 @@ from .adapters import DryRunAdapter
 from .inference import bootstrap_experience
 from .manifest import validate_pilot
 from .metrics import summarize_experience, summarize_flips
-from .runner import run_pilot
+from .runner import run_pilot, verify_run
 
 
 def read_jsonl(path):
@@ -45,6 +45,7 @@ def main():
     dry_run.add_argument("pilot")
     dry_run.add_argument("--profile", required=True)
     dry_run.add_argument("--output", required=True)
+    dry_run.add_argument("--resume", action="store_true")
 
     prepare_mlx = subparsers.add_parser(
         "prepare-mlx", help="Convert one exact model revision to a provenance-checked 4-bit MLX directory."
@@ -63,6 +64,18 @@ def main():
     mlx_run.add_argument("--model-role", required=True, choices=("previous", "new"))
     mlx_run.add_argument("--model-dir", required=True)
     mlx_run.add_argument("--output", required=True)
+    mlx_run.add_argument("--resume", action="store_true")
+    mlx_run.add_argument("--checkpoint-every", type=int, default=1)
+    mlx_run.add_argument("--progress-every", type=int, default=5)
+
+    verify = subparsers.add_parser(
+        "verify-run", help="Independently recompute hashes and completeness for response artifacts."
+    )
+    verify.add_argument("pilot")
+    verify.add_argument("--profile", required=True)
+    verify.add_argument("--model-role", action="append", choices=("previous", "new"))
+    verify.add_argument("--output", required=True)
+    verify.add_argument("--allow-incomplete", action="store_true")
 
     arguments = parser.parse_args()
     if arguments.command == "validate-pilot":
@@ -75,7 +88,13 @@ def main():
             "category_counts": validation["category_counts"],
         }
     elif arguments.command == "dry-run":
-        result = run_pilot(arguments.pilot, arguments.profile, arguments.output, DryRunAdapter())
+        result = run_pilot(
+            arguments.pilot,
+            arguments.profile,
+            arguments.output,
+            DryRunAdapter(),
+            resume=arguments.resume,
+        )
     elif arguments.command == "prepare-mlx":
         from .mlx_runtime import prepare_quantized_model
 
@@ -89,12 +108,30 @@ def main():
     elif arguments.command == "mlx-run":
         from .adapters.mlx import MlxAdapter
 
+        if arguments.progress_every < 1:
+            parser.error("--progress-every must be at least 1")
+
+        def report_progress(completed, expected):
+            if completed % arguments.progress_every == 0 or completed == expected:
+                print(f"progress {completed}/{expected}", flush=True)
+
         result = run_pilot(
             arguments.pilot,
             arguments.profile,
             arguments.output,
             MlxAdapter(arguments.model_dir),
             model_roles=(arguments.model_role,),
+            resume=arguments.resume,
+            checkpoint_every=arguments.checkpoint_every,
+            progress_callback=report_progress,
+        )
+    elif arguments.command == "verify-run":
+        result = verify_run(
+            arguments.pilot,
+            arguments.profile,
+            arguments.output,
+            model_roles=arguments.model_role,
+            require_complete=not arguments.allow_incomplete,
         )
     else:
         records = read_jsonl(arguments.input)

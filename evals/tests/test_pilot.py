@@ -10,9 +10,10 @@ sys.path.insert(0, str(ROOT / "evals"))
 from relativebench.adapters import DryRunAdapter  # noqa: E402
 from relativebench.adapters.base import GenerationResult  # noqa: E402
 from relativebench.manifest import validate_pilot  # noqa: E402
-from relativebench.runner import run_pilot  # noqa: E402
+from relativebench.runner import run_pilot, verify_run  # noqa: E402
 
 PILOT = ROOT / "data/pilots/qwen2.5-to-qwen3/pilot.json"
+SMOKE_PILOT = ROOT / "data/pilots/qwen2.5-to-qwen3/smoke-pilot.json"
 
 
 class PilotTests(unittest.TestCase):
@@ -103,6 +104,80 @@ class PilotTests(unittest.TestCase):
 
         self.assertNotEqual(first["responses_sha256"], second["responses_sha256"])
         self.assertEqual(first["artifact_set_sha256"], second["artifact_set_sha256"])
+
+    def test_interrupted_run_resumes_without_duplicate_artifacts(self):
+        class InterruptibleAdapter:
+            name = "interruptible-test"
+
+            def __init__(self, fail_after=None):
+                self.fail_after = fail_after
+                self.calls = 0
+
+            def generate(self, request):
+                self.calls += 1
+                if self.fail_after is not None and self.calls > self.fail_after:
+                    raise RuntimeError("simulated interruption")
+                return GenerationResult(text=f"stable::{request.scenario_id}::{request.seed}")
+
+        with tempfile.TemporaryDirectory() as output_dir:
+            with self.assertRaisesRegex(RuntimeError, "simulated interruption"):
+                run_pilot(
+                    SMOKE_PILOT,
+                    "mlx-4bit-non-thinking-smoke-v1",
+                    output_dir,
+                    InterruptibleAdapter(fail_after=5),
+                    model_roles=("previous",),
+                )
+
+            partial = verify_run(
+                SMOKE_PILOT,
+                "mlx-4bit-non-thinking-smoke-v1",
+                output_dir,
+                model_roles=("previous",),
+                require_complete=False,
+            )
+            self.assertTrue(partial["valid"], partial["errors"])
+            self.assertFalse(partial["complete"])
+            self.assertEqual(partial["artifact_count"], 5)
+
+            completed = run_pilot(
+                SMOKE_PILOT,
+                "mlx-4bit-non-thinking-smoke-v1",
+                output_dir,
+                InterruptibleAdapter(),
+                model_roles=("previous",),
+                resume=True,
+            )
+            self.assertEqual(completed["artifact_count"], 12)
+            records = [
+                json.loads(line)
+                for line in (Path(output_dir) / "responses.jsonl").read_text().splitlines()
+            ]
+            self.assertEqual(len({record["artifact_id"] for record in records}), 12)
+
+    def test_independent_verifier_rejects_response_tampering(self):
+        with tempfile.TemporaryDirectory() as output_dir:
+            run_pilot(
+                SMOKE_PILOT,
+                "mlx-4bit-non-thinking-smoke-v1",
+                output_dir,
+                DryRunAdapter(),
+                model_roles=("new",),
+            )
+            response_path = Path(output_dir) / "responses.jsonl"
+            records = [json.loads(line) for line in response_path.read_text().splitlines()]
+            records[0]["response_text"] = "tampered"
+            response_path.write_text("\n".join(json.dumps(item) for item in records) + "\n")
+
+            report = verify_run(
+                SMOKE_PILOT,
+                "mlx-4bit-non-thinking-smoke-v1",
+                output_dir,
+                model_roles=("new",),
+            )
+
+        self.assertFalse(report["valid"])
+        self.assertTrue(any("response hash" in error for error in report["errors"]))
 
 
 if __name__ == "__main__":

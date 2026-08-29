@@ -1,0 +1,67 @@
+{
+  "summary_version": "0.1.0",
+  "status": "complete",
+  "completed_on": "2026-08-29",
+  "purpose": "Full-corpus infrastructure rehearsal only; no capability, compatibility, or Experience Delta estimate is derived.",
+  "hardware_profile": {
+    "path": "hardware-profile-apple-m4-16gb.json",
+    "sha256": "7509f2344a0464634ac55f214d2699f1a30389360d0311aa477b29704b02bd50"
+  },
+  "dependency_lock": {
+    "path": "../../../../uv.lock",
+    "sha256": "1cda43661e5ef00d2b0d8b8a00de2e59323b8b751c3e7e7f976301f466c36649"
+  },
+  "rehearsal_pilot": {
+    "path": "../rehearsal-pilot.json",
+    "sha256": "fa73aeadf6240599d09adc0e6c3e2d78c12f3859d7e0588c448bdfaa39d4fb3b"
+  },
+  "scenario_manifest_sha256": "a8d1fb66fd6cbd0df35896a45ce9be5d52802d50e13171afd39fccfc5061291c",
+  "scenario_count": 120,
+  "seed": 11,
+  "max_new_tokens": 256,
+  "models": {
+    "previous": {
+      "model_id": "qwen/qwen2.5-7b-instruct",
+      "source_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "derived_weight_sha256": "f62c5c40a00383a28cc5ba618978baf21dd87f142d0cdbd9775d5900cdf1b80e",
+      "artifact_count": 120,
+      "responses_sha256": "6eff0a4e30f6d241aa4cf06f10540d8098f0507c3697b9975821c7a98e60aca5",
+      "artifact_set_sha256": "d24aaacb1ce79649a8d86263d0d70a076c7848e0ef6f4eb03c585188e98940d1",
+      "independent_rerun_artifact_set_sha256": "d24aaacb1ce79649a8d86263d0d70a076c7848e0ef6f4eb03c585188e98940d1",
+      "stable_rerun": true,
+      "status_counts": { "ok": 120 },
+      "finish_reason_counts": { "stop": 106, "length": 14 },
+      "empty_responses": 0,
+      "output_tokens": { "minimum": 2, "maximum": 256, "mean": 72.94166666666666 }
+    },
+    "new": {
+      "model_id": "qwen/qwen3-8b",
+      "source_revision": "b968826d9c46dd6066d109eabc6255188de91218",
+      "derived_weight_sha256": "a1411b70b4cfb45016fc69228d58716de58413f5e694561eee8a82b20cfbebf5",
+      "artifact_count": 120,
+      "responses_sha256": "781d554c8c0c0735cd49de5b52bd0083ba03daa046b9c010d7c33e25a4a2b895",
+      "artifact_set_sha256": "6d6d589eb64f23a9dbb20063a9ba8ea4cf0bce510bd99d27586175ad9bedc2a0",
+      "independent_rerun_artifact_set_sha256": "6d6d589eb64f23a9dbb20063a9ba8ea4cf0bce510bd99d27586175ad9bedc2a0",
+      "stable_rerun": true,
+      "status_counts": { "ok": 120 },
+      "finish_reason_counts": { "stop": 111, "length": 9 },
+      "empty_responses": 0,
+      "thinking_tag_count": 0,
+      "output_tokens": { "minimum": 2, "maximum": 256, "mean": 67.65833333333333 }
+    }
+  },
+  "raw_artifacts": {
+    "published": true,
+    "canonical_artifact_count": 240,
+    "independent_rerun_artifact_count": 240,
+    "independent_rerun_artifacts_retained": false,
+    "telemetry_note": "Raw-file hashes differ across reruns because latency is observational; artifact_set_sha256 excludes latency and cost."
+  },
+  "remaining_primary_gates": [
+    "independent domain review of the 120 scenarios",
+    "appropriate full-precision execution host",
+    "three-seed primary generation at the 1024-token ceiling",
+    "incumbent recruitment feasibility",
+    "participant consent and compensation approval"
+  ]
+}

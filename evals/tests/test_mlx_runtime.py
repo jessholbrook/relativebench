@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "evals"))
 from relativebench.adapters.mlx import MlxAdapter  # noqa: E402
 from relativebench.artifacts import sha256_file, sha256_value  # noqa: E402
 from relativebench.mlx_runtime import load_provenance, model_file_hashes  # noqa: E402
+from relativebench.runner import verify_run  # noqa: E402
 
 
 class MlxRuntimeTests(unittest.TestCase):
@@ -77,6 +78,35 @@ class MlxRuntimeTests(unittest.TestCase):
         new_responses = [
             json.loads(line)
             for line in (execution / "smoke-runs/new/responses.jsonl").read_text().splitlines()
+        ]
+        self.assertFalse(any("<think>" in item["response_text"] for item in new_responses))
+
+    def test_published_full_corpus_rehearsal_is_complete_and_verified(self):
+        pilot = ROOT / "data/pilots/qwen2.5-to-qwen3/rehearsal-pilot.json"
+        execution = ROOT / "data/pilots/qwen2.5-to-qwen3/execution"
+        summary = json.loads((execution / "full-corpus-rehearsal-summary.json").read_text())
+
+        for role in ("previous", "new"):
+            run_dir = execution / "full-corpus-rehearsal" / role
+            report = verify_run(
+                pilot,
+                "mlx-4bit-non-thinking-full-corpus-rehearsal-v1",
+                run_dir,
+                model_roles=(role,),
+            )
+            self.assertTrue(report["valid"], report["errors"])
+            self.assertTrue(report["complete"])
+            self.assertEqual(report["artifact_count"], 120)
+            self.assertEqual(
+                report["artifact_set_sha256"],
+                summary["models"][role]["independent_rerun_artifact_set_sha256"],
+            )
+
+        new_responses = [
+            json.loads(line)
+            for line in (
+                execution / "full-corpus-rehearsal/new/responses.jsonl"
+            ).read_text().splitlines()
         ]
         self.assertFalse(any("<think>" in item["response_text"] for item in new_responses))
 

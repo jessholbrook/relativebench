@@ -1,6 +1,6 @@
 # Inference Runtime
 
-Status: **Reproducible pinned-model MLX smoke complete**
+Status: **Reproducible pinned-model MLX full-corpus rehearsal complete**
 Profile: **apple-m4-16gb-mlx-4bit-v1**
 
 ## Decision
@@ -9,7 +9,9 @@ The first local smoke run uses MLX-LM 0.31.3 on the recorded Apple M4 host. The 
 
 This profile validates model loading, chat-template behavior, seeding, sampling, response capture, and artifact hashing. It is not the primary evaluation profile: the local host has 16 GB unified memory and cannot safely execute either selected BF16 checkpoint directly. Quantized smoke outputs are excluded from all headline capability, compatibility, and Experience Delta estimates.
 
-Both model roles completed all 12 scenarios with no infrastructure errors. Independent reruns produced identical stable artifact-set hashes for each role. Eleven Qwen2.5 generations stopped normally and one reached the 256-token smoke ceiling; all 12 Qwen3 generations stopped normally, and none emitted a thinking tag. The raw artifacts, run manifests, model provenance, and summary are published under [`data/pilots/qwen2.5-to-qwen3/execution`](../data/pilots/qwen2.5-to-qwen3/execution/).
+Both model roles first completed all 12 smoke scenarios with no infrastructure errors. They then completed the full 120-scenario corpus at one seed and a 256-token ceiling: 120/120 successful artifacts per model, zero empty responses, and no Qwen3 thinking tags. Qwen2.5 stopped normally in 106 cases and reached the rehearsal ceiling in 14; Qwen3 stopped normally in 111 and reached the ceiling in 9. Independent regenerations produced identical stable artifact-set hashes for both 120-scenario runs.
+
+The runner now checkpoints after a configurable number of artifacts, resumes only after validating existing artifacts, rejects duplicate or unexpected scenario/role/seed keys, and independently recomputes request, response, artifact, raw-file, and artifact-set hashes. Raw artifacts, manifests, provenance, and summaries are published under [`data/pilots/qwen2.5-to-qwen3/execution`](../data/pilots/qwen2.5-to-qwen3/execution/).
 
 The machine-readable hardware record is in [`data/pilots/qwen2.5-to-qwen3/execution/hardware-profile-apple-m4-16gb.json`](../data/pilots/qwen2.5-to-qwen3/execution/hardware-profile-apple-m4-16gb.json).
 
@@ -51,3 +53,17 @@ PYTHONPATH=evals UV_CACHE_DIR=.uv-cache UV_PYTHON_INSTALL_DIR=.uv-python uv run 
 ```
 
 Repeat conversion and execution for `new`. Keep the two run manifests separate so model memory can be released between processes.
+
+Run or resume the full-corpus infrastructure rehearsal:
+
+```bash
+PYTHONPATH=evals UV_CACHE_DIR=.uv-cache UV_PYTHON_INSTALL_DIR=.uv-python uv run python -m relativebench mlx-run \
+  data/pilots/qwen2.5-to-qwen3/rehearsal-pilot.json \
+  --profile mlx-4bit-non-thinking-full-corpus-rehearsal-v1 \
+  --model-role previous \
+  --model-dir models/qwen2.5-7b-instruct-4bit \
+  --output data/pilots/qwen2.5-to-qwen3/execution/full-corpus-rehearsal/previous \
+  --resume
+```
+
+The canonical artifacts are suitable for pipeline and blinded-rating-interface rehearsal only. They must not be scored or presented as a model comparison, and they do not replace the full-precision, three-seed primary run.

@@ -1,6 +1,6 @@
 # Qwen transition pilot
 
-This directory contains the selected candidate configuration, the reviewed 120-scenario candidate manifest, and the original 12-scenario smoke subset for:
+This directory contains the selected candidate configuration, the reviewed 120-scenario candidate manifest, a 120-scenario infrastructure rehearsal profile, and the original 12-scenario smoke subset for:
 
 ```text
 Qwen2.5-7B-Instruct -> Qwen3-8B
@@ -12,4 +12,4 @@ Author review and automated structural review are complete. Independent domain r
 
 Activation requires the gates in [`docs/first-pilot-transition.md`](../../../docs/first-pilot-transition.md), including a fixed runtime/hardware profile and incumbent recruitment feasibility.
 
-The local MLX hardware profile and independently reproduced smoke artifacts are under [`execution/`](execution/). They validate infrastructure only and are excluded from benchmark estimates.
+The local MLX hardware profile, independently reproduced smoke artifacts, and independently reproduced full-corpus rehearsal are under [`execution/`](execution/). All of these 4-bit outputs validate infrastructure only and are excluded from benchmark estimates.

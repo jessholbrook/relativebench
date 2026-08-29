@@ -1,0 +1,26 @@
+{
+  "adapter": "mlx-lm-4bit",
+  "artifact_count": 120,
+  "artifact_path": "responses.jsonl",
+  "artifact_set_sha256": "6d6d589eb64f23a9dbb20063a9ba8ea4cf0bce510bd99d27586175ad9bedc2a0",
+  "artifacts_by_model_role": {
+    "new": 120
+  },
+  "expected_artifact_count": 120,
+  "model_roles": [
+    "new"
+  ],
+  "pending_artifact_count": 0,
+  "pilot_id": "qwen2.5-7b-instruct-to-qwen3-8b-mlx-full-corpus-rehearsal-v0.1",
+  "profile_id": "mlx-4bit-non-thinking-full-corpus-rehearsal-v1",
+  "responses_sha256": "781d554c8c0c0735cd49de5b52bd0083ba03daa046b9c010d7c33e25a4a2b895",
+  "run_manifest_version": "0.3.0",
+  "run_plan_sha256": "1c055d810e5e83647a31919a08d5e6e0326756fed4bf83bfdb5b243f54acf5c8",
+  "scenario_count": 120,
+  "scenario_manifest_sha256": "a8d1fb66fd6cbd0df35896a45ce9be5d52802d50e13171afd39fccfc5061291c",
+  "seeds": [
+    11
+  ],
+  "status": "complete",
+  "transition_id": "qwen/qwen2.5-7b-instruct-to-qwen3-8b"
+}

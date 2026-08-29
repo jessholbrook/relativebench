@@ -1,7 +1,7 @@
 # First Pilot Transition
 
 Decision date: **2026-08-28**  
-Status: **Reproducible local smoke complete; independent review and primary execution pending**
+Status: **Full-corpus local rehearsal complete; independent review and primary execution pending**
 
 ## Selection
 
@@ -60,7 +60,7 @@ The candidate becomes an active pilot only after:
 
 If incumbent recruitment fails, the run may still validate infrastructure, but it cannot publish the headline incumbent Experience Delta.
 
-The first two activation gates now pass for the local 4-bit infrastructure profile. This does not activate primary collection: independent scenario review, incumbent recruitment, participant approval, and an appropriate full-precision execution host remain outstanding.
+The first two activation gates now pass for the local 4-bit infrastructure profile. The full 120-scenario corpus has also completed a single-seed, 256-token rehearsal for both model roles with an independently reproduced artifact-set hash. This does not activate primary collection: independent scenario review, incumbent recruitment, participant approval, an appropriate full-precision execution host, and the frozen three-seed primary generation remain outstanding.
 
 ## Known limitations
 

@@ -32,7 +32,7 @@ export default function Home() {
             </span>
             <span className="text-[15px] font-semibold tracking-[-0.02em]">RelativeBench</span>
             <Badge className="ml-1 bg-lime-200 text-lime-950" variant="secondary">
-              Smoke verified
+              Corpus rehearsal
             </Badge>
           </a>
           <nav className="hidden items-center gap-7 text-sm text-muted-foreground sm:flex" aria-label="Primary">
