@@ -1,0 +1,29 @@
+{
+  "experience": [
+    {
+      "name": "balanced unweighted ratings",
+      "judgments": [{ "rating": -2 }, { "rating": 0 }, { "rating": 2 }],
+      "expected_delta": 0,
+      "expected_preference_lift": 0
+    },
+    {
+      "name": "balanced weighted ratings",
+      "judgments": [{ "rating": 2, "weight": 1 }, { "rating": -1, "weight": 2 }],
+      "expected_delta": 0,
+      "expected_preference_lift": -33.333333333333336
+    }
+  ],
+  "flips": [
+    {
+      "name": "complete matrix",
+      "pairs": [
+        { "previous_passed": true, "new_passed": true },
+        { "previous_passed": true, "new_passed": false },
+        { "previous_passed": false, "new_passed": true },
+        { "previous_passed": false, "new_passed": false }
+      ],
+      "expected_negative_flip_rate": 0.5,
+      "expected_positive_flip_rate": 0.5
+    }
+  ]
+}

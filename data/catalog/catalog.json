@@ -1,0 +1,34 @@
+{
+  "$schema": "../../schemas/catalog.schema.json",
+  "schema_version": "0.1.0",
+  "providers": [
+    {
+      "id": "relativebench",
+      "display_name": "RelativeBench illustrative data"
+    }
+  ],
+  "models": [
+    {
+      "id": "relativebench/model-a",
+      "provider_id": "relativebench",
+      "display_name": "Model A",
+      "status": "illustrative"
+    },
+    {
+      "id": "relativebench/model-b",
+      "provider_id": "relativebench",
+      "display_name": "Model B",
+      "status": "illustrative"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "relativebench/model-a-to-model-b",
+      "previous_model_id": "relativebench/model-a",
+      "new_model_id": "relativebench/model-b",
+      "track": "model_core",
+      "status": "illustrative",
+      "rationale": "A non-provider example used to test the Protocol v0.1 presentation and data contracts."
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relativebench.org/schemas/result-snapshot.schema.json",
+  "title": "RelativeBench result snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "protocol_version", "snapshot_id", "status", "transition_id", "condition", "cohort", "experience", "compatibility", "benchmark_deltas"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "type": "string" },
+    "protocol_version": { "type": "string" },
+    "snapshot_id": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["illustrative", "pilot", "validated", "superseded"] },
+    "transition_id": { "type": "string", "minLength": 1 },
+    "condition": { "enum": ["frozen", "adapted", "learned"] },
+    "cohort": { "enum": ["incumbent", "fresh", "domain_expert", "automated_judge"] },
+    "experience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["delta", "confidence_interval", "distribution_percent"],
+      "properties": {
+        "delta": { "type": "number", "minimum": -100, "maximum": 100 },
+        "confidence_interval": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["level", "lower", "upper"],
+          "properties": {
+            "level": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 },
+            "lower": { "type": "number", "minimum": -100, "maximum": 100 },
+            "upper": { "type": "number", "minimum": -100, "maximum": 100 }
+          }
+        },
+        "distribution_percent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["better", "same", "worse"],
+          "properties": {
+            "better": { "type": "number", "minimum": 0, "maximum": 100 },
+            "same": { "type": "number", "minimum": 0, "maximum": 100 },
+            "worse": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["negative_flip_rate", "positive_flip_rate"],
+      "properties": {
+        "negative_flip_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "positive_flip_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+      }
+    },
+    "benchmark_deltas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "value", "unit"],
+        "properties": {
+          "label": { "type": "string", "minLength": 1 },
+          "value": { "type": "number" },
+          "unit": { "enum": ["percentage_points", "percent", "seconds", "usd"] }
+        }
+      }
+    }
+  }
+}

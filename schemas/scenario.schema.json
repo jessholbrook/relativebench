@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relativebench.org/schemas/scenario.schema.json",
+  "title": "RelativeBench scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "manifest_version", "category", "source", "license", "scoring_mode", "privacy_class", "prompt_template"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "manifest_version": { "type": "string" },
+    "category": { "enum": ["reasoning", "coding", "instruction_following", "structured_output", "factual_synthesis", "safety"] },
+    "source": { "type": "string", "minLength": 1 },
+    "license": { "type": "string", "minLength": 1 },
+    "scoring_mode": { "enum": ["objective", "rubric", "hybrid"] },
+    "privacy_class": { "enum": ["public", "restricted_research", "sensitive"] },
+    "prompt_template": { "type": "string", "minLength": 1 },
+    "reference_answer": { "type": ["string", "null"] },
+    "weight": { "type": "number", "exclusiveMinimum": 0 }
+  }
+}

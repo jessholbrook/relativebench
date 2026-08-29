@@ -1,0 +1,25 @@
+{
+  "$schema": "../../schemas/result-snapshot.schema.json",
+  "schema_version": "0.1.0",
+  "protocol_version": "0.1.0",
+  "snapshot_id": "illustrative-model-a-to-model-b-v1",
+  "status": "illustrative",
+  "transition_id": "relativebench/model-a-to-model-b",
+  "condition": "frozen",
+  "cohort": "incumbent",
+  "experience": {
+    "delta": 11,
+    "confidence_interval": { "level": 0.95, "lower": 6, "upper": 16 },
+    "distribution_percent": { "better": 41, "same": 47, "worse": 12 }
+  },
+  "compatibility": {
+    "negative_flip_rate": 0.074,
+    "positive_flip_rate": 0.131
+  },
+  "benchmark_deltas": [
+    { "label": "Reasoning", "value": 8.2, "unit": "percentage_points" },
+    { "label": "Coding", "value": 5.7, "unit": "percentage_points" },
+    { "label": "Instruction following", "value": 2.4, "unit": "percentage_points" },
+    { "label": "Structured output", "value": -3.1, "unit": "percentage_points" }
+  ]
+}

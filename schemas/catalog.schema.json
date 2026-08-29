@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relativebench.org/schemas/catalog.schema.json",
+  "title": "RelativeBench catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "providers", "models", "transitions"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "providers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "display_name"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "display_name": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "provider_id", "display_name", "status"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "provider_id": { "type": "string", "minLength": 1 },
+          "display_name": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["illustrative", "candidate", "active", "retired"] }
+        }
+      }
+    },
+    "transitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "previous_model_id", "new_model_id", "track", "status", "rationale"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "previous_model_id": { "type": "string", "minLength": 1 },
+          "new_model_id": { "type": "string", "minLength": 1 },
+          "track": { "enum": ["model_core", "product_experience"] },
+          "status": { "enum": ["illustrative", "candidate", "pilot", "validated", "superseded"] },
+          "rationale": { "type": "string", "minLength": 20 }
+        }
+      }
+    }
+  }
+}

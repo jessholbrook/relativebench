@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relativebench.org/schemas/judgment.schema.json",
+  "title": "RelativeBench experience judgment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol_version", "transition_id", "scenario_id", "evaluator_id", "cohort", "condition", "rating", "presented_new_on_left"],
+  "properties": {
+    "protocol_version": { "type": "string" },
+    "transition_id": { "type": "string", "minLength": 1 },
+    "scenario_id": { "type": "string", "minLength": 1 },
+    "evaluator_id": { "type": "string", "minLength": 1 },
+    "cohort": { "enum": ["incumbent", "fresh", "domain_expert", "automated_judge"] },
+    "condition": { "enum": ["frozen", "adapted", "learned"] },
+    "rating": { "type": "integer", "minimum": -2, "maximum": 2 },
+    "weight": { "type": "number", "exclusiveMinimum": 0 },
+    "presented_new_on_left": { "type": "boolean" },
+    "reason_tags": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+  }
+}
