@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relativebench.org/schemas/response-artifact.schema.json",
+  "title": "RelativeBench response artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_version", "artifact_id", "pilot_id", "transition_id", "profile_id", "condition", "scenario_id", "model_role", "model_id", "model_revision", "seed", "request_sha256", "response_sha256", "response_text", "status", "adapter"],
+  "properties": {
+    "artifact_version": { "type": "string" },
+    "artifact_id": { "$ref": "#/$defs/hash" },
+    "pilot_id": { "type": "string" },
+    "transition_id": { "type": "string" },
+    "profile_id": { "type": "string" },
+    "condition": { "enum": ["frozen", "adapted", "learned"] },
+    "scenario_id": { "type": "string" },
+    "model_role": { "enum": ["previous", "new"] },
+    "model_id": { "type": "string" },
+    "model_revision": { "$ref": "#/$defs/revision" },
+    "seed": { "type": "integer" },
+    "request_sha256": { "$ref": "#/$defs/hash" },
+    "response_sha256": { "$ref": "#/$defs/hash" },
+    "response_text": { "type": "string" },
+    "status": { "enum": ["ok", "model_error", "infrastructure_error"] },
+    "latency_ms": { "type": ["number", "null"], "minimum": 0 },
+    "input_tokens": { "type": ["integer", "null"], "minimum": 0 },
+    "output_tokens": { "type": ["integer", "null"], "minimum": 0 },
+    "cost_usd": { "type": ["number", "null"], "minimum": 0 },
+    "adapter": { "type": "string" }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "revision": { "type": "string", "pattern": "^[a-f0-9]{40}$" }
+  }
+}

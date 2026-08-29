@@ -30,7 +30,12 @@
           "id": { "type": "string", "minLength": 1 },
           "provider_id": { "type": "string", "minLength": 1 },
           "display_name": { "type": "string", "minLength": 1 },
-          "status": { "enum": ["illustrative", "candidate", "active", "retired"] }
+          "status": { "enum": ["illustrative", "candidate", "active", "retired"] },
+          "repository_url": { "type": "string", "format": "uri" },
+          "revision": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+          "license": { "type": "string", "minLength": 1 },
+          "parameter_count_billion": { "type": "number", "exclusiveMinimum": 0 },
+          "release_date": { "type": "string", "format": "date" }
         }
       }
     },

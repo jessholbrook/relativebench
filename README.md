@@ -16,7 +16,7 @@ For every transition, RelativeBench reports three separate layers:
 2. **Compatibility delta** — positive and negative flips on identical items.
 3. **Experience Delta (ΔE)** — the direction and magnitude of change perceived by users.
 
-This repository is currently at **Protocol v0.1 / Milestone 1 foundation**. The website uses illustrative data until the preregistered pilot is complete.
+This repository is currently at **Protocol v0.1 / Milestone 1 pilot runner**. The first candidate transition is Qwen2.5-7B-Instruct → Qwen3-8B. The website uses illustrative data until the preregistered pilot is complete.
 
 ## Local development
 
@@ -40,6 +40,7 @@ npm run build
 app/                  public website
 components/ui/        accessible interface primitives
 data/catalog/         versioned model and transition metadata
+data/pilots/          selected pilot configuration and scenarios
 docs/                 protocol, analysis plan, governance, and policy
 evals/relativebench/  reference metric implementation
 evals/tests/          metric and catalog verification
@@ -53,6 +54,19 @@ schemas/              versioned JSON Schemas
 - Statistical decisions are preregistered in [docs/statistical-analysis-plan.md](docs/statistical-analysis-plan.md).
 - Pilot scope and exit criteria are in [docs/pilot-plan.md](docs/pilot-plan.md).
 - No real model result should be presented as authoritative until the pilot gates pass.
+- The selected candidate and immutable model revisions are documented in [docs/first-pilot-transition.md](docs/first-pilot-transition.md).
+
+Validate and dry-run the pilot without model downloads:
+
+```bash
+PYTHONPATH=evals python3 -m relativebench validate-pilot \
+  data/pilots/qwen2.5-to-qwen3/pilot.json
+
+PYTHONPATH=evals python3 -m relativebench dry-run \
+  data/pilots/qwen2.5-to-qwen3/pilot.json \
+  --profile frozen-non-thinking-v1 \
+  --output /tmp/relativebench-dry-run
+```
 
 ## Contributing
 

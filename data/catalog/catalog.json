@@ -5,6 +5,10 @@
     {
       "id": "relativebench",
       "display_name": "RelativeBench illustrative data"
+    },
+    {
+      "id": "qwen",
+      "display_name": "Qwen"
     }
   ],
   "models": [
@@ -19,6 +23,28 @@
       "provider_id": "relativebench",
       "display_name": "Model B",
       "status": "illustrative"
+    },
+    {
+      "id": "qwen/qwen2.5-7b-instruct",
+      "provider_id": "qwen",
+      "display_name": "Qwen2.5-7B-Instruct",
+      "status": "candidate",
+      "repository_url": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "license": "Apache-2.0",
+      "parameter_count_billion": 7.61,
+      "release_date": "2024-09-19"
+    },
+    {
+      "id": "qwen/qwen3-8b",
+      "provider_id": "qwen",
+      "display_name": "Qwen3-8B",
+      "status": "candidate",
+      "repository_url": "https://huggingface.co/Qwen/Qwen3-8B",
+      "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+      "license": "Apache-2.0",
+      "parameter_count_billion": 8.2,
+      "release_date": "2025-04-29"
     }
   ],
   "transitions": [
@@ -29,6 +55,14 @@
       "track": "model_core",
       "status": "illustrative",
       "rationale": "A non-provider example used to test the Protocol v0.1 presentation and data contracts."
+    },
+    {
+      "id": "qwen/qwen2.5-7b-instruct-to-qwen3-8b",
+      "previous_model_id": "qwen/qwen2.5-7b-instruct",
+      "new_model_id": "qwen/qwen3-8b",
+      "track": "model_core",
+      "status": "candidate",
+      "rationale": "Qwen3 is documented as the successor to Qwen2.5; these open checkpoints are similarly sized, Apache-2.0 licensed, and simultaneously reproducible at pinned revisions."
     }
   ]
 }
