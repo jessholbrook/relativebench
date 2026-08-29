@@ -27,6 +27,19 @@ REQUIRED_SCENARIO_FIELDS = {
     "reference_answer",
     "weight",
 }
+REQUIRED_PROFILE_FIELDS = {
+    "id",
+    "condition",
+    "system_instruction",
+    "context_limit",
+    "max_new_tokens",
+    "temperature",
+    "top_p",
+    "top_k",
+    "min_p",
+    "seeds",
+    "model_options",
+}
 
 
 def load_json(path):
@@ -104,9 +117,28 @@ def validate_pilot(pilot_path):
     if duplicate_prompts:
         errors.append("Scenario prompt_template values must be unique.")
 
-    profile_ids = [profile["id"] for profile in pilot.get("execution_profiles", [])]
+    profiles = pilot.get("execution_profiles", [])
+    profile_ids = [profile.get("id") for profile in profiles]
     if len(profile_ids) != len(set(profile_ids)):
         errors.append("Execution profile ids must be unique.")
+    for profile in profiles:
+        missing_fields = REQUIRED_PROFILE_FIELDS - set(profile)
+        if missing_fields:
+            errors.append(
+                f"Execution profile {profile.get('id')} is missing required fields: "
+                f"{', '.join(sorted(missing_fields))}."
+            )
+        if not profile.get("system_instruction"):
+            errors.append(f"Execution profile {profile.get('id')} needs a system instruction.")
+        top_p = profile.get("top_p")
+        top_k = profile.get("top_k")
+        min_p = profile.get("min_p")
+        if not isinstance(top_p, (int, float)) or not 0 < top_p <= 1:
+            errors.append(f"Execution profile {profile.get('id')} has invalid top_p.")
+        if not isinstance(top_k, int) or top_k < 0:
+            errors.append(f"Execution profile {profile.get('id')} has invalid top_k.")
+        if not isinstance(min_p, (int, float)) or not 0 <= min_p <= 1:
+            errors.append(f"Execution profile {profile.get('id')} has invalid min_p.")
 
     target_per_category = pilot["targets"]["scenarios_per_category"]
     below_target = {

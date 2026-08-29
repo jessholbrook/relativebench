@@ -32,7 +32,7 @@ export default function Home() {
             </span>
             <span className="text-[15px] font-semibold tracking-[-0.02em]">RelativeBench</span>
             <Badge className="ml-1 bg-lime-200 text-lime-950" variant="secondary">
-              Protocol preview
+              Smoke verified
             </Badge>
           </a>
           <nav className="hidden items-center gap-7 text-sm text-muted-foreground sm:flex" aria-label="Primary">
@@ -64,7 +64,7 @@ export default function Home() {
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Featured transition</p>
-              <h2 id="transition-heading" className="mt-1 text-lg font-semibold tracking-tight">A worked protocol example</h2>
+              <h2 id="transition-heading" className="mt-1 text-lg font-semibold tracking-tight">Qwen2.5 7B → Qwen3 8B</h2>
             </div>
             <button className="hidden items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-muted sm:flex" type="button">
               All transitions <ChevronDown className="size-3.5" />
@@ -77,15 +77,15 @@ export default function Home() {
               <CardHeader className="relative border-b border-white/10 py-5 sm:grid-cols-[1fr_auto]">
                 <div>
                   <CardTitle className="flex flex-wrap items-center gap-3 text-xl sm:text-2xl">
-                    Model A <ArrowRight className="size-5 text-lime-300" /> Model B
+                    Qwen2.5 7B <ArrowRight className="size-5 text-lime-300" /> Qwen3 8B
                   </CardTitle>
                   <CardDescription className="mt-1 text-zinc-400">
-                    Core model track · frozen workflow · illustrative data
+                    Candidate transition · frozen workflow · illustrative result layout
                   </CardDescription>
                 </div>
                 <CardAction>
                   <Badge className="border-lime-300/30 bg-lime-300/10 text-lime-200" variant="outline">
-                    Qualified upgrade
+                    Illustrative result
                   </Badge>
                 </CardAction>
               </CardHeader>

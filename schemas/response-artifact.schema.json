@@ -25,7 +25,8 @@
     "input_tokens": { "type": ["integer", "null"], "minimum": 0 },
     "output_tokens": { "type": ["integer", "null"], "minimum": 0 },
     "cost_usd": { "type": ["number", "null"], "minimum": 0 },
-    "adapter": { "type": "string" }
+    "adapter": { "type": "string" },
+    "adapter_metadata": { "type": "object" }
   },
   "$defs": {
     "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },

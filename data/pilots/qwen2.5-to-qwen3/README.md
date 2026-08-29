@@ -11,3 +11,5 @@ Qwen2.5-7B-Instruct -> Qwen3-8B
 Author review and automated structural review are complete. Independent domain review is still required before this candidate can be frozen for collection; see [`docs/scenario-review.md`](../../../docs/scenario-review.md).
 
 Activation requires the gates in [`docs/first-pilot-transition.md`](../../../docs/first-pilot-transition.md), including a fixed runtime/hardware profile and incumbent recruitment feasibility.
+
+The local MLX hardware profile and independently reproduced smoke artifacts are under [`execution/`](execution/). They validate infrastructure only and are excluded from benchmark estimates.

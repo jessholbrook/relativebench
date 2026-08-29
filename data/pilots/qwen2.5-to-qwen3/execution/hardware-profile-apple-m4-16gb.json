@@ -1,0 +1,53 @@
+{
+  "profile_version": "0.1.0",
+  "profile_id": "apple-m4-16gb-mlx-4bit-v1",
+  "status": "frozen_for_smoke",
+  "recorded_on": "2026-08-29",
+  "purpose": "Infrastructure smoke validation only; outputs are excluded from headline RelativeBench estimates.",
+  "hardware": {
+    "machine": "Mac mini",
+    "model_identifier": "Mac16,10",
+    "chip": "Apple M4",
+    "cpu_cores": 10,
+    "gpu_cores": 10,
+    "unified_memory_gb": 16,
+    "metal_version": "Metal 4"
+  },
+  "operating_system": {
+    "name": "macOS",
+    "version": "26.6.2",
+    "build": "25G83",
+    "architecture": "arm64"
+  },
+  "runtime": {
+    "environment_manager": "uv 0.11.2",
+    "python": "3.13.12",
+    "mlx": "0.32.2",
+    "mlx_lm": "0.31.3",
+    "transformers": "5.16.1",
+    "tokenizers": "0.23.1",
+    "huggingface_hub": "1.29.0",
+    "dependency_lock": "uv.lock"
+  },
+  "weight_transformation": {
+    "source": "Each catalog-pinned Hugging Face revision is converted locally.",
+    "format": "MLX",
+    "quantization_mode": "affine",
+    "bits": 4,
+    "group_size": 64,
+    "provenance_requirement": "Every converted file is SHA-256 hashed and tied to the source repository and revision."
+  },
+  "execution": {
+    "model_loading": "sequential",
+    "model_roles": ["previous", "new"],
+    "smoke_pilot": "../smoke-pilot.json",
+    "profile": "mlx-4bit-non-thinking-smoke-v1",
+    "cache_policy": "Use an isolated cache; source downloads may be removed after derived-file verification.",
+    "identity_fields_omitted": ["serial_number", "hardware_uuid", "provisioning_udid"]
+  },
+  "limitations": [
+    "Four-bit outputs validate infrastructure and directional plausibility only.",
+    "Quantized outputs must never be pooled with full-precision primary estimates.",
+    "The 16 GB host cannot safely execute the selected BF16 checkpoints directly."
+  ]
+}

@@ -10,11 +10,14 @@ class GenerationRequest:
     repository: str
     revision: str
     scenario_id: str
+    system_instruction: str
     prompt: str
     seed: int
     max_new_tokens: int
     temperature: float
     top_p: float
+    top_k: int
+    min_p: float
     model_options: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -26,3 +29,4 @@ class GenerationResult:
     input_tokens: Optional[int] = None
     output_tokens: Optional[int] = None
     cost_usd: Optional[float] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)

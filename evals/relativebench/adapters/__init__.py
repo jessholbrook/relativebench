@@ -3,3 +3,5 @@
 from .dry_run import DryRunAdapter
 
 __all__ = ["DryRunAdapter"]
+
+__all__ = ["DryRunAdapter"]

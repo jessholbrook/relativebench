@@ -14,7 +14,7 @@ Calculate compatibility flips from JSONL scored pairs:
 PYTHONPATH=evals python3 -m relativebench flips scored-pairs.jsonl
 ```
 
-The runner currently includes manifest validation, deterministic dry-run artifacts, protocol weighting, and two-way clustered percentile intervals. Loading real model weights remains gated on the fixed runtime and hardware decision.
+The runner includes manifest validation, deterministic dry-run artifacts, a provenance-checked MLX adapter, sequential model-role execution, protocol weighting, and two-way clustered percentile intervals. The first pinned-revision 4-bit smoke run is complete; full-precision primary execution remains gated on an appropriate host.
 
 Validate the selected pilot:
 

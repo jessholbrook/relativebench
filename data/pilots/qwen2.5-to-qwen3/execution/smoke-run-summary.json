@@ -1,0 +1,51 @@
+{
+  "summary_version": "0.1.0",
+  "status": "complete",
+  "completed_on": "2026-08-29",
+  "purpose": "Infrastructure smoke validation only; no capability, compatibility, or Experience Delta estimate is derived.",
+  "hardware_profile": {
+    "path": "hardware-profile-apple-m4-16gb.json",
+    "sha256": "7509f2344a0464634ac55f214d2699f1a30389360d0311aa477b29704b02bd50"
+  },
+  "dependency_lock": {
+    "path": "../../../../uv.lock",
+    "sha256": "1cda43661e5ef00d2b0d8b8a00de2e59323b8b751c3e7e7f976301f466c36649"
+  },
+  "smoke_pilot": {
+    "path": "../smoke-pilot.json",
+    "sha256": "5cf87efb57860f7ea81300eb5aca1eda4ab01389bf40862462451894883b0191"
+  },
+  "scenario_manifest_sha256": "6bf9c8224d856eb1cd6ae331889c8668ac7f19b04dabe5b52390e3e377dc1633",
+  "models": {
+    "previous": {
+      "model_id": "qwen/qwen2.5-7b-instruct",
+      "source_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "derived_weight_sha256": "f62c5c40a00383a28cc5ba618978baf21dd87f142d0cdbd9775d5900cdf1b80e",
+      "artifact_count": 12,
+      "artifact_set_sha256": "9aec1c91668e7bfa0170f762c669514ae12ea8ba04d23c748c82c70574e32be4",
+      "independent_rerun_artifact_set_sha256": "9aec1c91668e7bfa0170f762c669514ae12ea8ba04d23c748c82c70574e32be4",
+      "stable_rerun": true,
+      "status_counts": { "ok": 12 },
+      "finish_reason_counts": { "stop": 11, "length": 1 },
+      "empty_responses": 0
+    },
+    "new": {
+      "model_id": "qwen/qwen3-8b",
+      "source_revision": "b968826d9c46dd6066d109eabc6255188de91218",
+      "derived_weight_sha256": "a1411b70b4cfb45016fc69228d58716de58413f5e694561eee8a82b20cfbebf5",
+      "artifact_count": 12,
+      "artifact_set_sha256": "29c0b1da4297f9cc38096a693e4536087ad32a14f9e39a7bb011ec92dd8922fa",
+      "independent_rerun_artifact_set_sha256": "29c0b1da4297f9cc38096a693e4536087ad32a14f9e39a7bb011ec92dd8922fa",
+      "stable_rerun": true,
+      "status_counts": { "ok": 12 },
+      "finish_reason_counts": { "stop": 12 },
+      "empty_responses": 0,
+      "thinking_tag_count": 0
+    }
+  },
+  "raw_artifacts": {
+    "published": true,
+    "telemetry_note": "Raw-file hashes differ across reruns because latency is observational; artifact_set_sha256 excludes latency and cost.",
+    "source_download_caches_removed": true
+  }
+}

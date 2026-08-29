@@ -53,14 +53,17 @@
     "execution_profile": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "condition", "context_limit", "max_new_tokens", "temperature", "top_p", "seeds", "model_options"],
+      "required": ["id", "condition", "system_instruction", "context_limit", "max_new_tokens", "temperature", "top_p", "top_k", "min_p", "seeds", "model_options"],
       "properties": {
         "id": { "type": "string" },
         "condition": { "enum": ["frozen", "adapted", "learned"] },
+        "system_instruction": { "type": "string", "minLength": 1 },
         "context_limit": { "type": "integer", "minimum": 1 },
         "max_new_tokens": { "type": "integer", "minimum": 1 },
         "temperature": { "type": "number", "minimum": 0 },
         "top_p": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+        "top_k": { "type": "integer", "minimum": 0 },
+        "min_p": { "type": "number", "minimum": 0, "maximum": 1 },
         "seeds": { "type": "array", "minItems": 1, "items": { "type": "integer" }, "uniqueItems": true },
         "model_options": { "type": "object" }
       }

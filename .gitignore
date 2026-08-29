@@ -39,3 +39,7 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+/.venv/
+/.uv-cache/
+/.uv-python/
+/models/

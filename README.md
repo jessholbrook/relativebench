@@ -16,7 +16,7 @@ For every transition, RelativeBench reports three separate layers:
 2. **Compatibility delta** — positive and negative flips on identical items.
 3. **Experience Delta (ΔE)** — the direction and magnitude of change perceived by users.
 
-This repository is currently at **Protocol v0.1 / Milestone 2 execution preparation**. The reviewed candidate manifest contains 120 scenarios for Qwen2.5-7B-Instruct → Qwen3-8B. The website uses illustrative data until the preregistered pilot is complete.
+This repository is currently at **Protocol v0.1 / Milestone 2 reproducible smoke execution**. The reviewed candidate manifest contains 120 scenarios for Qwen2.5-7B-Instruct → Qwen3-8B, and both pinned revisions now have independently reproduced 4-bit MLX smoke artifacts. The website uses illustrative data until the preregistered pilot is complete.
 
 ## Local development
 
@@ -54,6 +54,7 @@ schemas/              versioned JSON Schemas
 - Statistical decisions are preregistered in [docs/statistical-analysis-plan.md](docs/statistical-analysis-plan.md).
 - Pilot scope and exit criteria are in [docs/pilot-plan.md](docs/pilot-plan.md).
 - Scenario construction, balance, and review evidence are in [docs/scenario-review.md](docs/scenario-review.md).
+- The frozen local runtime and smoke-run limitations are in [docs/inference-runtime.md](docs/inference-runtime.md).
 - No real model result should be presented as authoritative until the pilot gates pass.
 - The selected candidate and immutable model revisions are documented in [docs/first-pilot-transition.md](docs/first-pilot-transition.md).
 

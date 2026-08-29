@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "evals"))
 
 from relativebench.adapters import DryRunAdapter  # noqa: E402
+from relativebench.adapters.base import GenerationResult  # noqa: E402
 from relativebench.manifest import validate_pilot  # noqa: E402
 from relativebench.runner import run_pilot  # noqa: E402
 
@@ -49,6 +50,59 @@ class PilotTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as output_dir:
             with self.assertRaisesRegex(ValueError, "Unknown execution profile"):
                 run_pilot(PILOT, "missing", output_dir, DryRunAdapter())
+
+    def test_runner_can_execute_one_model_role_for_sequential_hardware(self):
+        with tempfile.TemporaryDirectory() as output_dir:
+            result = run_pilot(
+                PILOT,
+                "frozen-non-thinking-v1",
+                output_dir,
+                DryRunAdapter(),
+                model_roles=("previous",),
+            )
+        self.assertEqual(result["artifact_count"], 360)
+        self.assertEqual(result["artifacts_by_model_role"], {"previous": 360})
+        self.assertEqual(result["model_roles"], ["previous"])
+
+    def test_runner_rejects_unknown_model_role(self):
+        with tempfile.TemporaryDirectory() as output_dir:
+            with self.assertRaisesRegex(ValueError, "Unknown model roles"):
+                run_pilot(
+                    PILOT,
+                    "frozen-non-thinking-v1",
+                    output_dir,
+                    DryRunAdapter(),
+                    model_roles=("candidate",),
+                )
+
+    def test_artifact_set_identity_excludes_latency_telemetry(self):
+        class TimedAdapter:
+            name = "timed-test"
+
+            def __init__(self, latency_ms):
+                self.latency_ms = latency_ms
+
+            def generate(self, request):
+                return GenerationResult(text="stable", latency_ms=self.latency_ms)
+
+        with tempfile.TemporaryDirectory() as first_dir, tempfile.TemporaryDirectory() as second_dir:
+            first = run_pilot(
+                PILOT,
+                "frozen-non-thinking-v1",
+                first_dir,
+                TimedAdapter(10),
+                model_roles=("previous",),
+            )
+            second = run_pilot(
+                PILOT,
+                "frozen-non-thinking-v1",
+                second_dir,
+                TimedAdapter(20),
+                model_roles=("previous",),
+            )
+
+        self.assertNotEqual(first["responses_sha256"], second["responses_sha256"])
+        self.assertEqual(first["artifact_set_sha256"], second["artifact_set_sha256"])
 
 
 if __name__ == "__main__":

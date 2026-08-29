@@ -1,0 +1,32 @@
+{
+  "files": {
+    "README.md": "748c964f9b7e5f2c3770ce013bbc0153be7c54311d9692c343b6188eefe77ac6",
+    "chat_template.jinja": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+    "config.json": "6c6e5116b2714a01cfbc559ddb2608e890c5be4791fdd3f8841b555955439abe",
+    "generation_config.json": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2",
+    "model.safetensors": "a1411b70b4cfb45016fc69228d58716de58413f5e694561eee8a82b20cfbebf5",
+    "model.safetensors.index.json": "846476a9b9fa9e801467338e37635ab6557596c289b9ec9eff4d48effe5f5dcf",
+    "tokenizer.json": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506",
+    "tokenizer_config.json": "ee8f6d44bf2353e6d3686c3adaf70e1ccfe9e6ed6822d0ab2f28cafdd7754792"
+  },
+  "model_id": "qwen/qwen3-8b",
+  "model_role": "new",
+  "pilot_id": "qwen2.5-7b-instruct-to-qwen3-8b-mlx-smoke-v0.1",
+  "provenance_version": "0.1.0",
+  "runtime": {
+    "huggingface_hub": "1.29.0",
+    "mlx": "0.32.2",
+    "mlx_lm": "0.31.3",
+    "python": "3.13.12",
+    "tokenizers": "0.23.1",
+    "transformers": "5.16.1"
+  },
+  "source_repository": "Qwen/Qwen3-8B",
+  "source_revision": "b968826d9c46dd6066d109eabc6255188de91218",
+  "transformation": {
+    "bits": 4,
+    "format": "mlx",
+    "group_size": 64,
+    "quantization_mode": "affine"
+  }
+}

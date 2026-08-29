@@ -1,0 +1,21 @@
+{
+  "adapter": "mlx-lm-4bit",
+  "artifact_count": 12,
+  "artifact_set_sha256": "29c0b1da4297f9cc38096a693e4536087ad32a14f9e39a7bb011ec92dd8922fa",
+  "artifacts_by_model_role": {
+    "new": 12
+  },
+  "model_roles": [
+    "new"
+  ],
+  "pilot_id": "qwen2.5-7b-instruct-to-qwen3-8b-mlx-smoke-v0.1",
+  "profile_id": "mlx-4bit-non-thinking-smoke-v1",
+  "responses_sha256": "f9003e13b7a755fb11ae3d4555156234844b4a8d463fd52c341c62a782a84b36",
+  "run_manifest_version": "0.2.0",
+  "scenario_count": 12,
+  "scenario_manifest_sha256": "6bf9c8224d856eb1cd6ae331889c8668ac7f19b04dabe5b52390e3e377dc1633",
+  "seeds": [
+    11
+  ],
+  "transition_id": "qwen/qwen2.5-7b-instruct-to-qwen3-8b"
+}
