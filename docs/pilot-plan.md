@@ -1,6 +1,6 @@
 # First Pilot Plan
 
-Status: **full-corpus local rehearsal complete; independent review and primary collection pending**
+Status: **internal blind-rating workflow ready; independent review and primary collection pending**
 
 ## Goal
 
@@ -37,7 +37,7 @@ These are operational targets, not a formal power claim. A simulation-based powe
 3. ~~Expand and author-review the smoke manifest from 12 to 120 scenarios.~~ Complete. Independent domain review remains an activation gate.
 4. ~~Fix the local inference runtime and hardware profile, then execute both pinned revisions.~~ Complete for the preregistered 4-bit infrastructure smoke; full-precision primary execution remains pending.
 5. ~~Generate full-corpus rehearsal responses and verify artifact hashes.~~ Complete for the single-seed 4-bit infrastructure profile; three-seed full-precision primary generation remains pending.
-6. Run the blind rating pilot internally without inspecting aggregate preference.
+6. Run the blind rating pilot internally without inspecting aggregate preference. The audited packet and owner-only workflow are ready; one completed internal session per mirrored form remains pending.
 7. Complete human collection.
 8. Execute the frozen statistical plan.
 9. Publish a versioned snapshot and methods report.

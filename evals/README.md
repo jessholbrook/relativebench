@@ -41,6 +41,29 @@ PYTHONPATH=evals python3 -m relativebench verify-run \
   --output data/pilots/qwen2.5-to-qwen3/execution/full-corpus-rehearsal/previous
 ```
 
+Create the blinded, mirrored internal rating packet while retaining the role key outside Git:
+
+```bash
+PYTHONPATH=evals python3 -m relativebench create-rating-packet \
+  data/pilots/qwen2.5-to-qwen3/rehearsal-pilot.json \
+  --profile mlx-4bit-non-thinking-full-corpus-rehearsal-v1 \
+  --execution-dir data/pilots/qwen2.5-to-qwen3/execution/full-corpus-rehearsal \
+  --output data/pilots/qwen2.5-to-qwen3/rating/internal-rating-packet.json \
+  --public-output public/rating/internal-rating-packet.json \
+  --key-output private/ratings/qwen-full-corpus-rehearsal-key.json
+```
+
+The packet verifier can audit public blinding without the key or additionally verify model-placement balance when the private key path is supplied. Exported sessions can be checked without unblinding:
+
+```bash
+PYTHONPATH=evals python3 -m relativebench verify-rating-session \
+  public/rating/internal-rating-packet.json \
+  relativebench-internal-rating-export.json \
+  --require-complete
+```
+
+Neither verifier calculates preference aggregates.
+
 Analyze judgment JSONL with the preregistered two-way clustered percentile interval:
 
 ```bash

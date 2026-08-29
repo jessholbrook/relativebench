@@ -1,0 +1,27 @@
+{
+  "verification_version": "0.1.0",
+  "valid": true,
+  "packet_id": "9225e34e9e02c87482e20e5b93c5c184f693b8d788a91052af68402da7d6c5c8",
+  "packet_sha256": "6e956cc70d3710cc06fb3e5ae8e74e0bf66ea158c34899de1bb28c0eaca72e74",
+  "key_commitment_sha256": "1d29bad60b9be42778fc7a96fa1702c9fb0ec8009ef075662096d8571fb8847c",
+  "pair_count": 120,
+  "form_count": 2,
+  "assignments_per_form": {
+    "form-a": 120,
+    "form-b": 120
+  },
+  "model_placement_balance": {
+    "form-a": {
+      "new_on_left": 60,
+      "previous_on_left": 60
+    },
+    "form-b": {
+      "new_on_left": 60,
+      "previous_on_left": 60
+    }
+  },
+  "public_identity_field_scan": [],
+  "public_model_name_scan": [],
+  "aggregate_preference_inspected": false,
+  "private_role_key_published": false
+}

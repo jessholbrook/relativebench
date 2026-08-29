@@ -1,7 +1,7 @@
 # First Pilot Transition
 
 Decision date: **2026-08-28**  
-Status: **Full-corpus local rehearsal complete; independent review and primary execution pending**
+Status: **Internal blind-rating workflow ready; independent review and primary execution pending**
 
 ## Selection
 

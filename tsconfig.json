@@ -25,6 +25,7 @@
     "app/**/*.tsx",
     "lib/**/*.ts",
     "hooks/**/*.ts",
+    "components/rating-workspace.tsx",
     "components/ui/badge.tsx",
     "components/ui/card.tsx",
     "next.config.ts",

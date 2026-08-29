@@ -1,11 +1,11 @@
 import {
   ArrowRight,
   BookOpen,
-  ChevronDown,
   CircleDot,
   GitCompareArrows,
   ShieldCheck,
 } from 'lucide-react';
+import Link from 'next/link';
 
 import { Badge } from '@/components/ui/badge';
 import {
@@ -32,12 +32,13 @@ export default function Home() {
             </span>
             <span className="text-[15px] font-semibold tracking-[-0.02em]">RelativeBench</span>
             <Badge className="ml-1 bg-lime-200 text-lime-950" variant="secondary">
-              Corpus rehearsal
+              Rating pilot ready
             </Badge>
           </a>
           <nav className="hidden items-center gap-7 text-sm text-muted-foreground sm:flex" aria-label="Primary">
             <a className="transition-colors hover:text-foreground" href="#transition">Transitions</a>
             <a className="transition-colors hover:text-foreground" href="#method">Method</a>
+            <Link className="transition-colors hover:text-foreground" href="/rate">Rate</Link>
             <a className="transition-colors hover:text-foreground" href="#about">About</a>
           </nav>
         </div>
@@ -66,9 +67,9 @@ export default function Home() {
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Featured transition</p>
               <h2 id="transition-heading" className="mt-1 text-lg font-semibold tracking-tight">Qwen2.5 7B → Qwen3 8B</h2>
             </div>
-            <button className="hidden items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-muted sm:flex" type="button">
-              All transitions <ChevronDown className="size-3.5" />
-            </button>
+            <Link className="hidden items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-muted sm:flex" href="/rate">
+              Start blind rating <ArrowRight className="size-3.5" />
+            </Link>
           </div>
 
           <div className="grid gap-4 xl:grid-cols-[1.35fr_.65fr]">

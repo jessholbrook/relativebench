@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relativebench.org/schemas/internal-rating-session.schema.json",
+  "title": "RelativeBench internal blinded rating session export",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["session_version", "session_type", "packet_id", "form_id", "reviewer_code_sha256", "started_at", "exported_at", "completed_assignment_count", "judgments"],
+  "properties": {
+    "session_version": { "type": "string" },
+    "session_type": { "const": "internal_interface_pilot" },
+    "packet_id": { "$ref": "#/$defs/hash" },
+    "form_id": { "enum": ["form-a", "form-b"] },
+    "reviewer_code_sha256": { "$ref": "#/$defs/hash" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "exported_at": { "type": "string", "format": "date-time" },
+    "completed_assignment_count": { "type": "integer", "minimum": 0 },
+    "judgments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["assignment_id", "pair_id", "scenario_id", "category", "pointwise_left", "pointwise_right", "side_preference", "reason_tags", "duration_ms"],
+        "properties": {
+          "assignment_id": { "$ref": "#/$defs/hash" },
+          "pair_id": { "$ref": "#/$defs/hash" },
+          "scenario_id": { "type": "string" },
+          "category": { "type": "string" },
+          "pointwise_left": { "enum": ["fails", "partially_meets", "meets"] },
+          "pointwise_right": { "enum": ["fails", "partially_meets", "meets"] },
+          "side_preference": { "type": "integer", "minimum": -2, "maximum": 2 },
+          "reason_tags": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "duration_ms": { "type": "number", "minimum": 0 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

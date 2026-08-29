@@ -77,6 +77,32 @@ def main():
     verify.add_argument("--output", required=True)
     verify.add_argument("--allow-incomplete", action="store_true")
 
+    create_rating = subparsers.add_parser(
+        "create-rating-packet",
+        help="Create mirrored blinded rating forms and a separately retained private role key.",
+    )
+    create_rating.add_argument("pilot")
+    create_rating.add_argument("--profile", required=True)
+    create_rating.add_argument("--execution-dir", required=True)
+    create_rating.add_argument("--output", required=True)
+    create_rating.add_argument("--key-output", required=True)
+    create_rating.add_argument("--public-output")
+    create_rating.add_argument("--schedule-seed", type=int, default=20260829)
+
+    verify_rating = subparsers.add_parser(
+        "verify-rating-packet", help="Audit a public rating packet and optional private role key."
+    )
+    verify_rating.add_argument("packet")
+    verify_rating.add_argument("--key")
+
+    verify_session = subparsers.add_parser(
+        "verify-rating-session",
+        help="Validate a blinded internal session without unblinding or aggregating preference.",
+    )
+    verify_session.add_argument("packet")
+    verify_session.add_argument("session")
+    verify_session.add_argument("--require-complete", action="store_true")
+
     arguments = parser.parse_args()
     if arguments.command == "validate-pilot":
         validation = validate_pilot(arguments.pilot)
@@ -132,6 +158,30 @@ def main():
             arguments.output,
             model_roles=arguments.model_role,
             require_complete=not arguments.allow_incomplete,
+        )
+    elif arguments.command == "create-rating-packet":
+        from .rating import create_rating_packet
+
+        result = create_rating_packet(
+            arguments.pilot,
+            arguments.profile,
+            arguments.execution_dir,
+            arguments.output,
+            arguments.key_output,
+            schedule_seed=arguments.schedule_seed,
+            public_output_path=arguments.public_output,
+        )
+    elif arguments.command == "verify-rating-packet":
+        from .rating import verify_rating_packet
+
+        result = verify_rating_packet(arguments.packet, arguments.key)
+    elif arguments.command == "verify-rating-session":
+        from .rating import verify_internal_session
+
+        result = verify_internal_session(
+            arguments.packet,
+            arguments.session,
+            require_complete=arguments.require_complete,
         )
     else:
         records = read_jsonl(arguments.input)
