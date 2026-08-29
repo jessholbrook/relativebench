@@ -12,6 +12,21 @@ REQUIRED_CATEGORIES = {
     "factual_synthesis",
     "safety",
 }
+REQUIRED_DIFFICULTY_COUNTS = {"easy": 6, "medium": 8, "hard": 6}
+REQUIRED_SCENARIO_FIELDS = {
+    "id",
+    "manifest_version",
+    "category",
+    "difficulty",
+    "required_capabilities",
+    "source",
+    "license",
+    "scoring_mode",
+    "privacy_class",
+    "prompt_template",
+    "reference_answer",
+    "weight",
+}
 
 
 def load_json(path):
@@ -69,8 +84,25 @@ def validate_pilot(pilot_path):
         errors.append(f"Missing required categories: {', '.join(sorted(missing_categories))}")
 
     for scenario in scenarios:
+        missing_fields = REQUIRED_SCENARIO_FIELDS - set(scenario)
+        if missing_fields:
+            errors.append(
+                f"Scenario {scenario.get('id')} is missing required fields: "
+                f"{', '.join(sorted(missing_fields))}."
+            )
         if scenario.get("manifest_version") != scenario_manifest.get("manifest_version"):
             errors.append(f"Scenario {scenario.get('id')} has a mismatched manifest_version.")
+        if not scenario.get("required_capabilities"):
+            errors.append(f"Scenario {scenario.get('id')} must declare required capabilities.")
+        if not scenario.get("reference_answer"):
+            errors.append(f"Scenario {scenario.get('id')} must include reference criteria.")
+        if scenario.get("weight") != 1:
+            errors.append(f"Scenario {scenario.get('id')} must have the frozen pilot weight of 1.")
+
+    prompts = [scenario.get("prompt_template") for scenario in scenarios]
+    duplicate_prompts = [item for item, count in Counter(prompts).items() if count > 1]
+    if duplicate_prompts:
+        errors.append("Scenario prompt_template values must be unique.")
 
     profile_ids = [profile["id"] for profile in pilot.get("execution_profiles", [])]
     if len(profile_ids) != len(set(profile_ids)):
@@ -87,6 +119,28 @@ def validate_pilot(pilot_path):
         warnings.append(
             f"Scenario manifest is below the active-pilot target of {target_per_category} per category: {summary}."
         )
+
+    if scenario_manifest.get("status") == "reviewed_candidate":
+        unexpected_counts = {
+            category: categories.get(category, 0)
+            for category in sorted(REQUIRED_CATEGORIES)
+            if categories.get(category, 0) != target_per_category
+        }
+        if unexpected_counts:
+            summary = ", ".join(f"{category}={count}" for category, count in unexpected_counts.items())
+            errors.append(f"Reviewed manifest category counts must equal the target: {summary}.")
+
+        for category in sorted(REQUIRED_CATEGORIES):
+            difficulty_counts = Counter(
+                scenario.get("difficulty")
+                for scenario in scenarios
+                if scenario.get("category") == category
+            )
+            if dict(difficulty_counts) != REQUIRED_DIFFICULTY_COUNTS:
+                errors.append(
+                    f"Reviewed manifest difficulty mix for {category} must be "
+                    f"{REQUIRED_DIFFICULTY_COUNTS}, got {dict(difficulty_counts)}."
+                )
 
     return {
         "valid": not errors,

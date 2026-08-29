@@ -5,7 +5,7 @@
   "pilot_id": "qwen2.5-7b-instruct-to-qwen3-8b-v0.1",
   "status": "candidate",
   "transition_id": "qwen/qwen2.5-7b-instruct-to-qwen3-8b",
-  "scenario_manifest": "smoke-scenarios.json",
+  "scenario_manifest": "pilot-scenarios.json",
   "models": {
     "previous": {
       "id": "qwen/qwen2.5-7b-instruct",

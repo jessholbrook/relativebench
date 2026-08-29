@@ -1,7 +1,7 @@
 # First Pilot Transition
 
 Decision date: **2026-08-28**  
-Status: **Selected candidate; execution pending**
+Status: **Scenario candidate complete; independent review and execution pending**
 
 ## Selection
 
@@ -54,7 +54,7 @@ The candidate becomes an active pilot only after:
 
 - a fixed inference runtime and hardware profile are recorded
 - both pinned checkpoints produce reproducible smoke-run artifacts
-- the full 120-scenario manifest passes license and domain review
+- the full 120-scenario manifest passes independent domain review (author review and automated checks are complete)
 - at least 40 qualified Qwen2.5 incumbent users are recruitable
 - the participant consent and compensation plan is approved
 

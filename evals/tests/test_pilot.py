@@ -15,13 +15,12 @@ PILOT = ROOT / "data/pilots/qwen2.5-to-qwen3/pilot.json"
 
 
 class PilotTests(unittest.TestCase):
-    def test_selected_pilot_is_valid_but_smoke_manifest_warns_below_target(self):
+    def test_selected_pilot_has_reviewed_balanced_manifest(self):
         validation = validate_pilot(PILOT)
         self.assertTrue(validation["valid"], validation["errors"])
-        self.assertEqual(validation["scenario_count"], 12)
-        self.assertEqual(set(validation["category_counts"].values()), {2})
-        self.assertEqual(len(validation["warnings"]), 1)
-        self.assertIn("below the active-pilot target", validation["warnings"][0])
+        self.assertEqual(validation["scenario_count"], 120)
+        self.assertEqual(set(validation["category_counts"].values()), {20})
+        self.assertEqual(validation["warnings"], [])
 
     def test_pilot_uses_pinned_catalog_revisions(self):
         validation = validate_pilot(PILOT)
@@ -35,15 +34,15 @@ class PilotTests(unittest.TestCase):
             second = run_pilot(PILOT, "frozen-non-thinking-v1", second_dir, DryRunAdapter())
 
             self.assertEqual(first, second)
-            self.assertEqual(first["artifact_count"], 72)
-            self.assertEqual(first["artifacts_by_model_role"], {"new": 36, "previous": 36})
-            self.assertEqual(first["scenario_count"], 12)
+            self.assertEqual(first["artifact_count"], 720)
+            self.assertEqual(first["artifacts_by_model_role"], {"new": 360, "previous": 360})
+            self.assertEqual(first["scenario_count"], 120)
 
             records = [
                 json.loads(line)
                 for line in (Path(first_dir) / "responses.jsonl").read_text().splitlines()
             ]
-            self.assertEqual(len({record["artifact_id"] for record in records}), 72)
+            self.assertEqual(len({record["artifact_id"] for record in records}), 720)
             self.assertTrue(all(record["adapter"] == "dry-run" for record in records))
 
     def test_unknown_profile_fails_closed(self):
