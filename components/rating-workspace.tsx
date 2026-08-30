@@ -4,12 +4,13 @@ import { useEffect, useMemo, useState, type ComponentProps } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
-  ArrowRight,
   Check,
   Download,
   EyeOff,
+  Keyboard,
   RotateCcw,
   ShieldCheck,
+  X,
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -98,6 +99,70 @@ const preferenceOptions: Array<{ value: SidePreference; label: string }> = [
 
 const reasonOptions = ['Correctness', 'Instruction following', 'Clarity', 'Format', 'Safety', 'Length'];
 
+function ShortcutKey({ children }: { children: string }) {
+  return (
+    <kbd className="inline-flex min-w-5 items-center justify-center rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground shadow-sm">
+      {children}
+    </kbd>
+  );
+}
+
+function ShortcutGuide({ onClose }: { onClose: () => void }) {
+  const shortcuts = [
+    ['1–3', 'Score the visible response'],
+    ['1–5', 'Choose the paired preference'],
+    ['B / ←', 'Go back one step or task'],
+    ['⇧1–6', 'Tag the previous judgment'],
+    ['E', 'Export the blinded session'],
+    ['⇧R', 'Reset the local session'],
+    ['?', 'Toggle this guide'],
+  ];
+  return (
+    <dialog open className="fixed inset-x-4 bottom-4 top-auto z-50 ml-auto max-w-sm rounded-xl border border-border bg-card p-4 text-foreground shadow-xl sm:inset-x-auto sm:right-6 sm:bottom-6" aria-label="Keyboard shortcuts">
+      <div className="flex items-center justify-between gap-4">
+        <p className="flex items-center gap-2 text-sm font-semibold"><Keyboard className="size-4" /> Keyboard shortcuts</p>
+        <ActionButton variant="ghost" size="sm" aria-label="Close keyboard shortcuts" onClick={onClose}><X className="size-4" /></ActionButton>
+      </div>
+      <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 text-xs">
+        {shortcuts.map(([keys, action]) => (
+          <div className="contents" key={keys}>
+            <dt><ShortcutKey>{keys}</ShortcutKey></dt>
+            <dd className="self-center text-muted-foreground">{action}</dd>
+          </div>
+        ))}
+      </dl>
+    </dialog>
+  );
+}
+
+function LastJudgmentTags({ judgment, onToggle }: { judgment: Judgment; onToggle: (reason: string) => void }) {
+  return (
+    <div className="rounded-lg border border-border bg-card px-4 py-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <p className="text-xs font-medium">Previous judgment saved</p>
+        <p className="text-xs text-muted-foreground">Optional reason tags</p>
+        <div className="flex flex-wrap gap-1.5 sm:ml-auto">
+          {reasonOptions.map((reason, index) => {
+            const selected = judgment.reason_tags.includes(reason);
+            return (
+              <button
+                key={reason}
+                type="button"
+                aria-pressed={selected}
+                aria-keyshortcuts={`Shift+${index + 1}`}
+                onClick={() => onToggle(reason)}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] transition-colors ${selected ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background hover:bg-muted'}`}
+              >
+                {reason} <ShortcutKey>{`⇧${index + 1}`}</ShortcutKey>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ActionButton({
   className = '',
   variant = 'default',
@@ -183,6 +248,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
   const [session, setSession] = useState<SessionState | null>(null);
   const [starting, setStarting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   const pairById = useMemo(
     () => new Map(packet.pairs.map((pair) => [pair.pair_id, pair])),
@@ -241,24 +307,47 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
     setStarting(false);
   }
 
-  function nextStage() {
+  function choosePointwise(value: PointwiseScore) {
+    setSession((current) => {
+      if (!current || current.stage === 'pair') return current;
+      if (current.stage === 'left') {
+        return { ...current, pointwiseLeft: value, stage: 'right' };
+      }
+      return { ...current, pointwiseRight: value, stage: 'pair' };
+    });
+    setNotice(null);
+  }
+
+  function goBack() {
     if (!session) return;
-    if (session.stage === 'left' && session.pointwiseLeft) {
-      setSession({ ...session, stage: 'right' });
-    } else if (session.stage === 'right' && session.pointwiseRight) {
-      setSession({ ...session, stage: 'pair' });
+    if (session.stage === 'right') {
+      setSession({ ...session, stage: 'left' });
+      return;
     }
+    if (session.stage === 'pair') {
+      setSession({ ...session, stage: 'right' });
+      return;
+    }
+    if (session.currentIndex === 0 || session.judgments.length === 0) return;
+    const previousJudgment = session.judgments.at(-1);
+    if (!previousJudgment) return;
+    setSession({
+      ...session,
+      currentIndex: session.currentIndex - 1,
+      stage: 'pair',
+      assignmentStartedAt: nowMilliseconds(),
+      pointwiseLeft: previousJudgment.pointwise_left,
+      pointwiseRight: previousJudgment.pointwise_right,
+      sidePreference: previousJudgment.side_preference,
+      reasonTags: previousJudgment.reason_tags,
+      judgments: session.judgments.slice(0, -1),
+    });
+    setNotice('Previous judgment reopened. Choose a preference to save it again.');
   }
 
-  function previousStage() {
-    if (!session) return;
-    if (session.stage === 'right') setSession({ ...session, stage: 'left' });
-    if (session.stage === 'pair') setSession({ ...session, stage: 'right' });
-  }
-
-  function submitJudgment() {
+  function choosePreference(value: SidePreference) {
     if (!session || !assignment || !pair) return;
-    if (!session.pointwiseLeft || !session.pointwiseRight || session.sidePreference === null) return;
+    if (!session.pointwiseLeft || !session.pointwiseRight) return;
     const judgment: Judgment = {
       assignment_id: assignment.assignment_id,
       pair_id: pair.pair_id,
@@ -266,7 +355,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
       category: pair.category,
       pointwise_left: session.pointwiseLeft,
       pointwise_right: session.pointwiseRight,
-      side_preference: session.sidePreference,
+      side_preference: value,
       reason_tags: session.reasonTags,
       duration_ms: Math.max(0, nowMilliseconds() - session.assignmentStartedAt),
     };
@@ -284,12 +373,22 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
     setNotice('Judgment saved locally.');
   }
 
-  function toggleReason(reason: string) {
-    if (!session) return;
-    const reasonTags = session.reasonTags.includes(reason)
-      ? session.reasonTags.filter((item) => item !== reason)
-      : [...session.reasonTags, reason];
-    setSession({ ...session, reasonTags });
+  function toggleLastReason(reason: string) {
+    setSession((current) => {
+      if (!current || current.judgments.length === 0) return current;
+      const previous = current.judgments.at(-1);
+      if (!previous) return current;
+      const reasonTags = previous.reason_tags.includes(reason)
+        ? previous.reason_tags.filter((item) => item !== reason)
+        : [...previous.reason_tags, reason];
+      return {
+        ...current,
+        judgments: [
+          ...current.judgments.slice(0, -1),
+          { ...previous, reason_tags: reasonTags },
+        ],
+      };
+    });
   }
 
   function exportSession() {
@@ -323,6 +422,63 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
     setNotice('Local session deleted.');
   }
 
+  useEffect(() => {
+    if (!session) return;
+    function handleKeyDown(event: KeyboardEvent) {
+      if (!session) return;
+      const target = event.target as HTMLElement | null;
+      if (target?.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target?.tagName ?? '')) return;
+      if (event.repeat) return;
+
+      if (event.key === 'Escape') {
+        setShowShortcuts(false);
+        return;
+      }
+      if (event.key === '?') {
+        event.preventDefault();
+        setShowShortcuts((visible) => !visible);
+        return;
+      }
+      if (event.shiftKey && /^Digit[1-6]$/.test(event.code)) {
+        event.preventDefault();
+        toggleLastReason(reasonOptions[Number(event.code.slice(-1)) - 1]);
+        return;
+      }
+      if (event.shiftKey && event.key.toLowerCase() === 'r') {
+        event.preventDefault();
+        resetSession();
+        return;
+      }
+      if (!event.shiftKey && event.key.toLowerCase() === 'e') {
+        event.preventDefault();
+        exportSession();
+        return;
+      }
+      if (!event.shiftKey && (event.key.toLowerCase() === 'b' || event.key === 'ArrowLeft')) {
+        event.preventDefault();
+        goBack();
+        return;
+      }
+      if (showShortcuts || event.shiftKey || !assignment || !pair || !/^Digit[1-5]$/.test(event.code)) return;
+      const optionIndex = Number(event.code.slice(-1)) - 1;
+      if (session.stage === 'pair') {
+        const option = preferenceOptions[optionIndex];
+        if (option) {
+          event.preventDefault();
+          choosePreference(option.value);
+        }
+        return;
+      }
+      const option = pointwiseOptions[optionIndex];
+      if (option) {
+        event.preventDefault();
+        choosePointwise(option.value);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  });
+
   if (!session) {
     return (
       <main className="min-h-screen bg-background px-5 py-8 text-foreground sm:px-8 sm:py-12">
@@ -345,6 +501,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
                 <p className="flex gap-3"><EyeOff className="mt-0.5 size-4 shrink-0 text-foreground" /> Left and right responses are counterbalanced across two forms.</p>
                 <p className="flex gap-3"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-foreground" /> Progress stays on this device until you export it.</p>
                 <p className="flex gap-3"><Check className="mt-0.5 size-4 shrink-0 text-foreground" /> No aggregate preference is calculated or displayed.</p>
+                <p className="flex gap-3"><Keyboard className="mt-0.5 size-4 shrink-0 text-foreground" /> Every selection advances automatically; keyboard shortcuts cover the full workflow.</p>
               </div>
             </div>
             <Card className="border-0 bg-card ring-1 ring-border">
@@ -367,8 +524,8 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
                   Only a SHA-256 hash of this code appears in exports.
                 </p>
                 {notice && <p className="mt-3 text-sm text-rose-700">{notice}</p>}
-                <ActionButton className="mt-5 w-full" size="lg" onClick={() => void beginSession()} disabled={starting}>
-                  {starting ? 'Preparing…' : 'Enter rating workspace'} <ArrowRight />
+                <ActionButton className="mt-5 w-full" size="lg" aria-keyshortcuts="Enter" onClick={() => void beginSession()} disabled={starting}>
+                  {starting ? 'Preparing…' : 'Enter rating workspace'} <ShortcutKey>Enter</ShortcutKey>
                 </ActionButton>
               </CardContent>
             </Card>
@@ -388,17 +545,23 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
   if (complete) {
     return (
       <main className="min-h-screen bg-background px-5 py-12 text-foreground sm:px-8">
-        <Card className="mx-auto max-w-xl border-0 bg-card text-center ring-1 ring-border">
-          <CardHeader>
-            <div className="mx-auto grid size-12 place-items-center rounded-full bg-lime-200 text-lime-950"><Check /></div>
-            <CardTitle className="mt-3 text-2xl">Rating session complete</CardTitle>
-            <CardDescription>All {completed} judgments are saved locally. No preference summary has been calculated.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <ActionButton size="lg" onClick={exportSession}><Download /> Export blinded session</ActionButton>
-            <ActionButton size="lg" variant="outline" onClick={resetSession}><RotateCcw /> Delete local copy</ActionButton>
-          </CardContent>
-        </Card>
+        <div className="mx-auto max-w-3xl space-y-4">
+          {session.judgments.at(-1) && <LastJudgmentTags judgment={session.judgments.at(-1)!} onToggle={toggleLastReason} />}
+          <Card className="border-0 bg-card text-center ring-1 ring-border">
+            <CardHeader>
+              <div className="mx-auto grid size-12 place-items-center rounded-full bg-lime-200 text-lime-950"><Check /></div>
+              <CardTitle className="mt-3 text-2xl">Rating session complete</CardTitle>
+              <CardDescription>All {completed} judgments are saved locally. No preference summary has been calculated.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+              <ActionButton size="lg" variant="outline" aria-keyshortcuts="B ArrowLeft" onClick={goBack}><ArrowLeft /> Reopen last <ShortcutKey>B</ShortcutKey></ActionButton>
+              <ActionButton size="lg" aria-keyshortcuts="E" onClick={exportSession}><Download /> Export <ShortcutKey>E</ShortcutKey></ActionButton>
+              <ActionButton size="lg" variant="outline" aria-keyshortcuts="Shift+R" onClick={resetSession}><RotateCcw /> Delete local copy <ShortcutKey>⇧R</ShortcutKey></ActionButton>
+              <ActionButton size="lg" variant="ghost" aria-keyshortcuts="?" onClick={() => setShowShortcuts(true)}><Keyboard /> Shortcuts <ShortcutKey>?</ShortcutKey></ActionButton>
+            </CardContent>
+          </Card>
+        </div>
+        {showShortcuts && <ShortcutGuide onClose={() => setShowShortcuts(false)} />}
       </main>
     );
   }
@@ -416,8 +579,10 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
           <Link className="flex items-center gap-2 text-sm font-semibold" href="/"><EyeOff className="size-4" /> Blind rating</Link>
           <Badge variant="outline">{session.formId}</Badge>
           <div className="ml-auto flex items-center gap-2">
-            <ActionButton variant="outline" size="sm" onClick={exportSession}><Download /> Export</ActionButton>
-            <ActionButton variant="ghost" size="sm" onClick={resetSession}><RotateCcw /> Reset</ActionButton>
+            <ActionButton variant="ghost" size="sm" aria-keyshortcuts="B ArrowLeft" onClick={goBack} disabled={session.stage === 'left' && session.currentIndex === 0}><ArrowLeft /> Back <ShortcutKey>B</ShortcutKey></ActionButton>
+            <ActionButton variant="outline" size="sm" aria-keyshortcuts="E" onClick={exportSession}><Download /> Export <ShortcutKey>E</ShortcutKey></ActionButton>
+            <ActionButton variant="ghost" size="sm" aria-keyshortcuts="?" onClick={() => setShowShortcuts(true)}><Keyboard /> <ShortcutKey>?</ShortcutKey></ActionButton>
+            <ActionButton variant="ghost" size="sm" aria-keyshortcuts="Shift+R" onClick={resetSession}><RotateCcw /> Reset <ShortcutKey>⇧R</ShortcutKey></ActionButton>
           </div>
           <div className="flex basis-full flex-wrap items-center gap-3" aria-label={`Progress ${completed} of ${total}`}>
             <span className="text-sm font-medium">Progress</span>
@@ -457,7 +622,8 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
           </p>
         </aside>
 
-        <section>
+        <section className="space-y-4">
+          {session.judgments.at(-1) && <LastJudgmentTags judgment={session.judgments.at(-1)!} onToggle={toggleLastReason} />}
           {session.stage !== 'pair' ? (
             <Card className="border-0 bg-card ring-1 ring-border">
               <CardHeader>
@@ -472,7 +638,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
                   <pre className="whitespace-pre-wrap font-sans">{visibleResponse.text}</pre>
                 </div>
                 <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                  {pointwiseOptions.map((option) => {
+                  {pointwiseOptions.map((option, index) => {
                     const selected = session.stage === 'left'
                       ? session.pointwiseLeft === option.value
                       : session.pointwiseRight === option.value;
@@ -481,25 +647,19 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
                         key={option.value}
                         type="button"
                         aria-pressed={selected}
-                        onClick={() => setSession({
-                          ...session,
-                          ...(session.stage === 'left'
-                            ? { pointwiseLeft: option.value }
-                            : { pointwiseRight: option.value }),
-                        })}
+                        aria-keyshortcuts={`${index + 1}`}
+                        onClick={() => choosePointwise(option.value)}
                         className={`rounded-lg border p-4 text-left transition-colors ${selected ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background hover:bg-muted'}`}
                       >
-                        <strong className="block text-sm">{option.label}</strong>
+                        <strong className="flex items-center justify-between gap-2 text-sm">{option.label} <ShortcutKey>{`${index + 1}`}</ShortcutKey></strong>
                         <span className={`mt-1 block text-xs leading-4 ${selected ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{option.description}</span>
                       </button>
                     );
                   })}
                 </div>
                 <div className="mt-6 flex items-center justify-between">
-                  <ActionButton variant="ghost" onClick={previousStage} disabled={session.stage === 'left'}><ArrowLeft /> Back</ActionButton>
-                  <ActionButton onClick={nextStage} disabled={session.stage === 'left' ? !session.pointwiseLeft : !session.pointwiseRight}>
-                    Continue <ArrowRight />
-                  </ActionButton>
+                  <ActionButton variant="ghost" aria-keyshortcuts="B ArrowLeft" onClick={goBack} disabled={session.stage === 'left' && session.currentIndex === 0}><ArrowLeft /> Back <ShortcutKey>B</ShortcutKey></ActionButton>
+                  <p className="flex items-center gap-2 text-xs text-muted-foreground">Select or press <ShortcutKey>1–3</ShortcutKey> to advance</p>
                 </div>
               </CardContent>
             </Card>
@@ -508,7 +668,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
               <div>
                 <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Paired judgment · step 3 of 3</p>
                 <h2 className="mt-1 text-2xl font-semibold tracking-tight">Compare the responses</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Your pointwise scores are retained. Now judge the meaningful difference between sides.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Your pointwise scores are retained. Choosing a preference saves it and opens the next task.</p>
               </div>
               <div className="grid gap-4 xl:grid-cols-2">
                 {([['Left', left], ['Right', right]] as const).map(([side, response]) => (
@@ -526,37 +686,22 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
                 <CardContent className="py-6">
                   <p className="text-sm font-medium">Overall difference</p>
                   <div className="mt-3 grid gap-2 sm:grid-cols-5">
-                    {preferenceOptions.map((option) => (
+                    {preferenceOptions.map((option, index) => (
                       <button
                         key={option.value}
                         type="button"
                         aria-pressed={session.sidePreference === option.value}
-                        onClick={() => setSession({ ...session, sidePreference: option.value })}
+                        aria-keyshortcuts={`${index + 1}`}
+                        onClick={() => choosePreference(option.value)}
                         className={`rounded-lg border px-3 py-3 text-sm transition-colors ${session.sidePreference === option.value ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background hover:bg-muted'}`}
                       >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                  <p className="mt-6 text-sm font-medium">Optional reason tags</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {reasonOptions.map((reason) => (
-                      <button
-                        key={reason}
-                        type="button"
-                        aria-pressed={session.reasonTags.includes(reason)}
-                        onClick={() => toggleReason(reason)}
-                        className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${session.reasonTags.includes(reason) ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background hover:bg-muted'}`}
-                      >
-                        {reason}
+                        <span className="flex items-center justify-center gap-2">{option.label} <ShortcutKey>{`${index + 1}`}</ShortcutKey></span>
                       </button>
                     ))}
                   </div>
                   <div className="mt-6 flex items-center justify-between">
-                    <ActionButton variant="ghost" onClick={previousStage}><ArrowLeft /> Back</ActionButton>
-                    <ActionButton onClick={submitJudgment} disabled={session.sidePreference === null}>
-                      Save judgment <ArrowRight />
-                    </ActionButton>
+                    <ActionButton variant="ghost" aria-keyshortcuts="B ArrowLeft" onClick={goBack}><ArrowLeft /> Back <ShortcutKey>B</ShortcutKey></ActionButton>
+                    <p className="flex items-center gap-2 text-xs text-muted-foreground">Select or press <ShortcutKey>1–5</ShortcutKey> to save and advance</p>
                   </div>
                 </CardContent>
               </Card>
@@ -565,6 +710,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
           {notice && <p className="mt-4 text-center text-xs text-muted-foreground">{notice}</p>}
         </section>
       </div>
+      {showShortcuts && <ShortcutGuide onClose={() => setShowShortcuts(false)} />}
     </main>
   );
 }

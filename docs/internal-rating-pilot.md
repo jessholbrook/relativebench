@@ -13,8 +13,10 @@ For each assignment, the evaluator:
 1. reads the prompt and task-specific rubric
 2. sees only the left response and records `fails`, `partially_meets`, or `meets`
 3. sees only the right response and records the same pointwise scale
-4. sees both responses and records a side-relative five-level judgment from “left much better” to “right much better”
-5. optionally adds reason tags after the primary paired judgment
+4. sees both responses and records a side-relative five-level judgment from “left much better” to “right much better”; the choice saves immediately and opens the next task
+5. optionally adds reason tags to the most recently saved judgment without interrupting the next task
+
+Pointwise choices also advance immediately. `B` or the left-arrow key returns to the prior stage, including reopening the most recently saved paired judgment. Number keys select every score, `Shift` plus a number applies reason tags, `E` exports, `Shift+R` resets, and `?` opens the complete shortcut guide.
 
 The export remains side-relative and blinded. It does not contain model identity, model role, model revision, raw artifact identifiers, or the new-response side. Those fields are joined only after collection using the separately retained private role key.
 
