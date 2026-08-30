@@ -100,21 +100,12 @@ export default function Home() {
               </h1>
             </div>
 
-            <div className="grid gap-8 border-t border-[#cbc8c1] pt-7 md:grid-cols-[1.35fr_.65fr]">
+            <div className="border-t border-[#cbc8c1] pt-7">
               <p className="max-w-3xl text-pretty text-lg leading-7 sm:text-xl sm:leading-8">
                 RelativeBench compares a new model with the model it replaces. It joins standard
                 benchmark deltas with blinded, paired judgments from people who know the incumbent—so
                 a release can be understood as a transition, not just a point on a leaderboard.
               </p>
-              <div className="flex items-end md:justify-end">
-                <a
-                  className="group inline-flex items-center gap-7 bg-[#171715] px-5 py-4 text-sm font-medium text-white transition-colors hover:bg-[#e34c3b]"
-                  href="#why"
-                >
-                  Why it matters
-                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-                </a>
-              </div>
             </div>
           </div>
         </section>
