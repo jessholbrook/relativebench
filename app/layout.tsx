@@ -14,20 +14,20 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.SITE_ORIGIN ?? 'http://localhost:3000'),
-  title: 'RelativeBench — How will the next model feel?',
+  title: 'RelativeBench — Measure the model transition',
   description:
-    'A model transition benchmark measuring capability change, compatibility, and perceived experience.',
+    'Compare a new model with the one it replaces through standard benchmark deltas and blinded, paired judgments.',
   openGraph: {
-    title: 'RelativeBench — How will the next model feel?',
+    title: 'RelativeBench — Measure the model transition',
     description:
-      'Measure capability change, compatibility, and the experience of moving to a new model.',
+      'Measure benchmark movement, compatibility, and the difference people feel when a model changes.',
     images: [{ url: '/og.png', width: 1200, height: 630, alt: 'RelativeBench model transition visualization' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'RelativeBench — How will the next model feel?',
+    title: 'RelativeBench — Measure the model transition',
     description:
-      'Measure capability change, compatibility, and the experience of moving to a new model.',
+      'Measure benchmark movement, compatibility, and the difference people feel when a model changes.',
     images: ['/og.png'],
   },
 };
