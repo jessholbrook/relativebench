@@ -38,6 +38,7 @@ export default function Home() {
           <nav className="hidden items-center gap-7 text-sm text-muted-foreground sm:flex" aria-label="Primary">
             <a className="transition-colors hover:text-foreground" href="#transition">Transitions</a>
             <a className="transition-colors hover:text-foreground" href="#method">Method</a>
+            <Link className="transition-colors hover:text-foreground" href="/demo">Example report</Link>
             <Link className="transition-colors hover:text-foreground" href="/rate">Rate</Link>
             <a className="transition-colors hover:text-foreground" href="#about">About</a>
           </nav>
@@ -67,9 +68,14 @@ export default function Home() {
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Featured transition</p>
               <h2 id="transition-heading" className="mt-1 text-lg font-semibold tracking-tight">Qwen2.5 7B → Qwen3 8B</h2>
             </div>
-            <Link className="hidden items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-muted sm:flex" href="/rate">
-              Start blind rating <ArrowRight className="size-3.5" />
-            </Link>
+            <div className="hidden items-center gap-2 sm:flex">
+              <Link className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-muted" href="/demo">
+                View example report
+              </Link>
+              <Link className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/80" href="/rate">
+                Start blind rating <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
           </div>
 
           <div className="grid gap-4 xl:grid-cols-[1.35fr_.65fr]">
