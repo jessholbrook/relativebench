@@ -120,22 +120,22 @@ export default function Home() {
                 <h2 className="max-w-5xl text-balance font-serif text-4xl leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
                   People do not experience a model at a point in time. They experience the move from one model to the next.
                 </h2>
-                <div className="mt-10 grid gap-px border border-[#cbc8c1] bg-[#cbc8c1] md:grid-cols-3">
-                  <article className="bg-[#f3f1ec] p-6 sm:p-8">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#e34c3b]">Scores miss direction</p>
-                    <p className="mt-5 text-base leading-7 text-[#514e49]">
+                <div className="mt-10 border-t border-[#171715]">
+                  <article className="grid gap-3 border-b border-[#cbc8c1] py-5 sm:grid-cols-[190px_1fr] sm:gap-8">
+                    <h3 className="font-serif text-xl tracking-[-0.025em]">Scores miss direction</h3>
+                    <p className="max-w-2xl text-base leading-7 text-[#514e49]">
                       A stronger average can still conceal task-level regressions that break established workflows.
                     </p>
                   </article>
-                  <article className="bg-[#f3f1ec] p-6 sm:p-8">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#e34c3b]">Users have memory</p>
-                    <p className="mt-5 text-base leading-7 text-[#514e49]">
+                  <article className="grid gap-3 border-b border-[#cbc8c1] py-5 sm:grid-cols-[190px_1fr] sm:gap-8">
+                    <h3 className="font-serif text-xl tracking-[-0.025em]">Users have memory</h3>
+                    <p className="max-w-2xl text-base leading-7 text-[#514e49]">
                       People compare every response with habits, expectations, and recovery strategies learned on the incumbent.
                     </p>
                   </article>
-                  <article className="bg-[#f3f1ec] p-6 sm:p-8">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#e34c3b]">Change has a shape</p>
-                    <p className="mt-5 text-base leading-7 text-[#514e49]">
+                  <article className="grid gap-3 border-b border-[#cbc8c1] py-5 sm:grid-cols-[190px_1fr] sm:gap-8">
+                    <h3 className="font-serif text-xl tracking-[-0.025em]">Change has a shape</h3>
+                    <p className="max-w-2xl text-base leading-7 text-[#514e49]">
                       Better, same, and worse outcomes can coexist. A useful report makes that distribution visible.
                     </p>
                   </article>
@@ -155,12 +155,12 @@ export default function Home() {
                 <h2 className="max-w-4xl font-serif text-4xl leading-none tracking-[-0.045em] sm:text-6xl">
                   One protocol. Three views of change.
                 </h2>
-                <div className="mt-10 grid border-t border-[#171715] md:grid-cols-3">
+                <div className="mt-10 border-t border-[#171715]">
                   {steps.map((step) => (
-                    <article key={step.number} className="border-b border-[#cbc8c1] py-5 md:border-r md:px-6 md:first:pl-0 md:last:border-r-0 md:last:pr-0">
+                    <article key={step.number} className="grid gap-3 border-b border-[#cbc8c1] py-5 sm:grid-cols-[44px_210px_1fr] sm:gap-6">
                       <span className="font-mono text-[10px] text-[#e34c3b]">{step.number}</span>
-                      <h3 className="mt-6 text-xl font-medium tracking-[-0.03em]">{step.title}</h3>
-                      <p className="mt-3 text-sm leading-6 text-[#625f59]">{step.copy}</p>
+                      <h3 className="text-lg font-medium tracking-[-0.03em]">{step.title}</h3>
+                      <p className="max-w-2xl text-sm leading-6 text-[#625f59]">{step.copy}</p>
                     </article>
                   ))}
                 </div>
@@ -191,6 +191,10 @@ export default function Home() {
                   </Link>
                 </div>
 
+                <p className="max-w-3xl border-b border-white/20 py-5 font-serif text-xl leading-8 text-[#d1cec8] sm:text-2xl">
+                  A transition report reads capability movement alongside the outcomes users actually notice: improvement, continuity, and regression.
+                </p>
+
                 <div className="grid gap-8 py-7 lg:grid-cols-[.8fr_1.2fr] lg:gap-10">
                   <div>
                     <p className="font-mono text-[10px] uppercase tracking-[0.17em] text-[#aaa69f]">Experience delta</p>
@@ -201,10 +205,10 @@ export default function Home() {
                     <p className="mt-3 text-sm text-[#aaa69f]">
                       {experience.confidence_interval.level * 100}% interval +{experience.confidence_interval.lower} to +{experience.confidence_interval.upper}
                     </p>
-                    <div className="mt-7 grid grid-cols-3 border-y border-white/20 py-4">
+                    <div className="mt-6 flex flex-wrap gap-x-7 gap-y-3">
                       {Object.entries(experience.distribution_percent).map(([label, value]) => (
                         <div key={label}>
-                          <strong className="block text-2xl font-medium">{value}%</strong>
+                          <strong className="mr-2 text-xl font-medium">{value}%</strong>
                           <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#89857e]">{label}</span>
                         </div>
                       ))}
@@ -233,12 +237,12 @@ export default function Home() {
                         </div>
                       ))}
                     </div>
-                    <div className="mt-7 grid grid-cols-2 gap-px bg-white/20">
-                      <div className="bg-[#171715] py-4 pr-5">
+                    <div className="mt-7 flex gap-10 border-t border-white/20 pt-5">
+                      <div>
                         <strong className="font-serif text-3xl">{(compatibility.negative_flip_rate * 100).toFixed(1)}%</strong>
                         <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#89857e]">negative flips</p>
                       </div>
-                      <div className="bg-[#171715] py-4 pl-5">
+                      <div>
                         <strong className="font-serif text-3xl">{(compatibility.positive_flip_rate * 100).toFixed(1)}%</strong>
                         <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#89857e]">positive flips</p>
                       </div>
@@ -277,7 +281,7 @@ export default function Home() {
                   </p>
                 </div>
                 <Link
-                  className="group block border border-[#bbb7b0] bg-[#e9e6df] p-2 transition-colors hover:border-[#171715]"
+                  className="group block"
                   href="/rate"
                   aria-label="Open the RelativeBench rater"
                 >
@@ -289,7 +293,7 @@ export default function Home() {
                     height={360}
                     unoptimized
                   />
-                  <div className="flex items-center justify-between px-2 pb-1 pt-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d]">
+                  <div className="mt-3 flex items-center justify-between border-t border-[#bbb7b0] pt-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d]">
                     <span>Actual rater workflow</span>
                     <span className="flex items-center gap-2 text-[#171715]">Open <ArrowUpRight className="size-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></span>
                   </div>
