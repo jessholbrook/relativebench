@@ -4,8 +4,6 @@ import {
   ArrowRight,
   ArrowUpRight,
   GitCompareArrows,
-  Keyboard,
-  ShieldCheck,
 } from 'lucide-react';
 
 import exampleSnapshot from '@/data/snapshots/example-transition.json';
@@ -22,17 +20,14 @@ const navigation = [
 
 const steps = [
   {
-    number: '01',
     title: 'Freeze the transition',
     copy: 'Name the incumbent and candidate, lock the task set, and keep the evaluation conditions identical.',
   },
   {
-    number: '02',
     title: 'Compare blind pairs',
     copy: 'Raters score both responses against the same rubric before seeing the pair or either model identity.',
   },
   {
-    number: '03',
     title: 'Publish the delta',
     copy: 'Combine benchmark movement, response flips, preference, uncertainty, and protocol provenance in one report.',
   },
@@ -88,7 +83,7 @@ export default function Home() {
       </aside>
 
       <div className="lg:ml-60">
-        <section id="what" className="border-b border-[#cbc8c1] px-5 py-12 sm:px-10 sm:py-16 lg:px-14 xl:px-20">
+        <section id="what" className="px-5 py-12 sm:px-10 sm:py-16 lg:px-14 xl:px-20">
           <div className="max-w-[1240px]">
             <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
               Model transition intelligence
@@ -100,7 +95,7 @@ export default function Home() {
               </h1>
             </div>
 
-            <div className="border-t border-[#cbc8c1] pt-5">
+            <div>
               <p className="max-w-3xl text-pretty text-lg leading-7 sm:text-xl sm:leading-8">
                 RelativeBench compares a new model with the model it replaces. It joins standard
                 benchmark deltas with blinded, paired judgments from people who know the incumbent—so
@@ -110,7 +105,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="why" className="border-b border-[#cbc8c1] px-5 py-12 sm:px-10 sm:py-16 lg:px-14 xl:px-20">
+        <section id="why" className="px-5 py-12 sm:px-10 sm:py-16 lg:px-14 xl:px-20">
           <div className="max-w-[1240px]">
             <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
@@ -120,32 +115,26 @@ export default function Home() {
                 <h2 className="max-w-5xl text-balance font-serif text-4xl leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
                   People do not experience a model at a point in time. They experience the move from one model to the next.
                 </h2>
-                <div className="mt-10 border-t border-[#171715]">
-                  <article className="grid gap-3 border-b border-[#cbc8c1] py-5 sm:grid-cols-[190px_1fr] sm:gap-8">
-                    <h3 className="font-serif text-xl tracking-[-0.025em]">Scores miss direction</h3>
-                    <p className="max-w-2xl text-base leading-7 text-[#514e49]">
+                <div className="mt-8 max-w-3xl space-y-5 text-lg leading-8 text-[#514e49]">
+                  <p>
+                    <strong className="font-serif font-normal text-[#171715]">Scores miss direction.</strong>{' '}
                       A stronger average can still conceal task-level regressions that break established workflows.
-                    </p>
-                  </article>
-                  <article className="grid gap-3 border-b border-[#cbc8c1] py-5 sm:grid-cols-[190px_1fr] sm:gap-8">
-                    <h3 className="font-serif text-xl tracking-[-0.025em]">Users have memory</h3>
-                    <p className="max-w-2xl text-base leading-7 text-[#514e49]">
+                  </p>
+                  <p>
+                    <strong className="font-serif font-normal text-[#171715]">Users have memory.</strong>{' '}
                       People compare every response with habits, expectations, and recovery strategies learned on the incumbent.
-                    </p>
-                  </article>
-                  <article className="grid gap-3 border-b border-[#cbc8c1] py-5 sm:grid-cols-[190px_1fr] sm:gap-8">
-                    <h3 className="font-serif text-xl tracking-[-0.025em]">Change has a shape</h3>
-                    <p className="max-w-2xl text-base leading-7 text-[#514e49]">
+                  </p>
+                  <p>
+                    <strong className="font-serif font-normal text-[#171715]">Change has a shape.</strong>{' '}
                       Better, same, and worse outcomes can coexist. A useful report makes that distribution visible.
-                    </p>
-                  </article>
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section id="how" className="border-b border-[#cbc8c1] px-5 py-12 sm:px-10 sm:py-16 lg:px-14 xl:px-20">
+        <section id="how" className="px-5 py-12 sm:px-10 sm:py-16 lg:px-14 xl:px-20">
           <div className="max-w-[1240px]">
             <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
@@ -155,33 +144,30 @@ export default function Home() {
                 <h2 className="max-w-4xl font-serif text-4xl leading-none tracking-[-0.045em] sm:text-6xl">
                   One protocol. Three views of change.
                 </h2>
-                <div className="mt-10 border-t border-[#171715]">
+                <div className="mt-8 max-w-3xl space-y-5 text-lg leading-8 text-[#514e49]">
                   {steps.map((step) => (
-                    <article key={step.number} className="grid gap-3 border-b border-[#cbc8c1] py-5 sm:grid-cols-[44px_210px_1fr] sm:gap-6">
-                      <span className="font-mono text-[10px] text-[#e34c3b]">{step.number}</span>
-                      <h3 className="text-lg font-medium tracking-[-0.03em]">{step.title}</h3>
-                      <p className="max-w-2xl text-sm leading-6 text-[#625f59]">{step.copy}</p>
-                    </article>
+                    <p key={step.title}>
+                      <strong className="font-serif font-normal text-[#171715]">{step.title}.</strong>{' '}
+                      {step.copy}
+                    </p>
                   ))}
-                </div>
-                <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3 font-mono text-[9px] uppercase tracking-[0.13em] text-[#77736d]">
-                  <span className="flex items-center gap-2"><ShieldCheck className="size-3.5 text-[#171715]" /> blinded</span>
-                  <span className="flex items-center gap-2"><GitCompareArrows className="size-3.5 text-[#171715]" /> paired</span>
-                  <span className="flex items-center gap-2"><Keyboard className="size-3.5 text-[#171715]" /> reproducible</span>
+                  <p className="font-serif text-xl text-[#171715]">
+                    The result is blinded, paired, and reproducible by design.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section id="example" className="border-b border-[#cbc8c1] bg-[#171715] px-5 py-12 text-white sm:px-10 sm:py-16 lg:px-14 xl:px-20">
+        <section id="example" className="bg-[#171715] px-5 py-12 text-white sm:px-10 sm:py-16 lg:px-14 xl:px-20">
           <div className="max-w-[1240px]">
             <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#aaa69f]">
                 Example
               </div>
               <div>
-                <div className="flex flex-col justify-between gap-5 border-b border-white/25 pb-5 md:flex-row md:items-end">
+                <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
                   <div>
                     <p className="font-mono text-[10px] uppercase tracking-[0.17em] text-[#aaa69f]">Model A → Model B</p>
                     <h2 className="mt-2 font-serif text-4xl tracking-[-0.045em] sm:text-6xl">Read the transition.</h2>
@@ -191,7 +177,7 @@ export default function Home() {
                   </Link>
                 </div>
 
-                <p className="max-w-3xl border-b border-white/20 py-5 font-serif text-xl leading-8 text-[#d1cec8] sm:text-2xl">
+                <p className="mt-5 max-w-3xl font-serif text-xl leading-8 text-[#d1cec8] sm:text-2xl">
                   A transition report reads capability movement alongside the outcomes users actually notice: improvement, continuity, and regression.
                 </p>
 
@@ -237,7 +223,7 @@ export default function Home() {
                         </div>
                       ))}
                     </div>
-                    <div className="mt-7 flex gap-10 border-t border-white/20 pt-5">
+                    <div className="mt-7 flex gap-10">
                       <div>
                         <strong className="font-serif text-3xl">{(compatibility.negative_flip_rate * 100).toFixed(1)}%</strong>
                         <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#89857e]">negative flips</p>
@@ -249,7 +235,7 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <p className="border-t border-white/20 pt-4 text-xs leading-5 text-[#89857e]">
+                <p className="text-xs leading-5 text-[#89857e]">
                   Example report format—not a published benchmark result.
                 </p>
               </div>
@@ -293,7 +279,7 @@ export default function Home() {
                     height={360}
                     unoptimized
                   />
-                  <div className="mt-3 flex items-center justify-between border-t border-[#bbb7b0] pt-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d]">
+                  <div className="mt-3 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d]">
                     <span>Actual rater workflow</span>
                     <span className="flex items-center gap-2 text-[#171715]">Open <ArrowUpRight className="size-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></span>
                   </div>
@@ -303,7 +289,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="flex flex-col justify-between gap-5 border-t border-[#cbc8c1] px-5 py-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d] sm:flex-row sm:px-10 lg:px-14 xl:px-20">
+        <footer className="flex flex-col justify-between gap-5 px-5 py-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d] sm:flex-row sm:px-10 lg:px-14 xl:px-20">
           <span>RelativeBench · An open protocol for model transitions</span>
           <div className="flex gap-6">
             <Link className="hover:text-[#171715]" href="/demo">Example report</Link>
