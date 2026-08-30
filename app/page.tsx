@@ -13,11 +13,11 @@ import exampleSnapshot from '@/data/snapshots/example-transition.json';
 const { experience, compatibility, benchmark_deltas: benchmarkDeltas } = exampleSnapshot;
 
 const navigation = [
-  ['01', 'What it is', '#what'],
-  ['02', 'Why now', '#why'],
-  ['03', 'How it works', '#how'],
-  ['04', 'Example', '#example'],
-  ['05', 'Rate', '#rate'],
+  ['What it is', '#what'],
+  ['Why now', '#why'],
+  ['How it works', '#how'],
+  ['Example', '#example'],
+  ['Rate', '#rate'],
 ] as const;
 
 const steps = [
@@ -63,14 +63,13 @@ export default function Home() {
         </div>
 
         <nav className="space-y-3" aria-label="On this page">
-          {navigation.map(([number, label, href]) => (
+          {navigation.map(([label, href]) => (
             <a
               key={href}
-              className="group grid grid-cols-[28px_1fr] items-center text-[13px] text-[#6e6b66] transition-colors hover:text-[#171715]"
+              className="block text-[13px] text-[#6e6b66] transition-colors hover:text-[#171715]"
               href={href}
             >
-              <span className="font-mono text-[9px] text-[#a19d96] group-hover:text-[#e34c3b]">{number}</span>
-              <span>{label}</span>
+              {label}
             </a>
           ))}
         </nav>
@@ -91,13 +90,12 @@ export default function Home() {
       <div className="lg:ml-60">
         <section id="what" className="min-h-[calc(100vh-3.5rem)] border-b border-[#cbc8c1] px-5 py-16 sm:px-10 sm:py-20 lg:min-h-screen lg:px-14 xl:px-20">
           <div className="flex h-full min-h-[620px] max-w-[1240px] flex-col justify-between">
-            <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
-              <span className="text-[#e34c3b]">01</span>
-              <span>Model transition intelligence</span>
+            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
+              Model transition intelligence
             </div>
 
             <div className="py-16 lg:py-24">
-              <h1 className="max-w-[1050px] text-balance font-serif text-[clamp(3.5rem,8.5vw,8.6rem)] leading-[0.88] tracking-[-0.065em]">
+              <h1 className="max-w-[1050px] text-balance font-serif text-[clamp(2.75rem,6.5vw,6.5rem)] leading-[0.92] tracking-[-0.055em]">
                 A benchmark for the difference people feel.
               </h1>
             </div>
@@ -125,7 +123,6 @@ export default function Home() {
           <div className="max-w-[1240px]">
             <div className="grid gap-10 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
-                <span className="mr-4 text-[#e34c3b]">02</span>
                 Why it is needed
               </div>
               <div>
@@ -161,7 +158,6 @@ export default function Home() {
           <div className="max-w-[1240px]">
             <div className="grid gap-10 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
-                <span className="mr-4 text-[#e34c3b]">03</span>
                 How it works
               </div>
               <div>
@@ -191,7 +187,6 @@ export default function Home() {
           <div className="max-w-[1240px]">
             <div className="grid gap-10 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#aaa69f]">
-                <span className="mr-4 text-[#ef5b48]">04</span>
                 Example
               </div>
               <div>
@@ -271,7 +266,6 @@ export default function Home() {
           <div className="max-w-[1240px]">
             <div className="grid gap-10 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
-                <span className="mr-4 text-[#e34c3b]">05</span>
                 Rater experience
               </div>
               <div className="grid gap-10 xl:grid-cols-[.7fr_1.3fr] xl:items-center">
