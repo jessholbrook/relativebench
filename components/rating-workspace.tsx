@@ -15,6 +15,14 @@ import {
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 type PointwiseScore = 'fails' | 'partially_meets' | 'meets';
 type SidePreference = -2 | -1 | 0 | 1 | 2;
@@ -98,6 +106,71 @@ const preferenceOptions: Array<{ value: SidePreference; label: string }> = [
 ];
 
 const reasonOptions = ['Correctness', 'Instruction following', 'Clarity', 'Format', 'Safety', 'Length'];
+
+const pointwiseLabels: Record<PointwiseScore, string> = {
+  fails: 'Fails',
+  partially_meets: 'Partially meets',
+  meets: 'Meets',
+};
+
+const preferenceLabels: Record<SidePreference, string> = {
+  [-2]: 'Left much better',
+  [-1]: 'Left slightly better',
+  0: 'Indistinguishable',
+  1: 'Right slightly better',
+  2: 'Right much better',
+};
+
+function formatCategory(value: string) {
+  return value.replace(/_/g, ' ');
+}
+
+function formatDuration(durationMs: number) {
+  const seconds = Math.round(durationMs / 1000);
+  if (seconds < 60) return `${seconds}s`;
+  return `${Math.floor(seconds / 60)}m ${String(seconds % 60).padStart(2, '0')}s`;
+}
+
+function preferenceTone(value: SidePreference) {
+  if (value < 0) return 'bg-sky-100 text-sky-900';
+  if (value > 0) return 'bg-amber-100 text-amber-950';
+  return 'bg-muted text-foreground';
+}
+
+function SessionJudgmentTable({ judgments }: { judgments: Judgment[] }) {
+  return (
+    <div className="max-h-[38rem] overflow-auto">
+      <Table aria-label="Blinded session judgments">
+        <TableHeader className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_var(--border)]">
+          <TableRow>
+            <TableHead className="w-14">#</TableHead>
+            <TableHead>Scenario</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Left score</TableHead>
+            <TableHead>Right score</TableHead>
+            <TableHead>Paired preference</TableHead>
+            <TableHead>Reason tags</TableHead>
+            <TableHead className="text-right">Time</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {judgments.map((judgment, index) => (
+            <TableRow key={judgment.assignment_id}>
+              <TableCell className="font-mono text-xs tabular-nums text-muted-foreground">{index + 1}</TableCell>
+              <TableCell className="font-mono text-xs">{judgment.scenario_id}</TableCell>
+              <TableCell className="capitalize">{formatCategory(judgment.category)}</TableCell>
+              <TableCell><span className="rounded-md bg-muted px-2 py-1 text-xs font-medium">{pointwiseLabels[judgment.pointwise_left]}</span></TableCell>
+              <TableCell><span className="rounded-md bg-muted px-2 py-1 text-xs font-medium">{pointwiseLabels[judgment.pointwise_right]}</span></TableCell>
+              <TableCell><span className={`rounded-md px-2 py-1 text-xs font-medium ${preferenceTone(judgment.side_preference)}`}>{preferenceLabels[judgment.side_preference]}</span></TableCell>
+              <TableCell className="min-w-52 whitespace-normal text-xs text-muted-foreground">{judgment.reason_tags.length > 0 ? judgment.reason_tags.join(', ') : '—'}</TableCell>
+              <TableCell className="text-right font-mono text-xs tabular-nums text-muted-foreground">{formatDuration(judgment.duration_ms)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
 
 function ShortcutKey({ children }: { children: string }) {
   return (
@@ -544,20 +617,37 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
 
   if (complete) {
     return (
-      <main className="min-h-screen bg-background px-5 py-12 text-foreground sm:px-8">
-        <div className="mx-auto max-w-3xl space-y-4">
+      <main className="min-h-screen bg-background px-5 py-8 text-foreground sm:px-8 sm:py-12">
+        <div className="mx-auto max-w-[1400px] space-y-4">
           {session.judgments.at(-1) && <LastJudgmentTags judgment={session.judgments.at(-1)!} onToggle={toggleLastReason} />}
-          <Card className="border-0 bg-card text-center ring-1 ring-border">
+          <Card className="border-0 bg-card ring-1 ring-border">
             <CardHeader>
-              <div className="mx-auto grid size-12 place-items-center rounded-full bg-lime-200 text-lime-950"><Check /></div>
-              <CardTitle className="mt-3 text-2xl">Rating session complete</CardTitle>
-              <CardDescription>All {completed} judgments are saved locally. No preference summary has been calculated.</CardDescription>
+              <div className="flex flex-col gap-4 text-center sm:flex-row sm:items-center sm:text-left">
+                <div className="mx-auto grid size-12 shrink-0 place-items-center rounded-full bg-lime-200 text-lime-950 sm:mx-0"><Check /></div>
+                <div>
+                  <CardTitle className="text-2xl">Rating session complete</CardTitle>
+                  <CardDescription className="mt-1">All {completed} judgments are saved locally. No preference summary has been calculated.</CardDescription>
+                </div>
+                <Badge className="mx-auto sm:ml-auto sm:mr-0" variant="outline">{session.formId}</Badge>
+              </div>
             </CardHeader>
-            <CardContent className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+            <CardContent className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:flex-wrap">
               <ActionButton size="lg" variant="outline" aria-keyshortcuts="B ArrowLeft" onClick={goBack}><ArrowLeft /> Reopen last <ShortcutKey>B</ShortcutKey></ActionButton>
               <ActionButton size="lg" aria-keyshortcuts="E" onClick={exportSession}><Download /> Export <ShortcutKey>E</ShortcutKey></ActionButton>
               <ActionButton size="lg" variant="outline" aria-keyshortcuts="Shift+R" onClick={resetSession}><RotateCcw /> Delete local copy <ShortcutKey>⇧R</ShortcutKey></ActionButton>
               <ActionButton size="lg" variant="ghost" aria-keyshortcuts="?" onClick={() => setShowShortcuts(true)}><Keyboard /> Shortcuts <ShortcutKey>?</ShortcutKey></ActionButton>
+            </CardContent>
+          </Card>
+          <Card className="overflow-hidden border-0 bg-card ring-1 ring-border">
+            <CardHeader className="border-b border-border sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <CardTitle>Blinded response record</CardTitle>
+                <CardDescription className="mt-1">Your task-level ratings, shown exactly as they will be exported. Model identities and aggregate preference remain hidden.</CardDescription>
+              </div>
+              <Badge variant="secondary">{completed} rows</Badge>
+            </CardHeader>
+            <CardContent className="p-0">
+              <SessionJudgmentTable judgments={session.judgments} />
             </CardContent>
           </Card>
         </div>

@@ -35,7 +35,7 @@ The public packet, schema, and machine-readable audit are under [`data/pilots/qw
 
 ## Storage and output boundary
 
-The owner-only `/rate` workspace stores progress in browser local storage under the packet and reviewer-code hashes. It sends no judgment data to the site and calculates no aggregate preference. Evaluators explicitly export a JSON session when ready.
+The owner-only `/rate` workspace stores progress in browser local storage under the packet and reviewer-code hashes. It sends no judgment data to the site and calculates no aggregate preference. On completion, evaluators can inspect a task-level table of their blinded judgments and explicitly export the same records as a JSON session.
 
 Internal session exports use [`schemas/internal-rating-session.schema.json`](../schemas/internal-rating-session.schema.json). They are collection-QA records, not canonical [`judgment.schema.json`](../schemas/judgment.schema.json) records.
 
