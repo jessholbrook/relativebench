@@ -12,10 +12,10 @@ const { experience, compatibility, benchmark_deltas: benchmarkDeltas } = example
 
 const navigation = [
   ['What it is', '#what'],
-  ['Why now', '#why'],
+  ["Why it's needed", '#why'],
   ['How it works', '#how'],
   ['Example', '#example'],
-  ['Rate', '#rate'],
+  ['Try it', '#rate'],
 ] as const;
 
 const steps = [
@@ -42,7 +42,7 @@ export default function Home() {
           RelativeBench
         </a>
         <Link className="font-mono text-[10px] uppercase tracking-[0.14em]" href="/rate">
-          Start rating ↗
+          Try it ↗
         </Link>
       </header>
 
@@ -85,12 +85,8 @@ export default function Home() {
       <div className="lg:ml-60">
         <section id="what" className="px-5 py-12 sm:px-10 sm:py-16 lg:px-14 xl:px-20">
           <div className="max-w-[1240px]">
-            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
-              Model transition intelligence
-            </div>
-
-            <div className="py-10 lg:py-12">
-              <h1 className="max-w-[1050px] text-balance font-serif text-[clamp(2.75rem,6.5vw,6.5rem)] leading-[0.92] tracking-[-0.055em]">
+            <div className="pb-8">
+              <h1 className="max-w-[1050px] text-balance font-serif text-[clamp(2.25rem,4.5vw,4.5rem)] leading-[1.02] tracking-[-0.045em]">
                 A benchmark for the difference people feel.
               </h1>
             </div>
@@ -109,23 +105,23 @@ export default function Home() {
           <div className="max-w-[1240px]">
             <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
-                Why it is needed
+                Why it&apos;s needed
               </div>
               <div>
-                <h2 className="max-w-5xl text-balance font-serif text-4xl leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
+                <h2 className="max-w-5xl text-balance font-serif text-2xl leading-[1.15] tracking-[-0.035em] sm:text-3xl lg:text-4xl">
                   People do not experience a model at a point in time. They experience the move from one model to the next.
                 </h2>
                 <div className="mt-8 max-w-3xl space-y-5 text-lg leading-8 text-[#514e49]">
                   <p>
-                    <strong className="font-serif font-normal text-[#171715]">Scores miss direction.</strong>{' '}
+                    <strong className="bg-[#d9ff72] px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Scores miss direction.</strong>{' '}
                       A stronger average can still conceal task-level regressions that break established workflows.
                   </p>
                   <p>
-                    <strong className="font-serif font-normal text-[#171715]">Users have memory.</strong>{' '}
+                    <strong className="bg-[#d9ff72] px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Users have memory.</strong>{' '}
                       People compare every response with habits, expectations, and recovery strategies learned on the incumbent.
                   </p>
                   <p>
-                    <strong className="font-serif font-normal text-[#171715]">Change has a shape.</strong>{' '}
+                    <strong className="bg-[#d9ff72] px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Change has a shape.</strong>{' '}
                       Better, same, and worse outcomes can coexist. A useful report makes that distribution visible.
                   </p>
                 </div>
@@ -141,8 +137,8 @@ export default function Home() {
                 How it works
               </div>
               <div>
-                <h2 className="max-w-4xl font-serif text-4xl leading-none tracking-[-0.045em] sm:text-6xl">
-                  One protocol. Three views of change.
+                <h2 className="max-w-4xl font-serif text-2xl leading-[1.15] tracking-[-0.035em] sm:text-4xl">
+                  Blinded, paired, and reproducible
                 </h2>
                 <div className="mt-8 max-w-3xl space-y-5 text-lg leading-8 text-[#514e49]">
                   {steps.map((step) => (
@@ -151,9 +147,6 @@ export default function Home() {
                       {step.copy}
                     </p>
                   ))}
-                  <p className="font-serif text-xl text-[#171715]">
-                    The result is blinded, paired, and reproducible by design.
-                  </p>
                 </div>
               </div>
             </div>
@@ -170,7 +163,7 @@ export default function Home() {
                 <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
                   <div>
                     <p className="font-mono text-[10px] uppercase tracking-[0.17em] text-[#aaa69f]">Model A → Model B</p>
-                    <h2 className="mt-2 font-serif text-4xl tracking-[-0.045em] sm:text-6xl">Read the transition.</h2>
+                    <h2 className="mt-2 font-serif text-2xl tracking-[-0.035em] sm:text-4xl">Relative changes</h2>
                   </div>
                   <Link className="group flex items-center gap-6 text-sm" href="/demo">
                     See the full example <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
@@ -247,11 +240,11 @@ export default function Home() {
           <div className="max-w-[1240px]">
             <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
-                Rater experience
+                Try it
               </div>
               <div className="grid gap-8 xl:grid-cols-[.7fr_1.3fr] xl:items-center">
                 <div>
-                  <h2 className="font-serif text-4xl leading-none tracking-[-0.045em] sm:text-6xl">Try the blind workflow.</h2>
+                  <h2 className="font-serif text-2xl leading-[1.15] tracking-[-0.035em] sm:text-4xl">Try the rater experience</h2>
                   <p className="mt-4 max-w-xl text-base leading-7 text-[#5e5b55]">
                     Score each response against a shared rubric, compare the pair only after both scores are locked, and move through the packet without touching the mouse.
                   </p>
@@ -259,7 +252,7 @@ export default function Home() {
                     className="group mt-6 inline-flex items-center gap-8 bg-[#e34c3b] px-5 py-4 text-sm font-medium text-white transition-colors hover:bg-[#171715]"
                     href="/rate"
                   >
-                    Open the rater
+                    Rate
                     <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                   <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d]">
@@ -279,10 +272,6 @@ export default function Home() {
                     height={360}
                     unoptimized
                   />
-                  <div className="mt-3 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d]">
-                    <span>Actual rater workflow</span>
-                    <span className="flex items-center gap-2 text-[#171715]">Open <ArrowUpRight className="size-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></span>
-                  </div>
                 </Link>
               </div>
             </div>
@@ -290,10 +279,10 @@ export default function Home() {
         </section>
 
         <footer className="flex flex-col justify-between gap-5 px-5 py-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d] sm:flex-row sm:px-10 lg:px-14 xl:px-20">
-          <span>RelativeBench · An open protocol for model transitions</span>
+          <span>RelativeBench</span>
           <div className="flex gap-6">
             <Link className="hover:text-[#171715]" href="/demo">Example report</Link>
-            <Link className="hover:text-[#171715]" href="/rate">Rater</Link>
+            <Link className="hover:text-[#171715]" href="/rate">Rater Experience</Link>
             <a className="hover:text-[#171715]" href="https://github.com/jessholbrook/relativebench">GitHub</a>
           </div>
         </footer>
