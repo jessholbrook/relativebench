@@ -56,6 +56,7 @@ schemas/              versioned JSON Schemas
 - Scenario construction, balance, and review evidence are in [docs/scenario-review.md](docs/scenario-review.md).
 - The frozen local runtime, resumable runner, and rehearsal limitations are in [docs/inference-runtime.md](docs/inference-runtime.md).
 - The blinded packet, interface sequence, and internal QA boundary are in [docs/internal-rating-pilot.md](docs/internal-rating-pilot.md).
+- Mechanical end-to-end rating QA is complete for both mirrored forms. The exported choices were automated interface fixtures, not human judgments; independent human/domain review and primary collection remain pending.
 - The `/demo` route is a reader-facing example report; all displayed models, scores, ratings, and run records are synthetic.
 - No real model result should be presented as authoritative until the pilot gates pass.
 - The selected candidate and immutable model revisions are documented in [docs/first-pilot-transition.md](docs/first-pilot-transition.md).

@@ -1,6 +1,6 @@
 # Internal Blind-Rating Pilot
 
-Status: **blinded workflow ready; no human judgments collected or unblinded**
+Status: **mechanical end-to-end QA complete; no human judgments collected or unblinded**
 
 ## Purpose
 
@@ -51,3 +51,14 @@ Before any primary collection infrastructure is approved:
 - the two sessions must remain blinded and unaggregated during this QA milestone
 
 The private key must remain unrevealed until these checks pass and a separate unblinding step is authorized.
+
+## Mechanical QA record
+
+On 2026-09-04, the owner-only deployment was exercised end to end with two clearly labeled, automated test-reviewer sessions. These are interface fixtures, not human judgments, and their deliberately uniform choices are not eligible for analysis.
+
+- form A exported all 120 assignments and passed `verify-rating-session --require-complete` with no errors or warnings (`session_sha256`: `f4fd1286776e1aef25d6452fd99210b47c73157acfd46bfd7cda20a9b9d80a4c`)
+- form B exported all 120 assignments and passed the same strict check with no errors or warnings (`session_sha256`: `f0ce9d3d4a548dd223b7c4d1ee5d130e77d9feb34f636a3878908e3eb0e3bad2`)
+- pointwise-before-paired staging, automatic advance, keyboard back, reload-and-resume, the completion table, JSON export, and device-local reset were exercised
+- both exports remained side-relative, blinded, and unaggregated; neither export is committed to Git
+
+The mechanical portion of the internal exit check is complete. The remaining gate is an independent human/domain review for identity leakage, rubric ambiguity, and unusable response rendering before primary collection is activated.
