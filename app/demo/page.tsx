@@ -24,6 +24,19 @@ import exampleSnapshot from '@/data/snapshots/example-transition.json';
 
 const { experience, compatibility, benchmark_deltas: benchmarkDeltas } = exampleSnapshot;
 
+// Illustrative task changes for the example report, not collected results.
+const exampleImprovements = [
+  { task: 'Scheduling with multiple constraints', change: 'Previously double-booked a meeting; now produces a schedule that satisfies every constraint.' },
+  { task: 'Code that handles empty input', change: 'Previously crashed on an empty list; now returns the expected result and passes the edge-case test.' },
+  { task: 'Summaries within a word limit', change: 'Previously exceeded the requested length; now keeps the key points within the word limit.' },
+];
+
+const exampleRegressions = [
+  { task: 'JSON-only responses', change: 'Previously returned parseable JSON alone; now adds commentary that breaks the parser.' },
+  { task: 'Required fields with missing values', change: 'Previously included null for missing values; now omits required fields and fails schema validation.' },
+  { task: 'Exact category labels', change: 'Previously used the allowed labels; now substitutes synonyms that the downstream system rejects.' },
+];
+
 const fakeRuns = [
   { id: 'RB-DEMO-005', stage: 'Final report', scope: '120 scenarios · 48 raters', output: 'Versioned snapshot', status: 'Complete' },
   { id: 'RB-DEMO-004', stage: 'Blind rating', scope: '120 pairs · 2 mirrored forms', output: '5,760 judgments', status: 'Validated' },
@@ -104,24 +117,46 @@ export default function DemoReport() {
           </Card>
         </section>
 
-        <section className="mt-6 grid gap-4 lg:grid-cols-[1.25fr_.75fr]">
+        <section className="mt-6 space-y-4">
           <ExperienceDelta experience={experience} />
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+          <div className="space-y-4">
             <Card className="border-0 bg-card ring-1 ring-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2"><CircleDot className="size-4 text-teal-600" /> Compatibility flips</CardTitle>
-                <CardDescription>Changes hidden by aggregate accuracy</CardDescription>
+                <CardDescription>Changes hidden by aggregate accuracy. Example tasks show what started working and what stopped.</CardDescription>
               </CardHeader>
-              <CardContent className="grid grid-cols-2 gap-3">
-                <div className="rounded-lg bg-teal-50 p-4 dark:bg-teal-950/30">
-                  <span className="font-mono text-2xl font-semibold text-teal-700 dark:text-teal-300">{(compatibility.positive_flip_rate * 100).toFixed(1)}%</span>
-                  <p className="mt-1 text-xs text-teal-900/60 dark:text-teal-100/60">previously failed → passed</p>
-                </div>
-                <div className="rounded-lg bg-rose-50 p-4 dark:bg-rose-950/30">
-                  <span className="font-mono text-2xl font-semibold text-rose-700 dark:text-rose-300">{(compatibility.negative_flip_rate * 100).toFixed(1)}%</span>
-                  <p className="mt-1 text-xs text-rose-900/60 dark:text-rose-100/60">previously passed → failed</p>
-                </div>
+              <CardContent className="grid gap-8 md:grid-cols-2">
+                <section aria-labelledby="improved-heading">
+                  <div className="rounded-lg bg-teal-50 p-4 dark:bg-teal-950/30">
+                    <span className="font-mono text-2xl font-semibold text-teal-700 dark:text-teal-300">{(compatibility.positive_flip_rate * 100).toFixed(1)}%</span>
+                    <p className="mt-1 text-sm text-teal-900 dark:text-teal-100">previously failed → passed</p>
+                  </div>
+                  <h3 id="improved-heading" className="mt-5 text-lg font-semibold">What improved</h3>
+                  <ul className="mt-3 list-disc space-y-4 pl-5 marker:text-teal-600">
+                    {exampleImprovements.map((item) => (
+                      <li key={item.task} className="pl-1 text-base leading-7">
+                        <strong className="font-semibold">{item.task}.</strong>{' '}
+                        <span className="text-muted-foreground">{item.change}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+                <section aria-labelledby="regressed-heading">
+                  <div className="rounded-lg bg-rose-50 p-4 dark:bg-rose-950/30">
+                    <span className="font-mono text-2xl font-semibold text-rose-700 dark:text-rose-300">{(compatibility.negative_flip_rate * 100).toFixed(1)}%</span>
+                    <p className="mt-1 text-sm text-rose-900 dark:text-rose-100">previously passed → failed</p>
+                  </div>
+                  <h3 id="regressed-heading" className="mt-5 text-lg font-semibold">What got worse</h3>
+                  <ul className="mt-3 list-disc space-y-4 pl-5 marker:text-rose-600">
+                    {exampleRegressions.map((item) => (
+                      <li key={item.task} className="pl-1 text-base leading-7">
+                        <strong className="font-semibold">{item.task}.</strong>{' '}
+                        <span className="text-muted-foreground">{item.change}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               </CardContent>
             </Card>
             <Card className="border-0 bg-card ring-1 ring-border">
