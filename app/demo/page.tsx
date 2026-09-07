@@ -46,21 +46,6 @@ const fakeRuns = [
   { id: 'RB-DEMO-001', stage: 'Protocol freeze', scope: 'Primary + guardrails', output: 'Protocol v0.1', status: 'Locked' },
 ];
 
-const methodology = [
-  {
-    title: 'Capability delta',
-    body: 'Standard benchmark scores stay visible as a vector, so gains and regressions are not compressed into one leaderboard number.',
-  },
-  {
-    title: 'Compatibility delta',
-    body: 'Paired tasks reveal positive and negative flips: what starts working, what stops working, and where migrations may break.',
-  },
-  {
-    title: 'Experience Delta',
-    body: 'Blind ratings from incumbent users estimate whether the new model feels better, the same, or worse than the model they know.',
-  },
-];
-
 export default function DemoReport() {
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -210,27 +195,6 @@ export default function DemoReport() {
               </Table>
             </CardContent>
           </Card>
-        </section>
-
-        <section className="mt-10 border-t border-border pt-10" aria-labelledby="method-heading">
-          <div className="grid gap-8 lg:grid-cols-[.55fr_1fr]">
-            <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">How RelativeBench works</p>
-              <h2 id="method-heading" className="mt-1 text-3xl font-semibold tracking-tight">A benchmark for the transition, not just the destination.</h2>
-              <p className="mt-4 text-sm leading-6 text-muted-foreground">The unit of analysis is a release edge: the exact model users have today compared with the proposed replacement under a frozen protocol.</p>
-            </div>
-            <div className="grid gap-4 md:grid-cols-3">
-              {methodology.map((item, index) => (
-                <Card key={item.title} className="border-0 bg-card ring-1 ring-border">
-                  <CardHeader>
-                    <span className="grid size-8 place-items-center rounded-full bg-primary font-mono text-xs text-primary-foreground">0{index + 1}</span>
-                    <CardTitle className="mt-3">{item.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent><p className="text-sm leading-6 text-muted-foreground">{item.body}</p></CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
         </section>
 
         <section className="mt-10 flex flex-col items-start justify-between gap-5 rounded-xl bg-ink p-6 text-white sm:flex-row sm:items-center sm:p-8">
