@@ -82,8 +82,8 @@ export default function Home() {
       </aside>
 
       <div className="lg:ml-60">
-        <section id="what" className="px-5 py-12 sm:px-10 sm:py-16 lg:px-14 xl:px-20">
-          <div className="max-w-[1240px]">
+        <section id="what" className="px-6 py-12 sm:px-12 sm:py-16 lg:px-16 xl:px-28">
+          <div className="mx-auto max-w-[1080px]">
             <div className="pb-8">
               <h1 className="max-w-[1050px] text-balance font-serif text-[clamp(2.25rem,4.5vw,4.5rem)] leading-[1.02] tracking-[-0.045em]">
                 Benchmarking the differences people feel.
@@ -91,7 +91,7 @@ export default function Home() {
             </div>
 
             <div>
-              <p className="max-w-3xl text-pretty text-lg leading-7 sm:text-xl sm:leading-8">
+              <p className="max-w-[65ch] text-pretty text-lg leading-7 sm:text-xl sm:leading-8">
                 RelativeBench compares a new model with the model it replaces. It joins standard
                 benchmark deltas with blinded, paired judgments from people who know the incumbent—so
                 a release can be understood as a transition, not just a point on a leaderboard.
@@ -100,8 +100,8 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="why" className="px-5 py-12 sm:px-10 sm:py-16 lg:px-14 xl:px-20">
-          <div className="max-w-[1240px]">
+        <section id="why" className="px-6 py-12 sm:px-12 sm:py-16 lg:px-16 xl:px-28">
+          <div className="mx-auto max-w-[1080px]">
             <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
                 Why it&apos;s needed
@@ -110,7 +110,7 @@ export default function Home() {
                 <h2 className="max-w-5xl text-balance font-serif text-2xl leading-[1.15] tracking-[-0.035em] sm:text-3xl lg:text-4xl">
                   People do not experience a model at a point in time. They experience the move from one model to the next.
                 </h2>
-                <div className="mt-8 max-w-3xl space-y-5 text-lg leading-8 text-[#514e49]">
+                <div className="mt-8 max-w-[65ch] space-y-5 text-lg leading-8 text-[#514e49]">
                   <p>
                     <strong className="bg-[#d9ff72] px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Scores miss direction.</strong>{' '}
                       A stronger average can still conceal task-level regressions that break established workflows.
@@ -129,8 +129,8 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="how" className="px-5 py-12 sm:px-10 sm:py-16 lg:px-14 xl:px-20">
-          <div className="max-w-[1240px]">
+        <section id="how" className="px-6 py-12 sm:px-12 sm:py-16 lg:px-16 xl:px-28">
+          <div className="mx-auto max-w-[1080px]">
             <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
                 How it works
@@ -139,7 +139,7 @@ export default function Home() {
                 <h2 className="max-w-4xl font-serif text-2xl leading-[1.15] tracking-[-0.035em] sm:text-4xl">
                   Blinded, paired, and reproducible
                 </h2>
-                <div className="mt-8 max-w-3xl space-y-5 text-lg leading-8 text-[#514e49]">
+                <div className="mt-8 max-w-[65ch] space-y-5 text-lg leading-8 text-[#514e49]">
                   {steps.map((step) => (
                     <p key={step.title}>
                       <strong className="bg-[#d9ff72] px-1 font-semibold text-[#171715] [box-decoration-break:clone]">{step.title}.</strong>{' '}
@@ -152,8 +152,8 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="example" className="bg-[#171715] px-5 py-12 text-white sm:px-10 sm:py-16 lg:px-14 xl:px-20">
-          <div className="max-w-[1240px]">
+        <section id="example" className="bg-[#171715] px-6 py-12 text-white sm:px-12 sm:py-16 lg:px-16 xl:px-28">
+          <div className="mx-auto max-w-[1080px]">
             <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#aaa69f]">
                 Example
@@ -173,7 +173,7 @@ export default function Home() {
                   A transition report reads capability movement alongside the outcomes users actually notice: improvement, continuity, and regression.
                 </p>
 
-                <div className="grid gap-8 py-7 lg:grid-cols-[.8fr_1.2fr] lg:gap-10">
+                <div className="grid gap-8 py-7 2xl:grid-cols-[.8fr_1.2fr] 2xl:gap-10">
                   <div>
                     <p className="font-mono text-[10px] uppercase tracking-[0.17em] text-[#aaa69f]">Experience delta</p>
                     <div className="mt-3 flex items-start gap-3">
@@ -235,13 +235,13 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="rate" className="px-5 py-12 sm:px-10 sm:py-16 lg:px-14 xl:px-20">
-          <div className="max-w-[1240px]">
+        <section id="rate" className="px-6 py-12 sm:px-12 sm:py-16 lg:px-16 xl:px-28">
+          <div className="mx-auto max-w-[1080px]">
             <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
                 Try it
               </div>
-              <div className="grid gap-8 xl:grid-cols-[.7fr_1.3fr] xl:items-center">
+              <div className="grid gap-8 2xl:grid-cols-[.7fr_1.3fr] 2xl:items-center">
                 <div>
                   <h2 className="font-serif text-2xl leading-[1.15] tracking-[-0.035em] sm:text-4xl">Try the rater experience</h2>
                   <p className="mt-4 max-w-xl text-base leading-7 text-[#5e5b55]">
@@ -277,7 +277,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="flex flex-col justify-between gap-5 px-5 py-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d] sm:flex-row sm:px-10 lg:px-14 xl:px-20">
+        <footer className="mx-auto flex max-w-[1304px] flex-col justify-between gap-5 px-6 py-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d] sm:flex-row sm:px-12 lg:px-16 xl:px-28">
           <span>RelativeBench</span>
           <div className="flex gap-6">
             <a className="hover:text-[#171715]" href="/demo">Example report</a>
