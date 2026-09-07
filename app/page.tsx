@@ -245,9 +245,6 @@ export default function Home() {
                     Rate
                     <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                   </a>
-                  <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d]">
-                    Keys 1–3 choose · B goes back · E exports
-                  </p>
                 </div>
                 <a
                   className="group block"
