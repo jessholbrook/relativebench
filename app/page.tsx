@@ -86,7 +86,7 @@ export default function Home() {
           <div className="max-w-[1240px]">
             <div className="pb-8">
               <h1 className="max-w-[1050px] text-balance font-serif text-[clamp(2.25rem,4.5vw,4.5rem)] leading-[1.02] tracking-[-0.045em]">
-                A benchmark for the difference people feel.
+                Benchmarking the differences people feel.
               </h1>
             </div>
 
