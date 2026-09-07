@@ -88,7 +88,7 @@ export default function DemoReport() {
               Model A <span className="text-muted-foreground">→</span> Model B
             </h1>
             <p className="mt-5 max-w-3xl text-pretty text-base leading-7 text-muted-foreground sm:text-lg">
-              A finished RelativeBench report combines conventional benchmark movement with exact task flips and the change incumbent users actually perceive.
+              A finished RelativeBench report combines conventional benchmark movement with task flips and the change incumbent users actually perceive.
             </p>
           </div>
           <Card className="border-0 bg-lime-200 text-lime-950 ring-0">
