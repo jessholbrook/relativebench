@@ -560,10 +560,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
           </a>
           <div className="mt-10 grid gap-6 md:grid-cols-[1fr_.72fr]">
             <div>
-              <Badge className="bg-lime-200 text-lime-950" variant="secondary">
-                Internal interface pilot
-              </Badge>
-              <h1 className="mt-4 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
+              <h1 className="text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
                 Blind rating workspace
               </h1>
               <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">
