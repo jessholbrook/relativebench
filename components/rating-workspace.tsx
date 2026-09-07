@@ -599,9 +599,6 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
               </CardContent>
             </Card>
           </div>
-          <p className="mt-10 border-t border-border pt-5 text-xs leading-5 text-muted-foreground">
-            These are 4-bit infrastructure-rehearsal outputs. This session tests collection mechanics and is not eligible for a published model result.
-          </p>
         </div>
       </main>
     );
