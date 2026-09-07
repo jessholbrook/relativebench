@@ -38,7 +38,7 @@ export default function Home() {
     <main className="min-h-screen bg-[#f3f1ec] text-[#171715]">
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-[#cbc8c1] bg-[#f3f1ec]/95 px-5 backdrop-blur lg:hidden">
         <a className="flex items-center gap-2 text-sm font-semibold tracking-[-0.02em]" href="#what">
-          <GitCompareArrows className="size-4 text-[#e34c3b]" />
+          <GitCompareArrows className="size-4 text-brand-coral" />
           RelativeBench
         </a>
         <a className="font-mono text-[10px] uppercase tracking-[0.14em]" href="/rate">
@@ -49,7 +49,7 @@ export default function Home() {
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col justify-between border-r border-[#cbc8c1] bg-[#f3f1ec] px-6 py-7 lg:flex">
         <div>
           <a className="flex items-center gap-2.5 font-semibold tracking-[-0.03em]" href="#what">
-            <GitCompareArrows className="size-[18px] text-[#e34c3b]" />
+            <GitCompareArrows className="size-[18px] text-brand-coral" />
             RelativeBench
           </a>
           <p className="mt-3 max-w-[170px] text-xs leading-5 text-[#6e6b66]">
@@ -103,15 +103,15 @@ export default function Home() {
                 </h2>
                 <div className="mt-8 max-w-[65ch] space-y-5 text-lg leading-8 text-[#514e49]">
                   <p>
-                    <strong className="bg-[#d9ff72] px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Scores miss direction.</strong>{' '}
+                    <strong className="bg-brand-coral px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Scores miss direction.</strong>{' '}
                       A stronger average can still conceal task-level regressions that break established workflows.
                   </p>
                   <p>
-                    <strong className="bg-[#d9ff72] px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Users have memory.</strong>{' '}
+                    <strong className="bg-brand-coral px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Users have memory.</strong>{' '}
                       People compare every response with habits, expectations, and recovery strategies learned on the incumbent.
                   </p>
                   <p>
-                    <strong className="bg-[#d9ff72] px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Change has a shape.</strong>{' '}
+                    <strong className="bg-brand-coral px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Change has a shape.</strong>{' '}
                       Better, same, and worse outcomes can coexist. A useful report makes that distribution visible.
                   </p>
                 </div>
@@ -133,7 +133,7 @@ export default function Home() {
                 <div className="mt-8 max-w-[65ch] space-y-5 text-lg leading-8 text-[#514e49]">
                   {steps.map((step) => (
                     <p key={step.title}>
-                      <strong className="bg-[#d9ff72] px-1 font-semibold text-[#171715] [box-decoration-break:clone]">{step.title}.</strong>{' '}
+                      <strong className="bg-brand-coral px-1 font-semibold text-[#171715] [box-decoration-break:clone]">{step.title}.</strong>{' '}
                       {step.copy}
                     </p>
                   ))}
@@ -168,7 +168,7 @@ export default function Home() {
                   <div>
                     <p className="font-mono text-[10px] uppercase tracking-[0.17em] text-[#aaa69f]">Experience delta</p>
                     <div className="mt-3 flex items-start gap-3">
-                      <span className="font-serif text-[7.5rem] leading-none tracking-[-0.08em] text-[#d9ff72]">+{experience.delta}</span>
+                      <span className="font-serif text-[7.5rem] leading-none tracking-[-0.08em] text-brand-coral">+{experience.delta}</span>
                       <span className="mt-5 font-mono text-[10px] text-[#aaa69f]">ΔE₀</span>
                     </div>
                     <p className="mt-3 text-sm text-[#aaa69f]">
@@ -196,11 +196,11 @@ export default function Home() {
                           <div className="relative h-px bg-white/20">
                             <span className="absolute left-1/2 top-[-4px] h-[9px] w-px bg-white/35" />
                             <span
-                              className={`absolute top-[-2px] h-[5px] ${metric.value >= 0 ? 'left-1/2 bg-[#d9ff72]' : 'right-1/2 bg-[#ef5b48]'}`}
+                              className={`absolute top-[-2px] h-[5px] ${metric.value >= 0 ? 'left-1/2 bg-brand-coral' : 'right-1/2 bg-[#ef5b48]'}`}
                               style={{ width: `${Math.abs(metric.value) * 5.5}%` }}
                             />
                           </div>
-                          <span className={`text-right font-mono ${metric.value >= 0 ? 'text-[#d9ff72]' : 'text-[#ef7a6b]'}`}>
+                          <span className={`text-right font-mono ${metric.value >= 0 ? 'text-brand-coral' : 'text-[#ef7a6b]'}`}>
                             {metric.value > 0 ? '+' : ''}{metric.value}
                           </span>
                         </div>
@@ -239,7 +239,7 @@ export default function Home() {
                     Score each response against a shared rubric, compare the pair only after both scores are locked, and move through the packet without touching the mouse.
                   </p>
                   <a
-                    className="group mt-6 inline-flex items-center gap-8 bg-[#e34c3b] px-5 py-4 text-sm font-medium text-white transition-colors hover:bg-[#171715]"
+                    className="group mt-6 inline-flex items-center gap-8 bg-brand-coral px-5 py-4 text-sm font-medium text-white transition-colors hover:bg-[#171715]"
                     href="/rate"
                   >
                     Rate

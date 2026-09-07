@@ -5,6 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-brand-coral: #e34c3b;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -130,7 +131,7 @@ body {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground selection:bg-lime-200 selection:text-lime-950;
+    @apply bg-background text-foreground selection:bg-brand-coral selection:text-[#171715];
   }
   html {
     @apply font-sans;

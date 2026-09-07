@@ -51,7 +51,7 @@ export function HomeSectionNav({ items }: { items: readonly (readonly [string, s
             href={href}
             aria-current={active ? 'location' : undefined}
             className={`block border-l-2 py-1.5 pl-3 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#171715] ${active
-              ? 'border-[#d9ff72] bg-[#d9ff72] font-semibold text-[#171715]'
+              ? 'border-brand-coral bg-brand-coral font-semibold text-[#171715]'
               : 'border-transparent text-[#6e6b66] hover:text-[#171715]'}`}
           >
             {label}
