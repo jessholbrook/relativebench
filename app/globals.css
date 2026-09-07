@@ -131,7 +131,7 @@ body {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground selection:bg-brand-coral selection:text-[#171715];
+    @apply bg-background text-foreground selection:bg-brand-coral/25;
   }
   html {
     @apply font-sans;

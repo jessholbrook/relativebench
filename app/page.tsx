@@ -103,15 +103,15 @@ export default function Home() {
                 </h2>
                 <div className="mt-8 max-w-[65ch] space-y-5 text-lg leading-8 text-[#514e49]">
                   <p>
-                    <strong className="bg-brand-coral px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Scores miss direction.</strong>{' '}
+                    <strong className="bg-brand-coral/20 px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Scores miss direction.</strong>{' '}
                       A stronger average can still conceal task-level regressions that break established workflows.
                   </p>
                   <p>
-                    <strong className="bg-brand-coral px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Users have memory.</strong>{' '}
+                    <strong className="bg-brand-coral/20 px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Users have memory.</strong>{' '}
                       People compare every response with habits, expectations, and recovery strategies learned on the incumbent.
                   </p>
                   <p>
-                    <strong className="bg-brand-coral px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Change has a shape.</strong>{' '}
+                    <strong className="bg-brand-coral/20 px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Change has a shape.</strong>{' '}
                       Better, same, and worse outcomes can coexist. A useful report makes that distribution visible.
                   </p>
                 </div>
@@ -133,7 +133,7 @@ export default function Home() {
                 <div className="mt-8 max-w-[65ch] space-y-5 text-lg leading-8 text-[#514e49]">
                   {steps.map((step) => (
                     <p key={step.title}>
-                      <strong className="bg-brand-coral px-1 font-semibold text-[#171715] [box-decoration-break:clone]">{step.title}.</strong>{' '}
+                      <strong className="bg-brand-coral/20 px-1 font-semibold text-[#171715] [box-decoration-break:clone]">{step.title}.</strong>{' '}
                       {step.copy}
                     </p>
                   ))}
