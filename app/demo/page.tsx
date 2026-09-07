@@ -197,14 +197,14 @@ export default function DemoReport() {
           </Card>
         </section>
 
-        <section className="mt-10 flex flex-col items-start justify-between gap-5 rounded-xl bg-ink p-6 text-white sm:flex-row sm:items-center sm:p-8">
+        <section className="mt-10 flex flex-col items-start justify-between gap-5 py-6 sm:flex-row sm:items-center sm:py-8" aria-labelledby="rater-heading">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-lime-300">Separate experience</p>
-            <h2 className="mt-1 text-2xl font-semibold">The report is for readers. The workspace is for raters.</h2>
-            <p className="mt-2 text-sm text-zinc-400">Ratings remain blind and local; reports publish only after the frozen analysis plan runs.</p>
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">Try it</p>
+            <h2 id="rater-heading" className="mt-1 text-2xl font-semibold">Try the rater experience</h2>
+            <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">Score each response against a shared rubric, compare the pair only after both scores are locked, and move through the packet without touching the mouse.</p>
           </div>
-          <a className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-lime-300 px-4 py-2.5 text-sm font-semibold text-lime-950 transition-colors hover:bg-lime-200" href="/rate">
-            Open rater workspace <ArrowRight className="size-4" />
+          <a className="group inline-flex shrink-0 items-center gap-8 bg-[#e34c3b] px-5 py-4 text-sm font-medium text-white transition-colors hover:bg-[#171715]" href="/rate">
+            Rate <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
           </a>
         </section>
 
