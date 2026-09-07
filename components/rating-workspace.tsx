@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState, type ComponentProps } from 'react';
-import Link from 'next/link';
 import {
   ArrowLeft,
   Check,
@@ -556,9 +555,9 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
     return (
       <main className="min-h-screen bg-background px-5 py-8 text-foreground sm:px-8 sm:py-12">
         <div className="mx-auto max-w-3xl">
-          <Link className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground" href="/">
+          <a className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground" href="/">
             <ArrowLeft className="size-4" /> RelativeBench
-          </Link>
+          </a>
           <div className="mt-10 grid gap-6 md:grid-cols-[1fr_.72fr]">
             <div>
               <Badge className="bg-lime-200 text-lime-950" variant="secondary">
@@ -666,7 +665,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
     <main className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border bg-background/95">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-4 px-5 py-4 sm:px-8">
-          <Link className="flex items-center gap-2 text-sm font-semibold" href="/"><EyeOff className="size-4" /> Blind rating</Link>
+          <a className="flex items-center gap-2 text-sm font-semibold" href="/"><EyeOff className="size-4" /> Blind rating</a>
           <Badge variant="outline">{session.formId}</Badge>
           <div className="ml-auto flex items-center gap-2">
             <ActionButton variant="ghost" size="sm" aria-keyshortcuts="B ArrowLeft" onClick={goBack} disabled={session.stage === 'left' && session.currentIndex === 0}><ArrowLeft /> Back <ShortcutKey>B</ShortcutKey></ActionButton>

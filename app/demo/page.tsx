@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import {
   ArrowLeft,
   ArrowRight,
@@ -60,18 +59,18 @@ export default function DemoReport() {
 
       <header className="border-b border-border/80 bg-background/95">
         <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-4 px-5 sm:px-8">
-          <Link className="flex items-center gap-2.5" href="/" aria-label="RelativeBench home">
+          <a className="flex items-center gap-2.5" href="/" aria-label="RelativeBench home">
             <span className="grid size-8 place-items-center rounded-full bg-primary text-primary-foreground">
               <GitCompareArrows className="size-4" />
             </span>
             <span className="text-[15px] font-semibold tracking-[-0.02em]">RelativeBench</span>
-          </Link>
+          </a>
           <Badge variant="outline">Example report</Badge>
           <nav className="ml-auto flex items-center gap-3 text-sm" aria-label="Example report navigation">
-            <Link className="hidden text-muted-foreground transition-colors hover:text-foreground sm:inline" href="/">Overview</Link>
-            <Link className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 font-medium shadow-sm transition-colors hover:bg-muted" href="/rate">
+            <a className="hidden text-muted-foreground transition-colors hover:text-foreground sm:inline" href="/">Overview</a>
+            <a className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 font-medium shadow-sm transition-colors hover:bg-muted" href="/rate">
               Rater workspace <ArrowRight className="size-3.5" />
-            </Link>
+            </a>
           </nav>
         </div>
       </header>
@@ -255,13 +254,13 @@ export default function DemoReport() {
             <h2 className="mt-1 text-2xl font-semibold">The report is for readers. The workspace is for raters.</h2>
             <p className="mt-2 text-sm text-zinc-400">Ratings remain blind and local; reports publish only after the frozen analysis plan runs.</p>
           </div>
-          <Link className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-lime-300 px-4 py-2.5 text-sm font-semibold text-lime-950 transition-colors hover:bg-lime-200" href="/rate">
+          <a className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-lime-300 px-4 py-2.5 text-sm font-semibold text-lime-950 transition-colors hover:bg-lime-200" href="/rate">
             Open rater workspace <ArrowRight className="size-4" />
-          </Link>
+          </a>
         </section>
 
         <footer className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground">
-          <Link className="inline-flex items-center gap-2 hover:text-foreground" href="/"><ArrowLeft className="size-3.5" /> RelativeBench overview</Link>
+          <a className="inline-flex items-center gap-2 hover:text-foreground" href="/"><ArrowLeft className="size-3.5" /> RelativeBench overview</a>
           <p className="flex items-center gap-2"><ShieldCheck className="size-3.5" /> Synthetic example · not a model claim</p>
         </footer>
       </div>

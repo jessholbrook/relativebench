@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -41,9 +40,9 @@ export default function Home() {
           <GitCompareArrows className="size-4 text-[#e34c3b]" />
           RelativeBench
         </a>
-        <Link className="font-mono text-[10px] uppercase tracking-[0.14em]" href="/rate">
+        <a className="font-mono text-[10px] uppercase tracking-[0.14em]" href="/rate">
           Try it ↗
-        </Link>
+        </a>
       </header>
 
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col justify-between border-r border-[#cbc8c1] bg-[#f3f1ec] px-6 py-7 lg:flex">
@@ -53,7 +52,7 @@ export default function Home() {
             RelativeBench
           </a>
           <p className="mt-3 max-w-[170px] text-xs leading-5 text-[#6e6b66]">
-            Measure the model transition, not just the model.
+            Measure the relative, perceived difference between models.
           </p>
         </div>
 
@@ -70,9 +69,9 @@ export default function Home() {
         </nav>
 
         <div className="space-y-3 font-mono text-[9px] uppercase tracking-[0.13em] text-[#77736d]">
-          <Link className="flex items-center justify-between border-t border-[#cbc8c1] pt-4 hover:text-[#171715]" href="/demo">
+          <a className="flex items-center justify-between border-t border-[#cbc8c1] pt-4 hover:text-[#171715]" href="/demo">
             Full example <ArrowUpRight className="size-3" />
-          </Link>
+          </a>
           <a
             className="flex items-center justify-between hover:text-[#171715]"
             href="https://github.com/jessholbrook/relativebench"
@@ -143,7 +142,7 @@ export default function Home() {
                 <div className="mt-8 max-w-3xl space-y-5 text-lg leading-8 text-[#514e49]">
                   {steps.map((step) => (
                     <p key={step.title}>
-                      <strong className="font-serif font-normal text-[#171715]">{step.title}.</strong>{' '}
+                      <strong className="bg-[#d9ff72] px-1 font-semibold text-[#171715] [box-decoration-break:clone]">{step.title}.</strong>{' '}
                       {step.copy}
                     </p>
                   ))}
@@ -165,9 +164,9 @@ export default function Home() {
                     <p className="font-mono text-[10px] uppercase tracking-[0.17em] text-[#aaa69f]">Model A → Model B</p>
                     <h2 className="mt-2 font-serif text-2xl tracking-[-0.035em] sm:text-4xl">Relative changes</h2>
                   </div>
-                  <Link className="group flex items-center gap-6 text-sm" href="/demo">
+                  <a className="group flex items-center gap-6 text-sm" href="/demo">
                     See the full example <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
+                  </a>
                 </div>
 
                 <p className="mt-5 max-w-3xl font-serif text-xl leading-8 text-[#d1cec8] sm:text-2xl">
@@ -248,18 +247,18 @@ export default function Home() {
                   <p className="mt-4 max-w-xl text-base leading-7 text-[#5e5b55]">
                     Score each response against a shared rubric, compare the pair only after both scores are locked, and move through the packet without touching the mouse.
                   </p>
-                  <Link
+                  <a
                     className="group mt-6 inline-flex items-center gap-8 bg-[#e34c3b] px-5 py-4 text-sm font-medium text-white transition-colors hover:bg-[#171715]"
                     href="/rate"
                   >
                     Rate
                     <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
+                  </a>
                   <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d]">
                     Keys 1–3 choose · B goes back · E exports
                   </p>
                 </div>
-                <Link
+                <a
                   className="group block"
                   href="/rate"
                   aria-label="Open the RelativeBench rater"
@@ -272,7 +271,7 @@ export default function Home() {
                     height={360}
                     unoptimized
                   />
-                </Link>
+                </a>
               </div>
             </div>
           </div>
@@ -281,8 +280,8 @@ export default function Home() {
         <footer className="flex flex-col justify-between gap-5 px-5 py-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d] sm:flex-row sm:px-10 lg:px-14 xl:px-20">
           <span>RelativeBench</span>
           <div className="flex gap-6">
-            <Link className="hover:text-[#171715]" href="/demo">Example report</Link>
-            <Link className="hover:text-[#171715]" href="/rate">Rater Experience</Link>
+            <a className="hover:text-[#171715]" href="/demo">Example report</a>
+            <a className="hover:text-[#171715]" href="/rate">Rater Experience</a>
             <a className="hover:text-[#171715]" href="https://github.com/jessholbrook/relativebench">GitHub</a>
           </div>
         </footer>
