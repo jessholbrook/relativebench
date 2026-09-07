@@ -256,10 +256,10 @@ export default function Home() {
                 >
                   <Image
                     className="h-auto w-full"
-                    src="/rater-preview.gif"
+                    src="/rater-preview.gif?v=20260907"
                     alt="Animated preview of the RelativeBench blinded rating workflow"
-                    width={640}
-                    height={360}
+                    width={960}
+                    height={600}
                     unoptimized
                   />
                 </a>
