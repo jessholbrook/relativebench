@@ -54,7 +54,7 @@ export default function DemoReport() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="border-b border-amber-300/60 bg-amber-100 px-5 py-2.5 text-center text-xs font-semibold text-amber-950">
-        Synthetic example — every model name, score, rating, and run below is invented to demonstrate the report format.
+        Example — every model name, score, rating, and run below is invented to demonstrate the report format.
       </div>
 
       <header className="border-b border-border/80 bg-background/95">
@@ -79,7 +79,7 @@ export default function DemoReport() {
         <section className="grid gap-8 border-b border-border pb-10 lg:grid-cols-[1fr_.55fr] lg:items-end">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge className="bg-amber-100 text-amber-950" variant="secondary"><FlaskConical className="size-3" /> Synthetic demonstration</Badge>
+              <Badge className="bg-amber-100 text-amber-950" variant="secondary"><FlaskConical className="size-3" /> Example</Badge>
               <Badge variant="outline">Protocol v0.1</Badge>
               <Badge variant="outline">Frozen condition</Badge>
             </div>
@@ -112,7 +112,7 @@ export default function DemoReport() {
                 <CardTitle className="mt-1 text-xl text-white">Experience Delta</CardTitle>
                 <CardDescription className="mt-1 text-zinc-400">Estimated relative change for incumbent users</CardDescription>
               </div>
-              <Badge className="border-amber-300/30 bg-amber-300/10 text-amber-200" variant="outline">Synthetic result</Badge>
+              <Badge className="border-amber-300/30 bg-amber-300/10 text-amber-200" variant="outline">Example</Badge>
             </CardHeader>
             <CardContent className="relative grid gap-8 py-8 md:grid-cols-[.7fr_1.3fr]">
               <div className="md:border-r md:border-white/10 md:pr-8">
@@ -261,7 +261,7 @@ export default function DemoReport() {
 
         <footer className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground">
           <a className="inline-flex items-center gap-2 hover:text-foreground" href="/"><ArrowLeft className="size-3.5" /> RelativeBench overview</a>
-          <p className="flex items-center gap-2"><ShieldCheck className="size-3.5" /> Synthetic example · not a model claim</p>
+          <p className="flex items-center gap-2"><ShieldCheck className="size-3.5" /> Example · not a model claim</p>
         </footer>
       </div>
     </main>
