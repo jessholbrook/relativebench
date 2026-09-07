@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
+import { ExperienceDelta } from '@/components/experience-delta';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -104,40 +105,7 @@ export default function DemoReport() {
         </section>
 
         <section className="mt-6 grid gap-4 lg:grid-cols-[1.25fr_.75fr]">
-          <Card className="relative overflow-hidden border-0 bg-ink text-white ring-0">
-            <div className="absolute right-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_70%_20%,rgba(190,242,100,.2),transparent_60%)]" />
-            <CardHeader className="relative border-b border-white/10 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-400">Headline metric</p>
-                <CardTitle className="mt-1 text-xl text-white">Experience Delta</CardTitle>
-                <CardDescription className="mt-1 text-zinc-400">Estimated relative change for incumbent users</CardDescription>
-              </div>
-              <Badge className="border-amber-300/30 bg-amber-300/10 text-amber-200" variant="outline">Example</Badge>
-            </CardHeader>
-            <CardContent className="relative grid gap-8 py-8 md:grid-cols-[.7fr_1.3fr]">
-              <div className="md:border-r md:border-white/10 md:pr-8">
-                <div className="flex items-start gap-2">
-                  <span className="text-7xl font-semibold tracking-[-0.08em] text-lime-300">+{experience.delta}</span>
-                  <span className="mt-3 font-mono text-xs text-zinc-400">ΔE₀</span>
-                </div>
-                <p className="mt-3 text-sm text-zinc-400">
-                  {experience.confidence_interval.level * 100}% CI +{experience.confidence_interval.lower} to +{experience.confidence_interval.upper}
-                </p>
-              </div>
-              <div>
-                <div className="flex h-4 overflow-hidden rounded-full bg-white/10" aria-label={`${experience.distribution_percent.better}% better, ${experience.distribution_percent.same}% same, ${experience.distribution_percent.worse}% worse`}>
-                  <span className="bg-lime-300" style={{ width: `${experience.distribution_percent.better}%` }} />
-                  <span className="bg-zinc-500" style={{ width: `${experience.distribution_percent.same}%` }} />
-                  <span className="bg-rose-400" style={{ width: `${experience.distribution_percent.worse}%` }} />
-                </div>
-                <div className="mt-5 grid grid-cols-3 gap-3 text-sm">
-                  <div><strong className="block text-xl text-lime-300">{experience.distribution_percent.better}%</strong><span className="text-zinc-400">better</span></div>
-                  <div><strong className="block text-xl text-white">{experience.distribution_percent.same}%</strong><span className="text-zinc-400">same</span></div>
-                  <div><strong className="block text-xl text-rose-300">{experience.distribution_percent.worse}%</strong><span className="text-zinc-400">worse</span></div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ExperienceDelta experience={experience} />
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
             <Card className="border-0 bg-card ring-1 ring-border">
