@@ -267,11 +267,6 @@ export default function Home() {
 
         <footer className="mx-auto flex max-w-[1304px] flex-col justify-between gap-5 px-6 py-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d] sm:flex-row sm:px-12 lg:px-16 xl:px-28">
           <span>RelativeBench</span>
-          <div className="flex gap-6">
-            <a className="hover:text-[#171715]" href="/demo">Example report</a>
-            <a className="hover:text-[#171715]" href="/rate">Rater Experience</a>
-            <a className="hover:text-[#171715]" href="https://github.com/jessholbrook/relativebench">GitHub</a>
-          </div>
         </footer>
       </div>
     </main>
