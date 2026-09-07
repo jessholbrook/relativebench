@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 
 import exampleSnapshot from '@/data/snapshots/example-transition.json';
+import { HomeSectionNav } from '@/components/home-section-nav';
 
 const { experience, compatibility, benchmark_deltas: benchmarkDeltas } = exampleSnapshot;
 
@@ -56,17 +57,7 @@ export default function Home() {
           </p>
         </div>
 
-        <nav className="space-y-3" aria-label="On this page">
-          {navigation.map(([label, href]) => (
-            <a
-              key={href}
-              className="block text-[13px] text-[#6e6b66] transition-colors hover:text-[#171715]"
-              href={href}
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
+        <HomeSectionNav items={navigation} />
 
         <div className="space-y-3 font-mono text-[9px] uppercase tracking-[0.13em] text-[#77736d]">
           <a className="flex items-center justify-between border-t border-[#cbc8c1] pt-4 hover:text-[#171715]" href="/demo">
