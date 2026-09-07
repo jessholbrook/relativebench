@@ -11,6 +11,7 @@ import {
 
 import { Badge } from '@/components/ui/badge';
 import { ExperienceDelta } from '@/components/experience-delta';
+import { BenchmarkDeltas } from '@/components/benchmark-deltas';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -59,10 +60,6 @@ const methodology = [
     body: 'Blind ratings from incumbent users estimate whether the new model feels better, the same, or worse than the model they know.',
   },
 ];
-
-function signed(value: number) {
-  return `${value > 0 ? '+' : ''}${value}`;
-}
 
 export default function DemoReport() {
   return (
@@ -178,22 +175,7 @@ export default function DemoReport() {
             </div>
             <p className="text-sm text-muted-foreground">Percentage-point change from Model A</p>
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            {benchmarkDeltas.map((metric) => (
-              <Card key={metric.label} className="border-0 bg-card ring-1 ring-border">
-                <CardContent className="py-5">
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="font-medium">{metric.label}</span>
-                    <span className={`font-mono text-lg font-semibold ${metric.value >= 0 ? 'text-teal-700 dark:text-teal-300' : 'text-rose-700 dark:text-rose-300'}`}>{signed(metric.value)}</span>
-                  </div>
-                  <div className="relative mt-4 h-2 overflow-hidden rounded-full bg-muted">
-                    <span className="absolute left-1/2 top-0 h-full w-px bg-foreground/25" />
-                    <span className={`absolute top-0 h-full rounded-full ${metric.value >= 0 ? 'left-1/2 bg-teal-500' : 'right-1/2 bg-rose-500'}`} style={{ width: `${Math.abs(metric.value) * 4}%` }} />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <BenchmarkDeltas metrics={benchmarkDeltas} />
         </section>
 
         <section className="mt-10" aria-labelledby="runs-heading">
