@@ -10,11 +10,13 @@
   "experience": {
     "delta": 11,
     "confidence_interval": { "level": 0.95, "lower": 6, "upper": 16 },
-    "distribution_percent": { "better": 41, "same": 47, "worse": 12 }
+    "distribution_percent": { "better": 41, "same": 47, "worse": 12 },
+    "rating_distribution_percent": { "-2": 8, "-1": 4, "0": 47, "1": 40, "2": 1 }
   },
   "compatibility": {
     "negative_flip_rate": 0.074,
-    "positive_flip_rate": 0.131
+    "positive_flip_rate": 0.131,
+    "counts": { "stable_successes": 926, "negative_flips": 74, "positive_flips": 131, "stable_failures": 869 }
   },
   "benchmark_deltas": [
     { "label": "Reasoning", "value": 8.2, "unit": "percentage_points" },
