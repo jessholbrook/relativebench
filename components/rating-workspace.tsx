@@ -366,7 +366,9 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
     try {
       saved = localStorage.getItem(key);
     } catch {
-      setStorageWarning('Local storage is unavailable. Keep this tab open and export your ratings before leaving.');
+      // Do not start a writer when an earlier session might exist but cannot be read.
+      setNotice('This browser cannot access saved progress. Enable browser storage and try again. Any saved session is unchanged.');
+      return;
     }
     if (saved) {
       let parsed: unknown;
