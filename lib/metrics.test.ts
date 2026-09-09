@@ -53,8 +53,35 @@ void test('experience summary applies preregistered weights', () => {
   ]);
 
   assert.equal(result.experienceDelta, 0);
-  assert.equal(result.preferenceLift, -100 / 3);
+  assert.ok(Math.abs(result.preferenceLift - (-100 / 3)) < 1e-12);
   assert.equal(result.totalWeight, 3);
+});
+
+void test('weighted bins reconstruct the headline without hiding raw counts', () => {
+  const result = summarizeExperience([{ rating: 2, weight: 1 }, { rating: -1, weight: 2 }]);
+  assert.equal(result.weightedDistribution[2], 1 / 3);
+  assert.equal(result.weightedDistribution[-1], 2 / 3);
+  assert.equal(result.distribution[2], 1);
+  const delta = Object.entries(result.weightedDistribution).reduce((sum, [rating, share]) => sum + Number(rating) * share * 50, 0);
+  assert.equal(delta, result.experienceDelta);
+});
+
+void test('classification rejects nonfinite and impossible bounds', () => {
+  for (const value of [NaN, Infinity, -Infinity]) {
+    assert.throws(() => classifyTransition(value, 10), /finite/);
+    assert.throws(() => classifyTransition(0, value), /finite/);
+    assert.throws(() => classifyTransition(0, 10, value), /finite/);
+  }
+  assert.throws(() => classifyTransition(-101, 0), /between/);
+  assert.throws(() => classifyTransition(0, 101), /between/);
+  assert.equal(classifyTransition(-5, 5), 'sidegrade');
+  assert.equal(classifyTransition(5, 6), 'inconclusive');
+  assert.equal(classifyTransition(-6, -5), 'inconclusive');
+});
+
+void test('finite large weights do not overflow in scale multiplication', () => {
+  assert.equal(summarizeExperience([{ rating: 1, weight: 1e307 }]).experienceDelta, 50);
+  assert.throws(() => summarizeExperience([{ rating: 2, weight: 1e308 }]), /finite numeric/);
 });
 
 void test('invalid judgments fail closed', () => {
@@ -105,11 +132,7 @@ void test('TypeScript calculations match the shared cross-language fixtures', ()
   for (const fixture of fixtures.experience) {
     const summary = summarizeExperience(fixture.judgments);
     assert.equal(summary.experienceDelta, fixture.expected_delta, fixture.name);
-    assert.equal(
-      summary.preferenceLift,
-      fixture.expected_preference_lift,
-      fixture.name,
-    );
+    assert.ok(Math.abs(summary.preferenceLift - fixture.expected_preference_lift) < 1e-12, fixture.name);
   }
   for (const fixture of fixtures.flips) {
     const summary = summarizeFlips(

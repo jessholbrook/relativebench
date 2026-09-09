@@ -32,7 +32,25 @@ The primary 95% interval uses a two-way cluster bootstrap:
 3. Recalculate normalized weights and ΔE.
 4. Use the 2.5th and 97.5th percentiles from at least 10,000 replicates.
 
-The reference implementation in Milestone 1 computes point estimates. Bootstrap implementation and simulation validation are an exit requirement for the pilot runner.
+The runner implements point estimates and a two-way cluster bootstrap. Implementation
+0.1.1 corrects omitted clusters being retained in resamples. Raw records are validated
+before normalization; fixed categories retain equal mass and surviving scenarios are
+renormalized within category. Draws with no support in any category are rejected and
+counted, not silently treated as a different category mixture. Thus sparse-design
+intervals are conditional on category support. Reports must retain the warning and
+rejected-draw count. The seed, replicate count, cluster counts, and implementation
+version travel with the interval.
+
+Software tests cover nonconstant data, omitted clusters, multiplicities, sparse
+support, and deterministic replay. **Simulation-based coverage validation for the
+actual assignment design remains an activation gate**, not a completed milestone.
+Fewer than 10,000 replicates may be used for software tests only. Too few clusters or
+a degenerate interval are reported as warnings, not as evidence of certainty.
+
+The reference summary returns both raw five-bin counts and weighted five-bin
+proportions. Only the latter reconcile with the weighted headline. Rejected records
+must be accounted for separately; this module does not perform quality-control
+exclusions, select cohorts, or establish publication eligibility.
 
 Flip-rate intervals use a scenario-cluster bootstrap. Undefined conditional rates remain null.
 
