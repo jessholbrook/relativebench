@@ -59,6 +59,7 @@ export function ExperienceDelta({ experience }: { experience: Experience }) {
             <span className="mt-3 font-mono text-sm text-stone-500">ΔE₀</span>
           </div>
           <figure className="mt-3">
+            {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role -- Inline SVG needs a named image role; an img cannot contain the chart geometry. */}
             <svg viewBox="0 0 300 90" className="w-full max-w-sm overflow-visible" role="img" aria-label={`Experience Delta ${signed(experience.delta)}; ${level}% confidence interval ${signed(interval.lower)} to ${signed(interval.upper)}. Zero indicates no change.`}>
               <line x1="20" y1="40" x2="280" y2="40" stroke="#d6d3d1" strokeWidth="1" />
               <line x1={x(0)} y1="16" x2={x(0)} y2="57" stroke="#a8a29e" strokeDasharray="3 3" />
@@ -79,7 +80,7 @@ export function ExperienceDelta({ experience }: { experience: Experience }) {
         </div>
 
         <div className="min-w-0">
-          <div className="flex" role="group" aria-label="Example outcome distribution">
+          <fieldset className="flex min-w-0" aria-label="Example outcome distribution">
             {outcomes.map((outcome) => (
               <Button
                 key={outcome.key}
@@ -92,8 +93,8 @@ export function ExperienceDelta({ experience }: { experience: Experience }) {
                 <span className={`block h-4 w-full transition-all motion-reduce:transition-none ${outcome.color} ${outcome.key === 'better' ? 'rounded-l-full' : outcome.key === 'worse' ? 'rounded-r-full' : ''} ${active === outcome.key ? 'h-6 brightness-95' : active ? 'opacity-50' : ''}`} />
               </Button>
             ))}
-          </div>
-          <div className="mt-2 grid grid-cols-3 gap-1" role="group" aria-label="Explore outcomes">
+          </fieldset>
+          <fieldset className="mt-2 grid min-w-0 grid-cols-3 gap-1" aria-label="Explore outcomes">
             {outcomes.map((outcome) => (
               <Button
                 key={outcome.key}
@@ -106,10 +107,10 @@ export function ExperienceDelta({ experience }: { experience: Experience }) {
                 <span className="text-base font-normal">{outcome.key}</span>
               </Button>
             ))}
-          </div>
-          <p id={detailId} role="status" className="mt-4 min-h-24 text-sm leading-6 text-stone-600">
+          </fieldset>
+          <output id={detailId} className="mt-4 block min-h-24 text-sm leading-6 text-stone-600">
             {detail ? <><strong className="font-semibold text-stone-900">{experience.distribution_percent[detail.key]}% {detail.key}.</strong> {detail.description}</> : 'Hover, focus, or tap an outcome to explore what changed.'}
-          </p>
+          </output>
         </div>
       </CardContent>
     </Card>
