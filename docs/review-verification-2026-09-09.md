@@ -47,3 +47,21 @@ coverage and power simulations remain outstanding. No human preference results,
 publication eligibility, or empirical model-quality claim follows from these
 checks. The example interval and counts are illustrative and internally consistent,
 not derived from collected runs.
+
+## Final patched stack
+
+The fifth PR updates audited runtime/tooling dependencies. The complete final
+stack again passes all 63 tests, type checking, lint, and production build;
+`npm audit --audit-level=low` reports zero known vulnerabilities on September 9.
+Non-blocking build warnings remain for future native-config JSON import
+attributes, deprecated punycode, and Vinext route classification.
+
+After restarting with the patched dependencies, a fresh browser tab successfully
+opened home, guide, example, and rater, and restored the same partial QA session.
+No new browser errors were logged. A stale local error tab needed replacement;
+failed/stalled attempts are not counted as verification. No additional judgments
+were recorded in this final smoke check.
+
+Initial CI exposed inherited baseline lint/typecheck configuration issues. Those
+repairs now live in PR 1, and every PR's final code head passed GitHub CI and its
+automatically generated preview check. Preview builds are not production releases.
