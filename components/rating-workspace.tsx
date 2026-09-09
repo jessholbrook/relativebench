@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
+import { ignoreRatingShortcut, isRestorableSession } from '@/lib/rating-session-guards';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -321,6 +322,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
   const [starting, setStarting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [storageWarning, setStorageWarning] = useState<string | null>(null);
 
   const pairById = useMemo(
     () => new Map(packet.pairs.map((pair) => [pair.pair_id, pair])),
@@ -334,33 +336,52 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
 
   useEffect(() => {
     if (!session) return;
-    localStorage.setItem(
-      storageKey(packet.packet_id, session.reviewerCodeSha256),
-      JSON.stringify(session),
-    );
+    try {
+      localStorage.setItem(
+        storageKey(packet.packet_id, session.reviewerCodeSha256),
+        JSON.stringify(session),
+      );
+      // eslint-disable-next-line react/react-compiler -- Surface the result of this external storage write.
+      setStorageWarning(null);
+    } catch {
+      // eslint-disable-next-line react/react-compiler -- A failed external write must be visible to prevent loss of progress.
+      setStorageWarning('This browser could not save your progress. Keep this tab open and export a copy before leaving.');
+    }
   }, [packet.packet_id, session]);
 
   async function beginSession() {
+    if (starting) return;
     const normalized = reviewerCode.trim();
     if (!normalized) {
       setNotice('Enter a reviewer code to start or resume.');
       return;
     }
     setStarting(true);
+    try {
     const reviewerCodeSha256 = await sha256(normalized);
     const key = storageKey(packet.packet_id, reviewerCodeSha256);
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      const parsed = JSON.parse(saved) as SessionState;
-      if (parsed.packetId === packet.packet_id && parsed.reviewerCodeSha256 === reviewerCodeSha256) {
-        setSession(parsed);
-        setNotice('Resumed the locally saved session.');
-        setStarting(false);
-        return;
-      }
-    }
     const firstByte = Number.parseInt(reviewerCodeSha256.slice(0, 2), 16);
     const formId = firstByte % 2 === 0 ? 'form-a' : 'form-b';
+    let saved: string | null = null;
+    try {
+      saved = localStorage.getItem(key);
+    } catch {
+      setStorageWarning('Local storage is unavailable. Keep this tab open and export your ratings before leaving.');
+    }
+    if (saved) {
+      let parsed: unknown;
+      try { parsed = JSON.parse(saved); } catch { parsed = null; }
+      if (isRestorableSession(parsed, {
+        packetId: packet.packet_id, reviewerCodeSha256, formId,
+        assignments: packet.forms.find((form) => form.form_id === formId)?.assignments ?? [],
+      })) {
+        setSession(parsed as SessionState);
+        setNotice('Resumed the locally saved session.');
+        return;
+      }
+      setNotice('This saved session cannot be safely resumed. It has not been changed. Use a different reviewer code to start a separate session.');
+      return;
+    }
     setSession({
       packetId: packet.packet_id,
       reviewerCodeSha256,
@@ -376,7 +397,11 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
       judgments: [],
     });
     setNotice(null);
-    setStarting(false);
+    } catch {
+      setNotice('The session could not be started. Please try again; any saved progress is unchanged.');
+    } finally {
+      setStarting(false);
+    }
   }
 
   function choosePointwise(value: PointwiseScore) {
@@ -442,7 +467,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
       reasonTags: [],
       judgments: [...session.judgments, judgment],
     });
-    setNotice('Judgment saved locally.');
+    setNotice('Judgment recorded.');
   }
 
   function toggleLastReason(reason: string) {
@@ -488,10 +513,16 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
   function resetSession() {
     if (!session) return;
     if (!window.confirm('Delete this device-local rating session? Export first if you need a copy.')) return;
-    localStorage.removeItem(storageKey(packet.packet_id, session.reviewerCodeSha256));
+    try {
+      localStorage.removeItem(storageKey(packet.packet_id, session.reviewerCodeSha256));
+    } catch {
+      setStorageWarning('The local copy could not be deleted. Your current session is still open; export it before closing this tab.');
+      return;
+    }
     setSession(null);
     setReviewerCode('');
     setNotice('Local session deleted.');
+    setStorageWarning(null);
   }
 
   useEffect(() => {
@@ -500,7 +531,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
       if (!session) return;
       const target = event.target as HTMLElement | null;
       if (target?.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target?.tagName ?? '')) return;
-      if (event.repeat) return;
+      if (ignoreRatingShortcut(event)) return;
 
       if (event.key === 'Escape') {
         setShowShortcuts(false);
@@ -584,6 +615,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
                   id="reviewer-code"
                   className="mt-2 h-9 w-full rounded-lg border border-input bg-transparent px-3 text-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                   value={reviewerCode}
+                  disabled={starting}
                   onChange={(event) => setReviewerCode(event.target.value)}
                   onKeyDown={(event) => { if (event.key === 'Enter') void beginSession(); }}
                   placeholder="e.g. internal-reviewer-01"
@@ -592,7 +624,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
                 <p className="mt-2 text-xs leading-5 text-muted-foreground">
                   Only a SHA-256 hash of this code appears in exports.
                 </p>
-                {notice && <p className="mt-3 text-sm text-rose-700">{notice}</p>}
+                {notice && <output className="mt-3 block text-sm text-rose-700">{notice}</output>}
                 <ActionButton className="mt-5 w-full" size="lg" aria-keyshortcuts="Enter" onClick={() => void beginSession()} disabled={starting}>
                   {starting ? 'Preparing…' : 'Enter rating workspace'} <ShortcutKey>Enter</ShortcutKey>
                 </ActionButton>
@@ -612,6 +644,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
     return (
       <main className="min-h-screen bg-background px-5 py-8 text-foreground sm:px-8 sm:py-12">
         <div className="mx-auto max-w-[1400px] space-y-4">
+          {storageWarning && <p role="alert" className="rounded-lg bg-amber-100 p-4 text-base text-amber-950">{storageWarning}</p>}
           {session.judgments.at(-1) && <LastJudgmentTags judgment={session.judgments.at(-1)!} onToggle={toggleLastReason} />}
           <Card className="border-0 bg-card ring-1 ring-border">
             <CardHeader>
@@ -619,7 +652,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
                 <div className="mx-auto grid size-12 shrink-0 place-items-center rounded-full bg-lime-200 text-lime-950 sm:mx-0"><Check /></div>
                 <div>
                   <CardTitle className="text-2xl">Rating session complete</CardTitle>
-                  <CardDescription className="mt-1">All {completed} judgments are saved locally. No preference summary has been calculated.</CardDescription>
+                  <CardDescription className="mt-1">All {completed} judgments are recorded{storageWarning ? ' in this open tab' : ' locally'}. Export a copy to keep. No preference summary has been calculated.</CardDescription>
                 </div>
                 <Badge className="mx-auto sm:ml-auto sm:mr-0" variant="outline">{session.formId}</Badge>
               </div>
@@ -657,11 +690,13 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
+      {storageWarning && <p role="alert" className="bg-amber-100 px-5 py-4 text-base text-amber-950">{storageWarning}</p>}
+      <output aria-live="polite" className="sr-only">Task {completed + 1} of {total}. {session.stage === 'pair' ? 'Compare the responses.' : `Score the ${session.stage} response.`}</output>
       <header className="border-b border-border bg-background/95">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-4 px-5 py-4 sm:px-8">
           <a className="flex items-center gap-2 text-sm font-semibold" href="/"><EyeOff className="size-4" /> Blind rating</a>
           <Badge variant="outline">{session.formId}</Badge>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex flex-wrap items-center gap-2">
             <ActionButton variant="ghost" size="sm" aria-keyshortcuts="B ArrowLeft" onClick={goBack} disabled={session.stage === 'left' && session.currentIndex === 0}><ArrowLeft /> Back <ShortcutKey>B</ShortcutKey></ActionButton>
             <ActionButton variant="outline" size="sm" aria-keyshortcuts="E" onClick={exportSession}><Download /> Export <ShortcutKey>E</ShortcutKey></ActionButton>
             <ActionButton variant="ghost" size="sm" aria-keyshortcuts="?" onClick={() => setShowShortcuts(true)}><Keyboard /> <ShortcutKey>?</ShortcutKey></ActionButton>
