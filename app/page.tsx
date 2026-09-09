@@ -114,6 +114,10 @@ export default function Home() {
                     <strong className="bg-brand-coral/20 px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Change has a shape.</strong>{' '}
                       Better, same, and worse outcomes can coexist. A useful report makes that distribution visible.
                   </p>
+                  <p className="text-base">
+                    Benchmarks remain useful—but every score depends on what was tested and how.
+                    {' '}<a className="underline decoration-brand-coral/50 underline-offset-4 hover:decoration-brand-coral" href="/guide">How benchmarks work, and where they fall short →</a>
+                  </p>
                 </div>
               </div>
             </div>
