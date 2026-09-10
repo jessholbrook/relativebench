@@ -48,10 +48,10 @@ export default function DemoReport() {
             </span>
             <span className="text-[15px] font-semibold tracking-[-0.02em]">RelativeBench</span>
           </a>
-          <Badge variant="outline">Example report</Badge>
+          <Badge className="hidden sm:inline-flex" variant="outline">Example report</Badge>
           <nav className="ml-auto flex items-center gap-3 text-sm" aria-label="Example report navigation">
             <a className="hidden text-muted-foreground transition-colors hover:text-foreground sm:inline" href="/">Overview</a>
-            <a className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 font-medium shadow-sm transition-colors hover:bg-muted" href="/rate">
+            <a className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-border bg-card px-3 py-2 font-medium shadow-sm transition-colors hover:bg-muted" href="/rate">
               Try it <ArrowRight className="size-3.5" />
             </a>
           </nav>
