@@ -30,6 +30,8 @@
     "components/ui/card.tsx",
     "next.config.ts",
     "vite.config.ts",
+    "playwright.config.ts",
+    "browser-tests/**/*.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],

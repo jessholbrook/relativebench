@@ -2,6 +2,11 @@
 
 Status: **mechanical blind-rating QA complete; independent review and primary collection pending**
 
+Participant-free follow-up: the [readiness checklist](preparticipant-checklist.md)
+now records simulation results, automated full-form browser QA, blinded QC,
+allocation checks, and staged BF16 execution. Real primary execution, independent
+approval, and the sample-size decision remain pending; slot counts are not recruits.
+
 ## Goal
 
 Demonstrate that RelativeBench can produce a reproducible transition report and distinguish aggregate score change from item compatibility and perceived change.

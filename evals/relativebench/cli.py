@@ -77,6 +77,15 @@ def main():
     verify.add_argument("--output", required=True)
     verify.add_argument("--allow-incomplete", action="store_true")
 
+    bf16 = subparsers.add_parser('bf16-run', help='Run an offline, pinned BF16 model after external activation gates are approved.')
+    bf16.add_argument('pilot')
+    bf16.add_argument('--model-role', choices=('previous', 'new'), required=True)
+    bf16.add_argument('--model-dir', required=True)
+    bf16.add_argument('--runtime-lock', required=True)
+    bf16.add_argument('--activation', required=True)
+    bf16.add_argument('--output', required=True)
+    bf16.add_argument('--resume', action='store_true')
+
     create_rating = subparsers.add_parser(
         "create-rating-packet",
         help="Create mirrored blinded rating forms and a separately retained private role key.",
@@ -102,6 +111,11 @@ def main():
     verify_session.add_argument("packet")
     verify_session.add_argument("session")
     verify_session.add_argument("--require-complete", action="store_true")
+
+    verify_primary = subparsers.add_parser('verify-primary-session', help='Validate an assigned primary export without aggregating preference.')
+    verify_primary.add_argument('packet')
+    verify_primary.add_argument('session')
+    verify_primary.add_argument('--require-complete', action='store_true')
 
     arguments = parser.parse_args()
     if arguments.command == "validate-pilot":
@@ -159,6 +173,15 @@ def main():
             model_roles=arguments.model_role,
             require_complete=not arguments.allow_incomplete,
         )
+    elif arguments.command == 'bf16-run':
+        from .adapters.bf16 import Bf16Adapter
+        from .readiness import GENERATION_GATES, primary_plan, validate_activation
+        plan = primary_plan(arguments.pilot)
+        validate_activation(plan, json.loads(Path(arguments.activation).read_text()), GENERATION_GATES)
+        adapter = Bf16Adapter(arguments.model_dir, plan['models'][arguments.model_role], arguments.runtime_lock,
+                              context_limit=plan['profile']['context_limit'])
+        result = run_pilot(arguments.pilot, 'frozen-non-thinking-v1', arguments.output, adapter,
+                           model_roles=(arguments.model_role,), resume=arguments.resume)
     elif arguments.command == "create-rating-packet":
         from .rating import create_rating_packet
 
@@ -175,10 +198,11 @@ def main():
         from .rating import verify_rating_packet
 
         result = verify_rating_packet(arguments.packet, arguments.key)
-    elif arguments.command == "verify-rating-session":
-        from .rating import verify_internal_session
+    elif arguments.command in ('verify-rating-session', 'verify-primary-session'):
+        from .rating import verify_internal_session, verify_primary_session
 
-        result = verify_internal_session(
+        verifier = verify_primary_session if arguments.command == 'verify-primary-session' else verify_internal_session
+        result = verifier(
             arguments.packet,
             arguments.session,
             require_complete=arguments.require_complete,
@@ -192,3 +216,5 @@ def main():
         else:
             result = bootstrap_experience(records, replicates=arguments.replicates, seed=arguments.seed)
     print(json.dumps(result, indent=2, sort_keys=True))
+    if result.get('valid') is False:
+        raise SystemExit(1)

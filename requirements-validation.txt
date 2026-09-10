@@ -1,0 +1,2 @@
+# Optional numerical simulation/test environment, separate from inference runtimes.
+numpy==2.4.3

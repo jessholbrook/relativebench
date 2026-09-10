@@ -2,6 +2,7 @@
 
 import json
 import random
+import re
 from collections import Counter
 from math import isfinite
 from pathlib import Path
@@ -353,6 +354,14 @@ def verify_rating_packet(packet_path, key_path=None):
 
 
 def verify_internal_session(packet_path, session_path, require_complete=False):
+    return _verify_session(packet_path, session_path, require_complete, primary=False)
+
+
+def verify_primary_session(packet_path, session_path, require_complete=False):
+    return _verify_session(packet_path, session_path, require_complete, primary=True)
+
+
+def _verify_session(packet_path, session_path, require_complete=False, primary=False):
     """Validate a blinded session export without unblinding or aggregating preferences."""
     packet = json.loads(Path(packet_path).read_text())
     session_path = Path(session_path)
@@ -362,13 +371,21 @@ def verify_internal_session(packet_path, session_path, require_complete=False):
     forbidden = sorted(set(_walk_field_names(session)) & FORBIDDEN_PUBLIC_FIELDS)
     if forbidden:
         errors.append("Session contains forbidden identity fields: " + ", ".join(forbidden))
-    if session.get("session_type") != "internal_interface_pilot":
-        errors.append("Session type must be internal_interface_pilot.")
+    expected_type = 'primary_collection' if primary else 'internal_interface_pilot'
+    if session.get('session_type') != expected_type or packet.get('session_type') != expected_type:
+        errors.append(f'Session and packet type must be {expected_type}.')
     if session.get("packet_id") != packet.get("packet_id"):
         errors.append("Session packet_id does not match the rating packet.")
     reviewer_hash = session.get("reviewer_code_sha256")
-    if not isinstance(reviewer_hash, str) or len(reviewer_hash) != 64:
+    if not isinstance(reviewer_hash, str) or not re.fullmatch('[0-9a-f]{64}', reviewer_hash):
         errors.append("Session reviewer_code_sha256 must be a 64-character hash.")
+    if primary:
+        if packet.get('collection_authorized') is not True:
+            errors.append('Primary packet has not been authorized for collection.')
+        if packet.get('form_selector') != 'assigned-slot-v1' or session.get('form_id') != 'form-a':
+            errors.append('Primary sessions must retain their fixed assigned form.')
+        if reviewer_hash != packet.get('assigned_reviewer_sha256'):
+            errors.append('Primary reviewer binding does not match the packet.')
 
     form = next(
         (item for item in packet.get("forms", []) if item.get("form_id") == session.get("form_id")),
@@ -413,13 +430,13 @@ def verify_internal_session(packet_path, session_path, require_complete=False):
             if judgment.get(field) not in valid_pointwise:
                 errors.append(f"{label} has invalid {field}.")
         preference = judgment.get("side_preference")
-        if not isinstance(preference, int) or preference not in {-2, -1, 0, 1, 2}:
+        if type(preference) is not int or preference not in {-2, -1, 0, 1, 2}:
             errors.append(f"{label} has invalid side_preference.")
         tags = judgment.get("reason_tags")
         if not isinstance(tags, list) or len(tags) != len(set(tags)):
             errors.append(f"{label} has invalid reason_tags.")
         duration = judgment.get("duration_ms")
-        if not isinstance(duration, (int, float)) or not isfinite(duration) or duration < 0:
+        if isinstance(duration, bool) or not isinstance(duration, (int, float)) or not isfinite(duration) or duration < 0:
             errors.append(f"{label} has invalid duration_ms.")
 
     if session.get("completed_assignment_count") != len(judgments):

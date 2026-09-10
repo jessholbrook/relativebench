@@ -1,5 +1,6 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import detailExamples from '@/data/snapshots/example-benchmark-details.json';
 
@@ -8,8 +9,12 @@ const signed = (value: number) => value > 0 ? `+${value}` : String(value);
 const benchmarks = detailExamples.benchmarks;
 const limit = Math.ceil(Math.max(...Object.values(benchmarks).flatMap(({ lower, upper }) => [Math.abs(lower), Math.abs(upper)])) / 5) * 5;
 const position = (value: number) => `${((value + limit) / (2 * limit)) * 100}%`;
+const subscribeToHydration = () => () => {};
+const clientReady = () => true;
+const serverReady = () => false;
 
 export function BenchmarkDeltas({ metrics }: { metrics: Metric[] }) {
+  const ready = useSyncExternalStore(subscribeToHydration, clientReady, serverReady);
   return (
     <div>
       <p className="mb-4 text-sm leading-6 text-muted-foreground">Example 95% confidence intervals and selected task comparisons. These illustrate the report format, not estimates from collected runs.</p>
@@ -19,9 +24,10 @@ export function BenchmarkDeltas({ metrics }: { metrics: Metric[] }) {
           if (!details) return null;
           const positive = metric.value >= 0;
           const crossesZero = details.lower <= 0 && details.upper >= 0;
+          const stableId = `benchmark-${metric.label.toLowerCase().replaceAll(' ', '-')}`;
           return (
             <AccordionItem key={metric.label} value={metric.label} className="min-w-0 rounded-xl border-0 bg-card ring-1 ring-border not-last:border-b-0">
-              <AccordionTrigger className="items-center gap-3 px-5 py-4 hover:bg-muted/40 hover:no-underline" aria-label={`${metric.label}: ${signed(metric.value)} percentage points. Toggle task differences`}>
+              <AccordionTrigger disabled={!ready} id={`${stableId}-trigger`} className="items-center gap-3 px-5 py-4 hover:bg-muted/40 hover:no-underline" aria-label={`${metric.label}: ${signed(metric.value)} percentage points. Toggle task differences`}>
                 <span className="min-w-0 flex-1">
                   <span className="block text-base font-semibold">{metric.label}</span>
                   <span className="mt-1 block text-sm font-normal text-muted-foreground">Task differences</span>
@@ -41,7 +47,7 @@ export function BenchmarkDeltas({ metrics }: { metrics: Metric[] }) {
                 <div aria-hidden="true" className="flex justify-between text-xs text-muted-foreground"><span>{-limit}</span><span>0</span><span>+{limit} pp</span></div>
                 <p className="mt-3 text-sm text-muted-foreground">95% interval: {signed(details.lower)} to {signed(details.upper)} pp{crossesZero ? ' · includes no change' : ''}</p>
               </div>
-              <AccordionContent className="h-auto px-5 pb-5">
+              <AccordionContent id={`${stableId}-content`} className="h-auto px-5 pb-5">
                 <p className="text-sm leading-6 text-muted-foreground">Selected example tasks—not the full scoring set behind the category average.</p>
                 <ul className="space-y-5">
                   {details.tasks.map((task) => {
