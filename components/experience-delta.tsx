@@ -11,6 +11,7 @@ type Experience = {
   delta: number;
   confidence_interval: { level: number; lower: number; upper: number };
   distribution_percent: Record<Outcome, number>;
+  rating_distribution_percent: Record<string, number>;
 };
 
 const outcomes = [
@@ -48,7 +49,7 @@ export function ExperienceDelta({ experience }: { experience: Experience }) {
       <CardHeader className="gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <CardTitle className="text-xl">Experience Delta</CardTitle>
-          <CardDescription className="mt-1 text-base text-stone-600">Estimated relative change for incumbent users</CardDescription>
+          <CardDescription className="mt-1 text-base text-stone-600">Perceived change with the previous workflow held fixed</CardDescription>
         </div>
         <Badge className="border-stone-200 bg-stone-50 text-stone-600" variant="outline">Example</Badge>
       </CardHeader>
@@ -62,6 +63,7 @@ export function ExperienceDelta({ experience }: { experience: Experience }) {
             {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role -- Inline SVG needs a named image role; an img cannot contain the chart geometry. */}
             <svg viewBox="0 0 300 90" className="w-full max-w-sm overflow-visible" role="img" aria-label={`Experience Delta ${signed(experience.delta)}; ${level}% confidence interval ${signed(interval.lower)} to ${signed(interval.upper)}. Zero indicates no change.`}>
               <line x1="20" y1="40" x2="280" y2="40" stroke="#d6d3d1" strokeWidth="1" />
+              <rect x={x(-5)} y="29" width={x(5) - x(-5)} height="22" fill="#e34c3b" opacity="0.15" />
               <line x1={x(0)} y1="16" x2={x(0)} y2="57" stroke="#a8a29e" strokeDasharray="3 3" />
               <line x1={x(interval.lower)} y1="40" x2={x(interval.upper)} y2="40" stroke="#4d7c0f" strokeWidth="3" />
               {[interval.lower, interval.upper].map((value) => (
@@ -77,6 +79,7 @@ export function ExperienceDelta({ experience }: { experience: Experience }) {
             </svg>
             <figcaption className="text-sm leading-6 text-stone-600">{level}% confidence interval: {signed(interval.lower)} to {signed(interval.upper)}</figcaption>
           </figure>
+          <p className="mt-3 max-w-sm text-sm leading-6 text-stone-600">Shading marks the provisional −5 to +5 importance band. The axis shows a zoomed view; the full ΔE scale runs from −100 to +100. This example interval is illustrative, not calculated from collected ratings.</p>
         </div>
 
         <div className="min-w-0">
@@ -113,6 +116,22 @@ export function ExperienceDelta({ experience }: { experience: Experience }) {
           </output>
         </div>
       </CardContent>
+      <div className="px-6 pb-6">
+        <h3 className="text-base font-semibold">How strong was the change?</h3>
+        <p className="mt-2 text-sm leading-6 text-stone-600">The five weighted response bins produce the headline. “Better” alone does not reveal whether a change was slight or substantial.</p>
+        <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-5">
+          {[
+            ['-2', 'Much worse'], ['-1', 'Slightly worse'], ['0', 'Indistinguishable'],
+            ['1', 'Slightly better'], ['2', 'Much better'],
+          ].map(([rating, label]) => (
+            <div key={rating}>
+              <dt className="text-sm text-stone-600">{label}</dt>
+              <dd className="mt-1 text-xl font-semibold">{experience.rating_distribution_percent[rating]}%</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-4 text-sm leading-6 text-stone-600">ΔE = 50 × the weighted average rating (−2 to +2). A +11 here is not an 11% productivity gain. An interval cannot account for biased tasks or judges. <a href="/guide#uncertainty" className="underline underline-offset-4">How to read uncertainty</a></p>
+      </div>
     </Card>
   );
 }

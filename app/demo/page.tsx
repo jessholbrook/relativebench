@@ -1,7 +1,6 @@
 import {
   ArrowLeft,
   ArrowRight,
-  CheckCircle2,
   CircleDot,
   FlaskConical,
   GitCompareArrows,
@@ -13,14 +12,6 @@ import { Badge } from '@/components/ui/badge';
 import { ExperienceDelta } from '@/components/experience-delta';
 import { BenchmarkDeltas } from '@/components/benchmark-deltas';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import exampleSnapshot from '@/data/snapshots/example-transition.json';
 
 const { experience, compatibility, benchmark_deltas: benchmarkDeltas } = exampleSnapshot;
@@ -38,13 +29,9 @@ const exampleRegressions = [
   { task: 'Exact category labels', change: 'Previously used the allowed labels; now substitutes synonyms that the downstream system rejects.' },
 ];
 
-const fakeRuns = [
-  { id: 'RB-DEMO-005', stage: 'Final report', scope: '120 scenarios · 48 raters', output: 'Versioned snapshot', status: 'Complete' },
-  { id: 'RB-DEMO-004', stage: 'Blind rating', scope: '120 pairs · 2 mirrored forms', output: '5,760 judgments', status: 'Validated' },
-  { id: 'RB-DEMO-003', stage: 'Response generation', scope: '2 models · 3 seeds', output: '720 artifacts', status: 'Validated' },
-  { id: 'RB-DEMO-002', stage: 'Scenario review', scope: '6 categories · 3 difficulties', output: '120 frozen tasks', status: 'Complete' },
-  { id: 'RB-DEMO-001', stage: 'Protocol freeze', scope: 'Primary + guardrails', output: 'Protocol v0.1', status: 'Locked' },
-];
+const counts = compatibility.counts;
+const previousPasses = counts.stable_successes + counts.negative_flips;
+const previousFailures = counts.positive_flips + counts.stable_failures;
 
 export default function DemoReport() {
   return (
@@ -65,7 +52,7 @@ export default function DemoReport() {
           <nav className="ml-auto flex items-center gap-3 text-sm" aria-label="Example report navigation">
             <a className="hidden text-muted-foreground transition-colors hover:text-foreground sm:inline" href="/">Overview</a>
             <a className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 font-medium shadow-sm transition-colors hover:bg-muted" href="/rate">
-              Rater workspace <ArrowRight className="size-3.5" />
+              Try it <ArrowRight className="size-3.5" />
             </a>
           </nav>
         </div>
@@ -87,14 +74,14 @@ export default function DemoReport() {
               A finished RelativeBench report combines conventional benchmark movement with task flips and the change incumbent users actually perceive.
             </p>
           </div>
-          <Card className="border-0 bg-lime-200 text-lime-950 ring-0">
+          <Card className="border-0 bg-brand-coral/10 text-foreground ring-0">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Sparkles className="size-4" /> What this page demonstrates</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm leading-6 text-lime-950/75">
+            <CardContent className="space-y-2 text-sm leading-6 text-muted-foreground">
               <p>One transition summary for decision-makers.</p>
               <p>Category-level evidence for model teams.</p>
-              <p>A reproducible run ledger for auditors.</p>
+              <p>What evidence a real report would need.</p>
             </CardContent>
           </Card>
         </section>
@@ -113,6 +100,7 @@ export default function DemoReport() {
                   <div className="rounded-lg bg-teal-50 p-4 dark:bg-teal-950/30">
                     <span className="font-mono text-2xl font-semibold text-teal-700 dark:text-teal-300">{(compatibility.positive_flip_rate * 100).toFixed(1)}%</span>
                     <p className="mt-1 text-sm text-teal-900 dark:text-teal-100">previously failed → passed</p>
+                    <p className="mt-2 text-sm text-teal-900">{counts.positive_flips} of {previousFailures.toLocaleString('en-US')} previously failed items</p>
                   </div>
                   <h3 id="improved-heading" className="mt-5 text-lg font-semibold">What improved</h3>
                   <ul className="mt-3 list-disc space-y-4 pl-5 marker:text-teal-600">
@@ -128,6 +116,7 @@ export default function DemoReport() {
                   <div className="rounded-lg bg-rose-50 p-4 dark:bg-rose-950/30">
                     <span className="font-mono text-2xl font-semibold text-rose-700 dark:text-rose-300">{(compatibility.negative_flip_rate * 100).toFixed(1)}%</span>
                     <p className="mt-1 text-sm text-rose-900 dark:text-rose-100">previously passed → failed</p>
+                    <p className="mt-2 text-sm text-rose-900">{counts.negative_flips} of {previousPasses.toLocaleString('en-US')} previously passed items</p>
                   </div>
                   <h3 id="regressed-heading" className="mt-5 text-lg font-semibold">What got worse</h3>
                   <ul className="mt-3 list-disc space-y-4 pl-5 marker:text-rose-600">
@@ -142,11 +131,11 @@ export default function DemoReport() {
               </CardContent>
             </Card>
             <Card className="border-0 bg-card ring-1 ring-border">
-              <CardHeader><CardTitle>Collection snapshot</CardTitle></CardHeader>
-              <CardContent className="grid grid-cols-3 gap-3 text-center">
-                <div><strong className="block text-2xl">120</strong><span className="text-xs text-muted-foreground">scenarios</span></div>
-                <div><strong className="block text-2xl">48</strong><span className="text-xs text-muted-foreground">raters</span></div>
-                <div><strong className="block text-2xl">3</strong><span className="text-xs text-muted-foreground">seeds</span></div>
+              <CardHeader><CardTitle>Different denominators, different questions</CardTitle></CardHeader>
+              <CardContent className="space-y-3 text-base leading-7 text-muted-foreground">
+                <p>Recovery is measured among earlier failures; regression is measured among earlier successes. Subtracting these two percentages does not give the change in overall accuracy.</p>
+                <p>In these example counts, {counts.stable_successes} items stay successful and {counts.stable_failures} stay unsuccessful. Across all {(previousPasses + previousFailures).toLocaleString('en-US')} example items, the net accuracy change is +{((counts.positive_flips - counts.negative_flips) / (previousPasses + previousFailures) * 100).toFixed(2)} percentage points.</p>
+                <p className="text-sm">Counts and selected tasks illustrate interpretation only. They do not come from a scored run, and the selected tasks are not the full scoring set.</p>
               </CardContent>
             </Card>
           </div>
@@ -165,36 +154,15 @@ export default function DemoReport() {
 
         <section className="mt-10" aria-labelledby="runs-heading">
           <div className="mb-4">
-            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Provenance</p>
-            <h2 id="runs-heading" className="mt-1 text-2xl font-semibold tracking-tight">Example run ledger</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">Every published number should trace back through frozen tasks, generated artifacts, blinded judgments, and a versioned report. These rows are fake.</p>
+            <h2 id="runs-heading" className="mt-1 text-2xl font-semibold tracking-tight">Behind the results</h2>
+            <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">A credible report lets you inspect how its numbers were produced. This page is an example: no human preference results have been collected, and no completed run supports these figures.</p>
           </div>
-          <Card className="overflow-hidden border-0 bg-card ring-1 ring-border">
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Run</TableHead>
-                    <TableHead>Stage</TableHead>
-                    <TableHead>Scope</TableHead>
-                    <TableHead>Output</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {fakeRuns.map((run) => (
-                    <TableRow key={run.id}>
-                      <TableCell className="font-mono text-xs">{run.id}</TableCell>
-                      <TableCell className="font-medium">{run.stage}</TableCell>
-                      <TableCell className="text-muted-foreground">{run.scope}</TableCell>
-                      <TableCell>{run.output}</TableCell>
-                      <TableCell><Badge className="bg-lime-100 text-lime-950" variant="secondary"><CheckCircle2 className="size-3" /> {run.status}</Badge></TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <div className="max-w-3xl space-y-4 text-base leading-7 text-muted-foreground">
+            <p><strong className="font-semibold text-foreground">What was compared?</strong> A real report needs immutable model revisions, the transition condition, prompts, tool settings, and a versioned task manifest. Those details establish whether the comparison matches your use case.</p>
+            <p><strong className="font-semibold text-foreground">Whose experience was measured?</strong> Look for cohort definitions, scenario and evaluator counts, assignment balance, missing responses, and exclusions—not just a total number of clicks.</p>
+            <p><strong className="font-semibold text-foreground">Can the analysis be checked?</strong> Look for response hashes, privacy-safe judgments, the analysis version and bootstrap seed, and recorded guardrail outcomes. An overall gain does not overrule a critical failure.</p>
+            <p><a className="underline decoration-brand-coral/50 underline-offset-4" href="https://github.com/jessholbrook/relativebench/blob/main/docs/methodology.md">Read the protocol</a>{' · '}<a className="underline decoration-brand-coral/50 underline-offset-4" href="/guide">Understand benchmark limitations</a></p>
+          </div>
         </section>
 
         <section className="mt-10 flex flex-col items-start justify-between gap-5 py-6 sm:flex-row sm:items-center sm:py-8" aria-labelledby="rater-heading">

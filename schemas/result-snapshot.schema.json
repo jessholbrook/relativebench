@@ -19,6 +19,18 @@
       "additionalProperties": false,
       "required": ["delta", "confidence_interval", "distribution_percent"],
       "properties": {
+        "rating_distribution_percent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["-2", "-1", "0", "1", "2"],
+          "properties": {
+            "-2": { "type": "number", "minimum": 0, "maximum": 100 },
+            "-1": { "type": "number", "minimum": 0, "maximum": 100 },
+            "0": { "type": "number", "minimum": 0, "maximum": 100 },
+            "1": { "type": "number", "minimum": 0, "maximum": 100 },
+            "2": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
         "delta": { "type": "number", "minimum": -100, "maximum": 100 },
         "confidence_interval": {
           "type": "object",
@@ -47,6 +59,17 @@
       "additionalProperties": false,
       "required": ["negative_flip_rate", "positive_flip_rate"],
       "properties": {
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["stable_successes", "negative_flips", "positive_flips", "stable_failures"],
+          "properties": {
+            "stable_successes": { "type": "integer", "minimum": 0 },
+            "negative_flips": { "type": "integer", "minimum": 0 },
+            "positive_flips": { "type": "integer", "minimum": 0 },
+            "stable_failures": { "type": "integer", "minimum": 0 }
+          }
+        },
         "negative_flip_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
         "positive_flip_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
       }
