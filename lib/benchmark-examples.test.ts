@@ -5,7 +5,7 @@ import test from 'node:test';
 const snapshot = JSON.parse(readFileSync(new URL('../data/snapshots/example-transition.json', import.meta.url), 'utf8'));
 const details = JSON.parse(readFileSync(new URL('../data/snapshots/example-benchmark-details.json', import.meta.url), 'utf8'));
 
-test('every benchmark has an explicitly illustrative interval enclosing its delta', () => {
+void test('every benchmark has an explicitly illustrative interval enclosing its delta', () => {
   assert.equal(details.status, 'illustrative');
   assert.equal(details.interval_level, 0.95);
   assert.equal(Object.keys(details.benchmarks).length, snapshot.benchmark_deltas.length);
@@ -17,7 +17,7 @@ test('every benchmark has an explicitly illustrative interval enclosing its delt
   }
 });
 
-test('each benchmark has identifiable task-level before and after evidence', () => {
+void test('each benchmark has identifiable task-level before and after evidence', () => {
   const ids = new Set();
   for (const metric of snapshot.benchmark_deltas) {
     const tasks = details.benchmarks[metric.label].tasks;
@@ -34,7 +34,7 @@ test('each benchmark has identifiable task-level before and after evidence', () 
   }
 });
 
-test('examples demonstrate uncertainty crossing zero and mixed task directions', () => {
+void test('examples demonstrate uncertainty crossing zero and mixed task directions', () => {
   const interval = details.benchmarks['Instruction following'];
   assert.ok(interval.lower < 0 && interval.upper > 0);
   const tasks = details.benchmarks.Reasoning.tasks;

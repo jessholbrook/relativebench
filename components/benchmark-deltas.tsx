@@ -29,6 +29,7 @@ export function BenchmarkDeltas({ metrics }: { metrics: Metric[] }) {
                 <span className={`font-mono text-lg font-semibold ${positive ? 'text-teal-700 dark:text-teal-300' : 'text-rose-700 dark:text-rose-300'}`}>{signed(metric.value)}</span>
               </AccordionTrigger>
               <div className="px-5 pb-5">
+                {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role -- This CSS-rendered interval is one named graphic, not an external image. */}
                 <div role="img" aria-label={`${metric.label}: ${signed(metric.value)} percentage points; example 95% confidence interval ${signed(details.lower)} to ${signed(details.upper)}.`} className="relative mx-2 h-10">
                   <span className="absolute top-1/2 h-px w-full bg-border" />
                   <span className="absolute left-1/2 top-1 h-8 border-l border-dashed border-muted-foreground/60" />
