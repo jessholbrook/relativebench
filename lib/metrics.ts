@@ -11,6 +11,7 @@ export interface ExperienceSummary {
   noticeability: number;
   strongRegressionRate: number;
   distribution: Record<ExperienceRating, number>;
+  weightedDistribution: Record<ExperienceRating, number>;
   sampleSize: number;
   totalWeight: number;
 }
@@ -53,6 +54,7 @@ export function summarizeExperience(
   ) as Record<ExperienceRating, number>;
 
   let totalWeight = 0;
+  const weightedDistribution = { ...distribution };
   let weightedRating = 0;
   let betterWeight = 0;
   let worseWeight = 0;
@@ -72,6 +74,7 @@ export function summarizeExperience(
     totalWeight += weight;
     weightedRating += weight * judgment.rating;
     distribution[judgment.rating] += 1;
+    weightedDistribution[judgment.rating] += weight;
 
     if (judgment.rating > 0) betterWeight += weight;
     if (judgment.rating < 0) worseWeight += weight;
@@ -79,14 +82,20 @@ export function summarizeExperience(
     if (judgment.rating === -2) strongRegressionWeight += weight;
   }
 
+  if (!Number.isFinite(totalWeight) || !Number.isFinite(weightedRating)) {
+    throw new Error('Accumulated judgment weights exceed the finite numeric range.');
+  }
+  for (const rating of RATINGS) weightedDistribution[rating] /= totalWeight;
+
   return {
-    experienceDelta: cleanZero((50 * weightedRating) / totalWeight),
+    experienceDelta: cleanZero(50 * (weightedRating / totalWeight)),
     preferenceLift: cleanZero(
-      (100 * (betterWeight - worseWeight)) / totalWeight,
+      100 * ((betterWeight - worseWeight) / totalWeight),
     ),
     noticeability: noticeableWeight / totalWeight,
     strongRegressionRate: strongRegressionWeight / totalWeight,
     distribution,
+    weightedDistribution,
     sampleSize: judgments.length,
     totalWeight,
   };
@@ -99,6 +108,9 @@ export function summarizeFlips(pairs: ScoredPair[]): FlipSummary {
   let stableFailures = 0;
 
   for (const pair of pairs) {
+    if (typeof pair.previousPassed !== 'boolean' || typeof pair.newPassed !== 'boolean') {
+      throw new Error('Scored pair outcomes must be booleans.');
+    }
     if (pair.previousPassed && pair.newPassed) stableSuccesses += 1;
     else if (pair.previousPassed) negativeFlips += 1;
     else if (pair.newPassed) positiveFlips += 1;
@@ -125,6 +137,12 @@ export function classifyTransition(
   upperBound: number,
   minimumImportantDifference = 5,
 ): TransitionClassification {
+  if (![lowerBound, upperBound, minimumImportantDifference].every(Number.isFinite)) {
+    throw new Error('Classification bounds and threshold must be finite.');
+  }
+  if (lowerBound < -100 || upperBound > 100) {
+    throw new Error('Experience Delta bounds must lie between -100 and 100.');
+  }
   if (lowerBound > upperBound) {
     throw new Error('The lower confidence bound cannot exceed the upper bound.');
   }

@@ -14,6 +14,24 @@ from relativebench.metrics import (  # noqa: E402
 
 
 class MetricTests(unittest.TestCase):
+    def test_weighted_distribution_and_input_guards(self):
+        summary = summarize_experience([{"rating": 2, "weight": 1}, {"rating": -1, "weight": 2}])
+        self.assertEqual(summary['weighted_distribution']['2'], 1 / 3)
+        self.assertEqual(summary['weighted_distribution']['-1'], 2 / 3)
+        self.assertEqual(summary['distribution']['2'], 1)
+        for value in (True, '1', float('nan'), float('inf')):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                summarize_experience([{'rating': value}])
+        with self.assertRaises(ValueError):
+            summarize_flips([{'previous_passed': 'false', 'new_passed': True}])
+        for bounds in ((float('nan'), 10), (0, float('inf')), (-101, 0), (0, 101)):
+            with self.assertRaises(ValueError):
+                classify_transition(*bounds)
+        self.assertEqual(classify_transition(-5, 5), 'sidegrade')
+        self.assertEqual(classify_transition(5, 6), 'inconclusive')
+        self.assertEqual(classify_transition(-6, -5), 'inconclusive')
+        self.assertEqual(summarize_experience([{'rating': 1, 'weight': 1e307}])['experience_delta'], 50)
+
     def test_experience_delta_range(self):
         self.assertEqual(summarize_experience([{"rating": 2}])["experience_delta"], 100)
         self.assertEqual(summarize_experience([{"rating": -2}])["experience_delta"], -100)
@@ -55,7 +73,7 @@ class MetricTests(unittest.TestCase):
         for fixture in fixtures["experience"]:
             summary = summarize_experience(fixture["judgments"])
             self.assertEqual(summary["experience_delta"], fixture["expected_delta"], fixture["name"])
-            self.assertEqual(summary["preference_lift"], fixture["expected_preference_lift"], fixture["name"])
+            self.assertAlmostEqual(summary["preference_lift"], fixture["expected_preference_lift"], msg=fixture["name"])
         for fixture in fixtures["flips"]:
             summary = summarize_flips(fixture["pairs"])
             self.assertEqual(summary["negative_flip_rate"], fixture["expected_negative_flip_rate"], fixture["name"])
