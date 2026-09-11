@@ -171,7 +171,7 @@ export default function DemoReport() {
             <h2 id="rater-heading" className="mt-1 text-2xl font-semibold">Try the rater experience</h2>
             <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">Score each response against a shared rubric, compare the pair only after both scores are locked, and move through the packet without touching the mouse.</p>
           </div>
-          <a className="group inline-flex shrink-0 items-center gap-8 bg-[#e34c3b] px-5 py-4 text-sm font-medium text-white transition-colors hover:bg-[#171715]" href="/rate">
+          <a className="group inline-flex shrink-0 items-center gap-8 bg-[#e34c3b] px-5 py-4 text-sm font-medium text-[#171715] transition-colors hover:bg-[#171715] hover:text-white" href="/rate">
             Rate <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
           </a>
         </section>

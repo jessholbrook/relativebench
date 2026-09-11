@@ -51,7 +51,9 @@ type PacketForm = { form_id: 'form-a' | 'form-b'; assignments: Assignment[] };
 export type RatingPacket = {
   packet_version: string;
   packet_id: string;
-  session_type: 'internal_interface_pilot';
+  session_type: 'internal_interface_pilot' | 'primary_collection';
+  assigned_reviewer_sha256?: string;
+  collection_authorized?: boolean;
   protocol_version: string;
   condition: 'frozen';
   blinding: string;
@@ -313,6 +315,9 @@ export function RatingWorkspace({ packetUrl }: { packetUrl: string }) {
       </main>
     );
   }
+  if (packet.session_type === 'primary_collection' && packet.collection_authorized !== true) {
+    return <main className="grid min-h-screen place-items-center bg-background px-5 text-foreground"><p>This assigned session is not open for collection yet.</p></main>;
+  }
   return <RatingSession packet={packet} />;
 }
 
@@ -359,9 +364,13 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
     setStarting(true);
     try {
     const reviewerCodeSha256 = await sha256(normalized);
+    if (packet.session_type === 'primary_collection' && (packet.form_selector !== 'assigned-slot-v1' || reviewerCodeSha256 !== packet.assigned_reviewer_sha256)) {
+      setNotice('This code does not match the assigned session. Check your invitation.');
+      return;
+    }
     const key = storageKey(packet.packet_id, reviewerCodeSha256);
     const firstByte = Number.parseInt(reviewerCodeSha256.slice(0, 2), 16);
-    const formId = firstByte % 2 === 0 ? 'form-a' : 'form-b';
+    const formId = packet.session_type === 'primary_collection' || firstByte % 2 === 0 ? 'form-a' : 'form-b';
     let saved: string | null = null;
     try {
       saved = localStorage.getItem(key);
@@ -507,7 +516,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `relativebench-internal-rating-${session.reviewerCodeSha256.slice(0, 12)}.json`;
+    anchor.download = `relativebench-${packet.session_type === 'primary_collection' ? 'primary' : 'internal'}-rating-${session.reviewerCodeSha256.slice(0, 12)}.json`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
@@ -600,7 +609,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
                 Score each response against the rubric before seeing the pair. Model identity and role are absent from this packet.
               </p>
               <div className="mt-7 grid gap-3 text-sm text-muted-foreground">
-                <p className="flex gap-3"><EyeOff className="mt-0.5 size-4 shrink-0 text-foreground" /> Left and right responses are counterbalanced across two forms.</p>
+                <p className="flex gap-3"><EyeOff className="mt-0.5 size-4 shrink-0 text-foreground" /> {packet.session_type === 'primary_collection' ? 'Your task assignments and presentation order are fixed for this study.' : 'Left and right responses are counterbalanced across two forms.'}</p>
                 <p className="flex gap-3"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-foreground" /> Progress stays on this device until you export it.</p>
                 <p className="flex gap-3"><Check className="mt-0.5 size-4 shrink-0 text-foreground" /> No aggregate preference is calculated or displayed.</p>
                 <p className="flex gap-3"><Keyboard className="mt-0.5 size-4 shrink-0 text-foreground" /> Every selection advances automatically; keyboard shortcuts cover the full workflow.</p>
@@ -732,7 +741,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{pair.prompt}</p>
               </div>
               <div className="rounded-lg bg-lime-100/70 p-4 text-lime-950">
-                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-lime-900/60">Rubric</p>
+                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-lime-900">Rubric</p>
                 <p className="mt-2 text-sm leading-6">{pair.rubric}</p>
               </div>
             </CardContent>

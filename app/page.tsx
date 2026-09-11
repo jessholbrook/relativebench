@@ -59,7 +59,7 @@ export default function Home() {
 
         <HomeSectionNav items={navigation} />
 
-        <div className="space-y-3 font-mono text-[9px] uppercase tracking-[0.13em] text-[#77736d]">
+        <div className="space-y-3 font-mono text-[9px] uppercase tracking-[0.13em] text-[#6b6761]">
           <a className="flex items-center justify-between border-t border-[#cbc8c1] pt-4 hover:text-[#171715]" href="/demo">
             Full example <ArrowUpRight className="size-3" />
           </a>
@@ -94,7 +94,7 @@ export default function Home() {
         <section id="why" className="px-6 py-12 sm:px-12 sm:py-16 lg:px-16 xl:px-28">
           <div className="mx-auto max-w-[1080px]">
             <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
-              <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
+              <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#6b6761]">
                 Why it&apos;s needed
               </div>
               <div>
@@ -127,7 +127,7 @@ export default function Home() {
         <section id="how" className="px-6 py-12 sm:px-12 sm:py-16 lg:px-16 xl:px-28">
           <div className="mx-auto max-w-[1080px]">
             <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
-              <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
+              <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#6b6761]">
                 How it works
               </div>
               <div>
@@ -191,7 +191,7 @@ export default function Home() {
                   <div>
                     <div className="flex items-center justify-between">
                       <p className="font-mono text-[10px] uppercase tracking-[0.17em] text-[#aaa69f]">Benchmark delta</p>
-                      <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d]">percentage points</p>
+                      <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#aaa59f]">percentage points</p>
                     </div>
                     <div className="mt-5 space-y-4">
                       {benchmarkDeltas.map((metric) => (
@@ -233,7 +233,7 @@ export default function Home() {
         <section id="rate" className="px-6 py-12 sm:px-12 sm:py-16 lg:px-16 xl:px-28">
           <div className="mx-auto max-w-[1080px]">
             <div className="grid gap-8 lg:grid-cols-[180px_1fr]">
-              <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#77736d]">
+              <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#6b6761]">
                 Try it
               </div>
               <div className="grid gap-8 2xl:grid-cols-[.7fr_1.3fr] 2xl:items-center">
@@ -243,7 +243,7 @@ export default function Home() {
                     Score each response against a shared rubric, compare the pair only after both scores are locked, and move through the packet without touching the mouse.
                   </p>
                   <a
-                    className="group mt-6 inline-flex items-center gap-8 bg-brand-coral px-5 py-4 text-sm font-medium text-white transition-colors hover:bg-[#171715]"
+                    className="group mt-6 inline-flex items-center gap-8 bg-brand-coral px-5 py-4 text-sm font-medium text-[#171715] transition-colors hover:bg-[#171715] hover:text-white"
                     href="/rate"
                   >
                     Rate
@@ -269,7 +269,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="mx-auto flex max-w-[1304px] flex-col justify-between gap-5 px-6 py-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#77736d] sm:flex-row sm:px-12 lg:px-16 xl:px-28">
+        <footer className="mx-auto flex max-w-[1304px] flex-col justify-between gap-5 px-6 py-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b6761] sm:flex-row sm:px-12 lg:px-16 xl:px-28">
           <span>RelativeBench</span>
         </footer>
       </div>

@@ -44,6 +44,12 @@ version travel with the interval.
 Software tests cover nonconstant data, omitted clusters, multiplicities, sparse
 support, and deterministic replay. **Simulation-based coverage validation for the
 actual assignment design remains an activation gate**, not a completed milestone.
+The [participant-free simulation assessment](simulation-validation.md) now supplies
+1,600 repeated datasets and 16 million resamples across eight explicit mechanisms.
+It finds near-nominal coverage in several clustered cases, conservative iid behavior,
+and severe failure under outcome-dependent dropout. This is evidence to review,
+not automatic gate clearance or proof that 40 evaluators suffice. Production
+inference and its frozen target have not been changed to fit the simulations.
 Fewer than 10,000 replicates may be used for software tests only. Too few clusters or
 a degenerate interval are reported as warnings, not as evidence of certainty.
 
@@ -72,6 +78,13 @@ The threshold will be recalibrated from pilot anchor judgments and frozen before
 - Exclusions are applied without reference to which model benefited.
 - Both raw and filtered counts are published.
 - No missing human rating is imputed.
+
+The new [candidate collection rules](collection-readiness.md) implement blinded
+duplicate quarantine and planned-denominator sensitivity bounds. The existing
+minimum reading-time and attention rules still need explicit values/items and
+approval before collection. The utility's zero-millisecond default is not an
+approved replacement cutoff. Worst-case bounds are labeled separately and never
+inserted into the observed estimate.
 
 ## Multiplicity
 
