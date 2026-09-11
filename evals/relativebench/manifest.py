@@ -3,6 +3,7 @@
 import json
 from collections import Counter
 from pathlib import Path
+from .artifacts import sha256_value
 
 REQUIRED_CATEGORIES = {
     "reasoning",
@@ -116,6 +117,17 @@ def validate_pilot(pilot_path):
     duplicate_prompts = [item for item, count in Counter(prompts).items() if count > 1]
     if duplicate_prompts:
         errors.append("Scenario prompt_template values must be unique.")
+
+    if pilot.get('objective_rules'):
+        rules_path = pilot_path.parent / pilot['objective_rules']
+        if not rules_path.is_file():
+            errors.append('Candidate objective rule registry is missing.')
+        else:
+            registry = load_json(rules_path)
+            objective = {row['id']: row for row in scenarios if row.get('scoring_mode') == 'objective'}
+            rules = registry.get('rules', {})
+            if set(rules) != set(objective) or any(rules[key].get('scenario_sha256') != sha256_value(value) for key, value in objective.items() if key in rules):
+                errors.append('Objective rules must bind every objective scenario at its exact current revision.')
 
     profiles = pilot.get("execution_profiles", [])
     profile_ids = [profile.get("id") for profile in profiles]

@@ -1,23 +1,58 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://relativebench.org/schemas/rating-packet.schema.json",
-  "title": "RelativeBench blinded internal rating packet",
+  "title": "RelativeBench blinded rating packet",
   "type": "object",
   "additionalProperties": false,
-  "required": ["packet_version", "packet_id", "session_type", "protocol_version", "condition", "blinding", "pointwise_scale", "paired_scale", "form_selector", "source_run_commitments", "key_commitment_sha256", "pairs", "forms"],
+  "required": [
+    "packet_version",
+    "packet_id",
+    "session_type",
+    "protocol_version",
+    "condition",
+    "blinding",
+    "pointwise_scale",
+    "paired_scale",
+    "form_selector",
+    "source_run_commitments",
+    "key_commitment_sha256",
+    "pairs",
+    "forms"
+  ],
   "properties": {
-    "packet_version": { "type": "string" },
-    "packet_id": { "$ref": "#/$defs/hash" },
-    "session_type": { "const": "internal_interface_pilot" },
-    "protocol_version": { "type": "string" },
-    "condition": { "const": "frozen" },
-    "blinding": { "type": "string" },
+    "packet_version": {
+      "type": "string"
+    },
+    "packet_id": {
+      "$ref": "#/$defs/hash"
+    },
+    "session_type": {
+      "enum": [
+        "internal_interface_pilot",
+        "primary_collection"
+      ]
+    },
+    "protocol_version": {
+      "type": "string"
+    },
+    "condition": {
+      "const": "frozen"
+    },
+    "blinding": {
+      "type": "string"
+    },
     "pointwise_scale": {
       "type": "array",
       "prefixItems": [
-        { "const": "fails" },
-        { "const": "partially_meets" },
-        { "const": "meets" }
+        {
+          "const": "fails"
+        },
+        {
+          "const": "partially_meets"
+        },
+        {
+          "const": "meets"
+        }
       ],
       "minItems": 3,
       "maxItems": 3
@@ -25,50 +60,127 @@
     "paired_scale": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["-2", "-1", "0", "1", "2"],
+      "required": [
+        "-2",
+        "-1",
+        "0",
+        "1",
+        "2"
+      ],
       "properties": {
-        "-2": { "type": "string" },
-        "-1": { "type": "string" },
-        "0": { "type": "string" },
-        "1": { "type": "string" },
-        "2": { "type": "string" }
+        "0": {
+          "type": "string"
+        },
+        "1": {
+          "type": "string"
+        },
+        "2": {
+          "type": "string"
+        },
+        "-2": {
+          "type": "string"
+        },
+        "-1": {
+          "type": "string"
+        }
       }
     },
-    "form_selector": { "type": "string" },
+    "form_selector": {
+      "type": "string"
+    },
     "source_run_commitments": {
       "type": "array",
-      "items": { "$ref": "#/$defs/hash" },
+      "items": {
+        "$ref": "#/$defs/hash"
+      },
       "minItems": 2,
       "maxItems": 2,
       "uniqueItems": true
     },
-    "key_commitment_sha256": { "$ref": "#/$defs/hash" },
+    "key_commitment_sha256": {
+      "$ref": "#/$defs/hash"
+    },
     "pairs": {
       "type": "array",
       "minItems": 1,
-      "items": { "$ref": "#/$defs/pair" }
+      "items": {
+        "$ref": "#/$defs/pair"
+      }
     },
     "forms": {
       "type": "array",
-      "minItems": 2,
+      "minItems": 1,
       "maxItems": 2,
-      "items": { "$ref": "#/$defs/form" }
+      "items": {
+        "$ref": "#/$defs/form"
+      }
+    },
+    "stimulus_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "assigned_reviewer_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "collection_authorized": {
+      "type": "boolean"
     }
   },
   "$defs": {
-    "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
     "pair": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["pair_id", "scenario_id", "category", "difficulty", "scoring_mode", "prompt", "rubric", "responses"],
+      "required": [
+        "pair_id",
+        "scenario_id",
+        "category",
+        "difficulty",
+        "scoring_mode",
+        "prompt",
+        "rubric",
+        "responses"
+      ],
       "properties": {
-        "pair_id": { "$ref": "#/$defs/hash" },
-        "scenario_id": { "type": "string" },
-        "category": { "enum": ["reasoning", "coding", "instruction_following", "structured_output", "factual_synthesis", "safety"] },
-        "difficulty": { "enum": ["easy", "medium", "hard"] },
-        "scoring_mode": { "enum": ["objective", "rubric"] },
-        "prompt": { "type": "string", "minLength": 1 },
-        "rubric": { "type": "string", "minLength": 1 },
+        "pair_id": {
+          "$ref": "#/$defs/hash"
+        },
+        "scenario_id": {
+          "type": "string"
+        },
+        "category": {
+          "enum": [
+            "reasoning",
+            "coding",
+            "instruction_following",
+            "structured_output",
+            "factual_synthesis",
+            "safety"
+          ]
+        },
+        "difficulty": {
+          "enum": [
+            "easy",
+            "medium",
+            "hard"
+          ]
+        },
+        "scoring_mode": {
+          "enum": [
+            "objective",
+            "rubric"
+          ]
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rubric": {
+          "type": "string",
+          "minLength": 1
+        },
         "responses": {
           "type": "array",
           "minItems": 2,
@@ -76,10 +188,18 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["response_id", "text"],
+            "required": [
+              "response_id",
+              "text"
+            ],
             "properties": {
-              "response_id": { "$ref": "#/$defs/hash" },
-              "text": { "type": "string", "minLength": 1 }
+              "response_id": {
+                "$ref": "#/$defs/hash"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         }
@@ -88,26 +208,94 @@
     "form": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["form_id", "assignments"],
+      "required": [
+        "form_id",
+        "assignments"
+      ],
       "properties": {
-        "form_id": { "enum": ["form-a", "form-b"] },
+        "form_id": {
+          "enum": [
+            "form-a",
+            "form-b"
+          ]
+        },
         "assignments": {
           "type": "array",
           "minItems": 1,
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["assignment_id", "position", "pair_id", "left_response_id", "right_response_id"],
+            "required": [
+              "assignment_id",
+              "position",
+              "pair_id",
+              "left_response_id",
+              "right_response_id"
+            ],
             "properties": {
-              "assignment_id": { "$ref": "#/$defs/hash" },
-              "position": { "type": "integer", "minimum": 1 },
-              "pair_id": { "$ref": "#/$defs/hash" },
-              "left_response_id": { "$ref": "#/$defs/hash" },
-              "right_response_id": { "$ref": "#/$defs/hash" }
+              "assignment_id": {
+                "$ref": "#/$defs/hash"
+              },
+              "position": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "pair_id": {
+                "$ref": "#/$defs/hash"
+              },
+              "left_response_id": {
+                "$ref": "#/$defs/hash"
+              },
+              "right_response_id": {
+                "$ref": "#/$defs/hash"
+              }
             }
           }
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "session_type": {
+            "const": "primary_collection"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "stimulus_sha256",
+          "assigned_reviewer_sha256",
+          "collection_authorized"
+        ],
+        "properties": {
+          "packet_version": {
+            "const": "0.3.0"
+          },
+          "form_selector": {
+            "const": "assigned-slot-v1"
+          },
+          "forms": {
+            "maxItems": 1,
+            "items": {
+              "properties": {
+                "form_id": {
+                  "const": "form-a"
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "forms": {
+            "minItems": 2
+          }
+        }
+      }
+    }
+  ]
 }

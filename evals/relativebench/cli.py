@@ -116,6 +116,7 @@ def main():
     verify_primary.add_argument('packet')
     verify_primary.add_argument('session')
     verify_primary.add_argument('--require-complete', action='store_true')
+    verify_primary.add_argument('--receipt', required=True, help='Privately retained freeze-time receipt, not supplied by the rater.')
 
     arguments = parser.parse_args()
     if arguments.command == "validate-pilot":
@@ -206,6 +207,7 @@ def main():
             arguments.packet,
             arguments.session,
             require_complete=arguments.require_complete,
+            **({'receipt_path': arguments.receipt} if arguments.command == 'verify-primary-session' else {}),
         )
     else:
         records = read_jsonl(arguments.input)

@@ -2,12 +2,15 @@
 
 import json
 import os
+import platform
+import subprocess
 import time
 from importlib.metadata import version
 from pathlib import Path
 
 from .base import GenerationResult
 from ..artifacts import sha256_file
+from ..execution_identity import validate_fingerprint
 
 
 RUNTIME_PACKAGES = ('torch', 'transformers', 'tokenizers', 'safetensors', 'huggingface-hub')
@@ -65,6 +68,25 @@ class Bf16Adapter:
         if torch.cuda.get_device_properties(0).total_memory < 32 * 1024**3:
             raise ValueError('Primary host needs at least 32 GiB GPU memory; profile peak usage before collection.')
         torch.use_deterministic_algorithms(True)
+        driver = subprocess.run(['nvidia-smi', '--query-gpu=driver_version', '--format=csv,noheader'],
+                                check=True, capture_output=True, text=True).stdout.strip()
+        self.execution_fingerprint = {
+            'version': 'bf16-execution-v1', 'weight_format': 'bfloat16',
+            'adapter_code_sha256': sha256_file(__file__),
+            'runtime': self.runtime, 'snapshot': self.metadata,
+            'context_limit': context_limit, 'attention_implementation': 'eager',
+            'environment': {'python': platform.python_version(), 'platform': platform.platform(),
+                            'cuda': torch.version.cuda, 'driver': driver,
+                            'gpu': torch.cuda.get_device_name(0),
+                            'gpu_memory': torch.cuda.get_device_properties(0).total_memory,
+                            'gpu_capability': list(torch.cuda.get_device_capability(0)),
+                            'cublas_workspace_config': os.environ['CUBLAS_WORKSPACE_CONFIG'],
+                            'deterministic_algorithms': torch.are_deterministic_algorithms_enabled(),
+                            'matmul_allow_tf32': torch.backends.cuda.matmul.allow_tf32,
+                            'cudnn_allow_tf32': torch.backends.cudnn.allow_tf32,
+                            'cudnn_benchmark': torch.backends.cudnn.benchmark},
+        }
+        self.execution_fingerprint_sha256 = validate_fingerprint(self.execution_fingerprint)
         self.torch = torch
         self.tokenizer = AutoTokenizer.from_pretrained(directory, local_files_only=True, trust_remote_code=False)
         self.model = AutoModelForCausalLM.from_pretrained(
@@ -103,6 +125,8 @@ class Bf16Adapter:
                                 input_tokens=input_tokens, output_tokens=len(tokens),
                                 latency_ms=(time.perf_counter() - started) * 1000,
                                 metadata={'weight_format': 'bfloat16', 'runtime': self.runtime,
+                                          'execution_fingerprint': self.execution_fingerprint,
+                                          'execution_fingerprint_sha256': self.execution_fingerprint_sha256,
                                           'snapshot_sha256': self.metadata['files'],
                                           'attention_implementation': 'eager',
                                           'finish_reason': 'length' if len(tokens) == request.max_new_tokens else 'stop'})

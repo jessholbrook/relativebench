@@ -60,9 +60,22 @@ class CollectionTests(unittest.TestCase):
 
     def test_critical_regressions_and_missing_scores_block_clearance(self):
         row = {'scenario_id': 's', 'seed': 11, 'previous_pass': True, 'new_pass': False}
-        self.assertFalse(audit_critical_tasks([row], ['s'])['clear'])
-        self.assertFalse(audit_critical_tasks([], ['s'])['clear'])
-        self.assertTrue(audit_critical_tasks([{**row, 'new_pass': True}], ['s'])['clear'])
+        self.assertFalse(audit_critical_tasks([row], ['s'], expected_seeds=[11])['clear'])
+        self.assertFalse(audit_critical_tasks([], ['s'], expected_seeds=[11])['clear'])
+        self.assertTrue(audit_critical_tasks([{**row, 'new_pass': True}], ['s'], expected_seeds=[11])['clear'])
+        partial = audit_critical_tasks([{**row, 'new_pass': True}], ['s'], expected_seeds=[11, 29, 47])
+        self.assertFalse(partial['clear'])
+        self.assertEqual([r['seed'] for r in partial['missing_critical_pairs']], [29, 47])
+
+    def test_missing_whole_category_does_not_redefine_target(self):
+        self.assignments[1]['category'] = 'b'
+        result = prepare_collection(self.assignments, self.records[:1])
+        self.assertIsNone(result['observed_only'])
+        self.assertIn('b', result['unavailable_reason'])
+        self.assertEqual(result['planned_categories'], ['a', 'b'])
+        self.assertEqual(result['all_planned_rating_bounds'], {
+            'lower': -75, 'upper': 25,
+            'interpretation': 'Worst-case sensitivity bounds, NOT an imputation, confidence interval, or repaired estimate.'})
 
     def test_private_keys_cannot_target_public_or_tracked_data(self):
         root = Path(__file__).resolve().parents[2]

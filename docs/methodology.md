@@ -135,7 +135,13 @@ The headline ΔE for a release transition uses the incumbent cohort. Exposure is
 6. Collect optional reason tags only after the primary judgment.
 7. Record timing, order, display characteristics, and evaluator cohort.
 
-The protocol preserves ties. It does not ask which prose is preferable when an objective scoring rule fully resolves the task.
+The protocol preserves ties. Objective correctness and perceived preference are
+separate measurements: a preference must never be used as an objective pass/fail
+score. The candidate rater asks for perceived usefulness even on objective tasks,
+with indistinguishable available when there is no meaningful difference. This
+clarification and the [candidate correctness rules](objective-scoring.md) require
+explicit protocol review before primary collection; they do not retroactively
+validate existing rehearsal ratings.
 
 ## 7. Scenario sampling
 

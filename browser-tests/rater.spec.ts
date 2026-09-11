@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { stimulusDigest } from '../lib/rating-packet-identity';
 
 const sourcePacket = JSON.parse(await readFile(new URL('../public/rating/internal-rating-packet.json', import.meta.url), 'utf8'));
 const packet = {
@@ -220,6 +221,7 @@ test('assigned packet requires explicit activation and matching code, not hash p
   const assigned = { ...packet, session_type: 'primary_collection', collection_authorized: false,
     form_selector: 'assigned-slot-v1', assigned_reviewer_sha256: createHash('sha256').update(code).digest('hex'),
     forms: [packet.forms[0]] };
+  assigned.stimulus_sha256 = await stimulusDigest(assigned);
   await page.route('**/rating/internal-rating-packet.json', route => route.fulfill({ json: assigned }));
   await page.goto('/rate');
   await expect(page.getByText('This assigned session is not open for collection yet.')).toBeVisible();
@@ -233,6 +235,54 @@ test('assigned packet requires explicit activation and matching code, not hash p
   await expect(page.getByText('form-a', { exact: true })).toBeVisible();
   await choosePair(page);
   await expect.poll(async () => (await storage(page))?.currentIndex).toBe(1);
+});
+
+test('Back and reopen retain first-pass scores; corrections and stimuli survive export', async ({ page }) => {
+  await enter(page);
+  await page.keyboard.press('1');
+  await expect(page.getByText('Score the right response', { exact: true })).toBeVisible();
+  await page.keyboard.press('3');
+  await page.keyboard.press('b');
+  await page.keyboard.press('b');
+  await expect(page.getByText('Score the left response', { exact: true })).toBeVisible();
+  await page.keyboard.press('3');
+  await page.keyboard.press('2');
+  await page.keyboard.press('4');
+  const first = (await storage(page)).judgments[0];
+  expect(first.pointwise_left).toBe('fails');
+  expect(first.pointwise_right).toBe('meets');
+  expect(first.assessment_history.final_left).toBe('meets');
+  expect(first.assessment_history.final_right).toBe('partially_meets');
+  expect(first.assessment_history.revisions).toHaveLength(2);
+  await page.keyboard.press('b');
+  await page.keyboard.press('b');
+  await page.keyboard.press('1');
+  await page.keyboard.press('3');
+  const revised = (await storage(page)).judgments[0];
+  expect(revised.pointwise_right).toBe('meets');
+  expect(revised.assessment_history.final_right).toBe('fails');
+  expect(revised.assessment_history.revisions).toHaveLength(3);
+  const downloadEvent = page.waitForEvent('download');
+  await page.keyboard.press('e');
+  const payload = JSON.parse(await readFile((await (await downloadEvent).path())!, 'utf8'));
+  expect(payload.stimulus_sha256).toBe(await stimulusDigest(packet));
+  expect(payload.judgments[0].assessment_history).toEqual(revised.assessment_history);
+});
+
+test('multiline references preserve whitespace and changed text cannot restore old progress', async ({ page }) => {
+  const changed = structuredClone(packet);
+  for (const pair of changed.pairs) pair.rubric = 'line one\nline two\n  indented';
+  await page.route('**/rating/internal-rating-packet.json', route => route.fulfill({ json: changed }));
+  await enter(page);
+  await expect(page.getByTestId('rating-rubric')).toHaveCSS('white-space', 'pre-wrap');
+  expect(await page.getByTestId('rating-rubric').textContent()).toBe('line one\nline two\n  indented');
+  const saved = await storage(page);
+  changed.pairs[0].responses[0].text += '\nA different response';
+  await page.reload();
+  await page.getByLabel('Reviewer code').fill(codeFor('form-a'));
+  await page.getByRole('button', { name: /Enter rating workspace/ }).click();
+  await expect(page.getByText(/cannot be safely resumed/)).toBeVisible();
+  expect(await storage(page)).toEqual(saved);
 });
 
 for (const width of [390, 1440]) {

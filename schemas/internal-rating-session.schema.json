@@ -1,40 +1,275 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://relativebench.org/schemas/internal-rating-session.schema.json",
-  "title": "RelativeBench internal blinded rating session export",
+  "title": "RelativeBench blinded rating session export (legacy rehearsal and content-bound v0.2)",
   "type": "object",
   "additionalProperties": false,
-  "required": ["session_version", "session_type", "packet_id", "form_id", "reviewer_code_sha256", "started_at", "exported_at", "completed_assignment_count", "judgments"],
+  "required": [
+    "session_version",
+    "session_type",
+    "packet_id",
+    "form_id",
+    "reviewer_code_sha256",
+    "started_at",
+    "exported_at",
+    "completed_assignment_count",
+    "judgments"
+  ],
   "properties": {
-    "session_version": { "type": "string" },
-    "session_type": { "const": "internal_interface_pilot" },
-    "packet_id": { "$ref": "#/$defs/hash" },
-    "form_id": { "enum": ["form-a", "form-b"] },
-    "reviewer_code_sha256": { "$ref": "#/$defs/hash" },
-    "started_at": { "type": "string", "format": "date-time" },
-    "exported_at": { "type": "string", "format": "date-time" },
-    "completed_assignment_count": { "type": "integer", "minimum": 0 },
+    "session_version": {
+      "enum": [
+        "0.1.0",
+        "0.2.0"
+      ]
+    },
+    "session_type": {
+      "enum": [
+        "internal_interface_pilot",
+        "primary_collection"
+      ]
+    },
+    "packet_id": {
+      "$ref": "#/$defs/hash"
+    },
+    "form_id": {
+      "enum": [
+        "form-a",
+        "form-b"
+      ]
+    },
+    "reviewer_code_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "exported_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_assignment_count": {
+      "type": "integer",
+      "minimum": 0
+    },
     "judgments": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["assignment_id", "pair_id", "scenario_id", "category", "pointwise_left", "pointwise_right", "side_preference", "reason_tags", "duration_ms"],
+        "required": [
+          "assignment_id",
+          "pair_id",
+          "scenario_id",
+          "category",
+          "pointwise_left",
+          "pointwise_right",
+          "side_preference",
+          "reason_tags",
+          "duration_ms"
+        ],
         "properties": {
-          "assignment_id": { "$ref": "#/$defs/hash" },
-          "pair_id": { "$ref": "#/$defs/hash" },
-          "scenario_id": { "type": "string" },
-          "category": { "type": "string" },
-          "pointwise_left": { "enum": ["fails", "partially_meets", "meets"] },
-          "pointwise_right": { "enum": ["fails", "partially_meets", "meets"] },
-          "side_preference": { "type": "integer", "minimum": -2, "maximum": 2 },
-          "reason_tags": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-          "duration_ms": { "type": "number", "minimum": 0 }
+          "assignment_id": {
+            "$ref": "#/$defs/hash"
+          },
+          "pair_id": {
+            "$ref": "#/$defs/hash"
+          },
+          "scenario_id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "pointwise_left": {
+            "enum": [
+              "fails",
+              "partially_meets",
+              "meets"
+            ]
+          },
+          "pointwise_right": {
+            "enum": [
+              "fails",
+              "partially_meets",
+              "meets"
+            ]
+          },
+          "side_preference": {
+            "type": "integer",
+            "minimum": -2,
+            "maximum": 2
+          },
+          "reason_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "duration_ms": {
+            "type": "number",
+            "minimum": 0
+          },
+          "left_response_id": {
+            "$ref": "#/$defs/hash"
+          },
+          "right_response_id": {
+            "$ref": "#/$defs/hash"
+          },
+          "assessment_history": {
+            "$ref": "#/$defs/assessment"
+          }
         }
+      }
+    },
+    "stimulus_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "assessment_history": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/assessment"
       }
     }
   },
   "$defs": {
-    "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
-  }
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "left",
+        "right",
+        "final_left",
+        "final_right",
+        "revisions"
+      ],
+      "properties": {
+        "left": {
+          "enum": [
+            "fails",
+            "partially_meets",
+            "meets",
+            null
+          ]
+        },
+        "right": {
+          "enum": [
+            "fails",
+            "partially_meets",
+            "meets",
+            null
+          ]
+        },
+        "final_left": {
+          "enum": [
+            "fails",
+            "partially_meets",
+            "meets",
+            null
+          ]
+        },
+        "final_right": {
+          "enum": [
+            "fails",
+            "partially_meets",
+            "meets",
+            null
+          ]
+        },
+        "revisions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "side",
+              "from",
+              "to",
+              "exposure"
+            ],
+            "properties": {
+              "side": {
+                "enum": [
+                  "left",
+                  "right"
+                ]
+              },
+              "from": {
+                "enum": [
+                  "fails",
+                  "partially_meets",
+                  "meets"
+                ]
+              },
+              "to": {
+                "enum": [
+                  "fails",
+                  "partially_meets",
+                  "meets"
+                ]
+              },
+              "exposure": {
+                "enum": [
+                  "right_seen",
+                  "pair_seen"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "session_version": {
+            "const": "0.2.0"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "stimulus_sha256",
+          "assessment_history"
+        ],
+        "properties": {
+          "judgments": {
+            "items": {
+              "required": [
+                "left_response_id",
+                "right_response_id",
+                "assessment_history"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "session_type": {
+            "const": "primary_collection"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "session_version": {
+            "const": "0.2.0"
+          },
+          "form_id": {
+            "const": "form-a"
+          }
+        }
+      }
+    }
+  ]
 }

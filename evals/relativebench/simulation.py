@@ -36,6 +36,15 @@ def matrix_estimates(values, observed, categories, scenario_counts, evaluator_co
 
 
 def interval(values, observed, categories, replicates, rng):
+    # Match production: resample observed scenario/evaluator clusters, not empty
+    # planned clusters. Still require every planned category to be represented.
+    active_scenarios = observed.sum(axis=1) > 0
+    active_people = observed.sum(axis=0) > 0
+    if set(categories[active_scenarios]) != set(categories):
+        raise ValueError('No support in a planned category.')
+    values = values[active_scenarios][:, active_people]
+    observed = observed[active_scenarios][:, active_people]
+    categories = categories[active_scenarios]
     estimates = []
     attempts = 0
     rejected = 0
@@ -67,26 +76,33 @@ def true_delta(shift, scenario_sd, evaluator_sd, noise_sd):
 def summarize_trials(trials, truth):
     total = len(trials)
     successful = [row for row in trials if 'lower' in row]
-    if not successful:
-        raise ValueError('No successful trials.')
-    coverage = sum(row['lower'] <= truth <= row['upper'] for row in successful) / len(successful)
-    upgrade = sum(row['lower'] > 5 for row in successful) / len(successful)
-    regression = sum(row['upper'] < -5 for row in successful) / len(successful)
+    if not total:
+        raise ValueError('At least one attempted trial is required.')
+    n = len(successful)
+    covered = sum(row['lower'] <= truth <= row['upper'] for row in successful)
+    coverage = covered / n if n else None
+    upgrade = sum(row['lower'] > 5 for row in successful) / total
+    regression = sum(row['upper'] < -5 for row in successful) / total
     widths = [row['upper'] - row['lower'] for row in successful]
     return {
         'trials': total, 'successful_trials': len(successful), 'failed_trials': total - len(successful),
-        'coverage': coverage, 'coverage_mcse': math.sqrt(coverage * (1 - coverage) / len(successful)),
-        'coverage_wilson_95': wilson(sum(row['lower'] <= truth <= row['upper'] for row in successful), len(successful)),
-        'bias': float(np.mean([row['estimate'] - truth for row in successful])),
-        'mean_width': float(np.mean(widths)), 'width_p90': float(np.quantile(widths, .9)),
+        'coverage': coverage, 'coverage_denominator': n,
+        'coverage_interpretation': 'Conditional on successful intervals; failures are reported separately.',
+        'coverage_mcse': math.sqrt(coverage * (1 - coverage) / n) if n else None,
+        'coverage_wilson_95': wilson(covered, n),
+        'bias': float(np.mean([row['estimate'] - truth for row in successful])) if n else None,
+        'mean_width': float(np.mean(widths)) if n else None, 'width_p90': float(np.quantile(widths, .9)) if n else None,
         'upgrade_rate_at_provisional_5': upgrade, 'regression_rate_at_provisional_minus5': regression,
-        'upgrade_mcse': math.sqrt(upgrade * (1 - upgrade) / len(successful)),
-        'sidegrade_rate': sum(row['lower'] >= -5 and row['upper'] <= 5 for row in successful) / len(successful),
+        'decision_rate_denominator': total,
+        'upgrade_mcse': math.sqrt(upgrade * (1 - upgrade) / total),
+        'sidegrade_rate': sum(row['lower'] >= -5 and row['upper'] <= 5 for row in successful) / total,
         'rejected_draws': sum(row.get('rejected_draws', 0) for row in successful),
     }
 
 
 def wilson(successes, n):
+    if n == 0:
+        return None
     z = 1.959963984540054
     p = successes / n
     center = (p + z*z/(2*n)) / (1 + z*z/n)

@@ -9,10 +9,12 @@ from math import isfinite
 from .inference import weighted_experience
 
 
-def audit_critical_tasks(scored_pairs, critical_ids):
+def audit_critical_tasks(scored_pairs, critical_ids, *, expected_seeds):
     """A zero-tolerance candidate guardrail; never selected from favorable outcomes."""
     if not critical_ids or len(set(critical_ids)) != len(critical_ids):
         raise ValueError('Freeze a nonempty, unique critical-task list before scoring.')
+    if not expected_seeds or len(set(expected_seeds)) != len(expected_seeds) or any(type(seed) is not int for seed in expected_seeds):
+        raise ValueError('Freeze a nonempty, unique integer seed list before scoring.')
     failures = []
     seen = set()
     errors = []
@@ -21,13 +23,17 @@ def audit_critical_tasks(scored_pairs, critical_ids):
         if key in seen:
             errors.append('Duplicate scored scenario/seed.')
         seen.add(key)
+        if type(row.get('seed')) is not int or row['seed'] not in expected_seeds:
+            errors.append('Scored seed is not in the frozen seed list.')
         if type(row.get('previous_pass')) is not bool or type(row.get('new_pass')) is not bool:
             errors.append('Scored outcomes must be booleans, not missing values.')
         elif row.get('scenario_id') in critical_ids and row['previous_pass'] and not row['new_pass']:
             failures.append({'scenario_id': row['scenario_id'], 'seed': row.get('seed')})
     missing = sorted(set(critical_ids) - {row.get('scenario_id') for row in scored_pairs})
-    return {'clear': not errors and not failures and not missing, 'errors': errors,
+    missing_pairs = sorted({(task, seed) for task in critical_ids for seed in expected_seeds} - seen)
+    return {'clear': not errors and not failures and not missing_pairs, 'errors': errors,
             'negative_flips': failures, 'missing_critical_tasks': missing,
+            'missing_critical_pairs': [{'scenario_id': task, 'seed': seed} for task, seed in missing_pairs],
             'note': 'Must also verify full artifact/seed completeness; a clear guardrail is not publication approval.'}
 
 
@@ -85,13 +91,18 @@ def prepare_collection(assignments, records, *, minimum_reading_ms=0):
             missing_by_category[base['category']] += 1
             low.append({**base, 'rating': -2})
             high.append({**base, 'rating': 2})
+    planned_categories = sorted({row['category'] for row in assignments})
+    observed_categories = sorted({row['category'] for row in retained})
+    absent_categories = sorted(set(planned_categories) - set(observed_categories))
     return {
         'publication_eligible': False,
         'raw_record_count': len(records), 'planned_judgment_count': len(expected),
         'included_count': len(retained), 'missing_or_excluded_count': len(missing),
         'missing_by_category': dict(missing_by_category), 'exclusion_reason_counts': dict(reasons),
         'decisions': decisions, 'analysis_judgments': retained,
-        'observed_only': weighted_experience(retained) if retained else None,
+        'observed_only': weighted_experience(retained) if retained and not absent_categories else None,
+        'planned_categories': planned_categories, 'observed_categories': observed_categories,
+        'unavailable_reason': 'No retained ratings for planned categories: ' + ', '.join(absent_categories) if absent_categories else None,
         'all_planned_rating_bounds': {
             'lower': weighted_experience(low)['experience_delta'],
             'upper': weighted_experience(high)['experience_delta'],

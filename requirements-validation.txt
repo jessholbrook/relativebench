@@ -1,2 +1,3 @@
 # Optional numerical simulation/test environment, separate from inference runtimes.
 numpy==2.4.3
+PyYAML==6.0.3

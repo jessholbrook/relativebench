@@ -1,0 +1,72 @@
+{
+  "$schema": "../../../schemas/pilot.schema.json",
+  "schema_version": "0.1.0",
+  "protocol_version": "0.1.0",
+  "pilot_id": "qwen2.5-7b-instruct-to-qwen3-8b-v0.2",
+  "status": "candidate",
+  "transition_id": "qwen/qwen2.5-7b-instruct-to-qwen3-8b",
+  "scenario_manifest": "pilot-scenarios-0.3.0.json",
+  "objective_rules": "objective-rules-0.1.0.json",
+  "models": {
+    "previous": {
+      "id": "qwen/qwen2.5-7b-instruct",
+      "repository": "Qwen/Qwen2.5-7B-Instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28"
+    },
+    "new": {
+      "id": "qwen/qwen3-8b",
+      "repository": "Qwen/Qwen3-8B",
+      "revision": "b968826d9c46dd6066d109eabc6255188de91218"
+    }
+  },
+  "execution_profiles": [
+    {
+      "id": "frozen-non-thinking-v1",
+      "condition": "frozen",
+      "system_instruction": "You are a helpful assistant. Follow the user's instructions exactly.",
+      "context_limit": 32768,
+      "max_new_tokens": 1024,
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0,
+      "seeds": [
+        11,
+        29,
+        47
+      ],
+      "model_options": {
+        "qwen/qwen3-8b": {
+          "enable_thinking": false
+        }
+      }
+    },
+    {
+      "id": "adapted-thinking-v1",
+      "condition": "adapted",
+      "system_instruction": "You are a helpful assistant. Follow the user's instructions exactly.",
+      "context_limit": 32768,
+      "max_new_tokens": 4096,
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0,
+      "seeds": [
+        11,
+        29,
+        47
+      ],
+      "model_options": {
+        "qwen/qwen3-8b": {
+          "enable_thinking": true
+        }
+      }
+    }
+  ],
+  "targets": {
+    "categories": 6,
+    "scenarios_per_category": 20,
+    "judgments_per_response_pair": 5,
+    "minimum_incumbent_evaluators": 40
+  }
+}

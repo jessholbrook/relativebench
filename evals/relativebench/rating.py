@@ -257,6 +257,10 @@ def verify_rating_packet(packet_path, key_path=None):
     packet = json.loads(packet_path.read_text())
     errors = []
     warnings = []
+    from .packet_identity import validate_packet_structure
+    errors.extend(validate_packet_structure(packet))
+    if errors:
+        return {'valid': False, 'errors': errors, 'warnings': warnings, 'packet_id': packet.get('packet_id')}
     forbidden = sorted(set(_walk_field_names(packet)) & FORBIDDEN_PUBLIC_FIELDS)
     if forbidden:
         errors.append("Public packet contains forbidden fields: " + ", ".join(forbidden))
@@ -357,17 +361,28 @@ def verify_internal_session(packet_path, session_path, require_complete=False):
     return _verify_session(packet_path, session_path, require_complete, primary=False)
 
 
-def verify_primary_session(packet_path, session_path, require_complete=False):
-    return _verify_session(packet_path, session_path, require_complete, primary=True)
+def verify_primary_session(packet_path, session_path, require_complete=False, *, receipt_path=None):
+    return _verify_session(packet_path, session_path, require_complete, primary=True, receipt_path=receipt_path)
 
 
-def _verify_session(packet_path, session_path, require_complete=False, primary=False):
+def _verify_session(packet_path, session_path, require_complete=False, primary=False, receipt_path=None):
     """Validate a blinded session export without unblinding or aggregating preferences."""
     packet = json.loads(Path(packet_path).read_text())
     session_path = Path(session_path)
     session = json.loads(session_path.read_text())
     errors = []
     warnings = []
+    from .packet_identity import stimulus_digest, validate_packet_structure
+    errors.extend(validate_packet_structure(packet))
+    if errors:
+        return {'valid': False, 'complete': False, 'errors': errors, 'warnings': warnings,
+                'aggregate_preference_calculated': False}
+    bound = primary or session.get('session_version') == '0.2.0'
+    digest = stimulus_digest(packet)
+    if bound and session.get('stimulus_sha256') != digest:
+        errors.append('Session stimulus/presentation hash does not match the packet.')
+    if not bound:
+        warnings.append('Legacy rehearsal export is not bound to exact stimuli; not eligible for primary analysis.')
     forbidden = sorted(set(_walk_field_names(session)) & FORBIDDEN_PUBLIC_FIELDS)
     if forbidden:
         errors.append("Session contains forbidden identity fields: " + ", ".join(forbidden))
@@ -380,6 +395,15 @@ def _verify_session(packet_path, session_path, require_complete=False, primary=F
     if not isinstance(reviewer_hash, str) or not re.fullmatch('[0-9a-f]{64}', reviewer_hash):
         errors.append("Session reviewer_code_sha256 must be a 64-character hash.")
     if primary:
+        if packet.get('stimulus_sha256') != digest or session.get('session_version') != '0.2.0':
+            errors.append('Primary collection requires a current content-bound packet and export.')
+        if receipt_path is None:
+            errors.append('Primary verification requires the privately retained freeze-time receipt.')
+        else:
+            receipt = json.loads(Path(receipt_path).read_text())
+            ids = [row['assignment_id'] for row in packet['forms'][0]['assignments']]
+            if receipt.get('packet_id') != packet.get('packet_id') or receipt.get('stimulus_sha256') != digest or receipt.get('assignment_ids') != ids:
+                errors.append('Packet differs from its independently retained freeze-time receipt.')
         if packet.get('collection_authorized') is not True:
             errors.append('Primary packet has not been authorized for collection.')
         if packet.get('form_selector') != 'assigned-slot-v1' or session.get('form_id') != 'form-a':
@@ -399,6 +423,13 @@ def _verify_session(packet_path, session_path, require_complete=False, primary=F
             item["assignment_id"]: item for item in form.get("assignments", [])
         }
     pair_by_id = {item["pair_id"]: item for item in packet.get("pairs", [])}
+
+    if bound:
+        from .rating_history import validate_assessment
+        histories = session.get('assessment_history')
+        if not isinstance(histories, dict) or not all(key in assignments and validate_assessment(value) for key, value in histories.items()):
+            errors.append('Session assessment history is missing or inconsistent with its assignments.')
+            histories = {}
 
     judgments = session.get("judgments")
     if not isinstance(judgments, list):
@@ -423,12 +454,25 @@ def _verify_session(packet_path, session_path, require_complete=False, primary=F
             "scenario_id": pair.get("scenario_id"),
             "category": pair.get("category"),
         }
+        if bound:
+            expected.update({key: assignment[key] for key in ('left_response_id', 'right_response_id')})
         for field, value in expected.items():
             if judgment.get(field) != value:
                 errors.append(f"{label} has mismatched {field}.")
         for field in ("pointwise_left", "pointwise_right"):
             if judgment.get(field) not in valid_pointwise:
                 errors.append(f"{label} has invalid {field}.")
+        if bound:
+            from .rating_history import validate_assessment
+            history = judgment.get('assessment_history')
+            if not validate_assessment(history, complete=True):
+                errors.append(f'{label} has invalid first-pass/revision history.')
+            else:
+                if histories.get(assignment_id) != history:
+                    errors.append(f'{label} differs from the session assessment history.')
+                for side in ('left', 'right'):
+                    if judgment.get(f'pointwise_{side}') != history[side]:
+                        errors.append(f'{label} first-pass score was overwritten.')
         preference = judgment.get("side_preference")
         if type(preference) is not int or preference not in {-2, -1, 0, 1, 2}:
             errors.append(f"{label} has invalid side_preference.")
@@ -449,7 +493,7 @@ def _verify_session(packet_path, session_path, require_complete=False, primary=F
     return {
         "verification_version": "0.1.0",
         "valid": not errors,
-        "complete": missing_count == 0 and len(judgments) == len(assignments),
+        "complete": not errors and bool(assignments) and missing_count == 0 and len(judgments) == len(assignments),
         "errors": errors,
         "warnings": warnings,
         "packet_id": packet.get("packet_id"),

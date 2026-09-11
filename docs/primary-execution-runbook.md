@@ -65,7 +65,7 @@ without PyTorch; this does not demonstrate GPU compatibility or exact replay.
 
    ```bash
    PYTHONPATH=evals python -m relativebench bf16-run \
-     data/pilots/qwen2.5-to-qwen3/pilot.json --model-role previous \
+     data/pilots/qwen2.5-to-qwen3/primary-candidate.json --model-role previous \
      --model-dir /approved-storage/qwen-previous \
      --runtime-lock /approved-storage/qwen-previous.runtime-lock.json \
      --activation /approved-private/activation.json \
@@ -91,7 +91,10 @@ without PyTorch; this does not demonstrate GPU compatibility or exact replay.
    delivery. Only after all collection approvals may reviewed copies be activated
    and delivered through approved participant access. The rater supports fixed
    assigned forms and code binding, and refuses inactive packets. Verify returned
-   exports with `verify-primary-session PACKET SESSION --require-complete`.
+   exports with `verify-primary-session PACKET SESSION --receipt PRIVATE_RECEIPT --require-complete`.
+   Keep the generator's `private-receipt-*.json` records independently of rater
+   uploads. They bind the exact stimulus digest and frozen assignment list;
+   never reconstruct a trusted receipt from a returned packet.
    The current two mirrored full forms and `internal_interface_pilot` exports must
    not be relabeled as primary. Client-side code binding is not authentication;
    use approved site access controls, private delivery, and offline verification.

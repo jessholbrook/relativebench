@@ -51,13 +51,16 @@ def primary_plan(pilot_path):
                            'sample_size_decision_after_simulations', 'bf16_host_and_locked_runtime_verified',
                            'independent_smoke_replay', 'primary_packet_delivery_review'],
     }
+    if pilot.get('objective_rules'):
+        plan['objective_rules_sha256'] = sha256_file(Path(pilot_path).parent / pilot['objective_rules'])
+        plan['blocking_gates'].append('objective_correctness_and_preference_separation_review')
     plan['plan_sha256'] = sha256_value(plan)
     return plan
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--pilot', default='data/pilots/qwen2.5-to-qwen3/pilot.json')
+    parser.add_argument('--pilot', default='data/pilots/qwen2.5-to-qwen3/primary-candidate.json')
     parser.add_argument('--output', required=True)
     args = parser.parse_args()
     if Path(args.output).exists():

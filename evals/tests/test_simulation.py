@@ -15,6 +15,29 @@ from relativebench.metrics import summarize_experience
 
 @unittest.skipIf(np is None, 'Install requirements-validation.txt for simulation tests.')
 class SimulationTests(unittest.TestCase):
+    def test_whole_cluster_dropout_matches_observed_cluster_universe(self):
+        from relativebench.simulation import interval
+        values = np.array([[2., 0, 0], [0, -1, 0], [0, 0, 0]])
+        observed = np.array([[1., 0, 0], [0, 1, 0], [0, 0, 0]])
+        full = interval(values, observed, np.array(['a'] * 3), 1000, np.random.default_rng(23))
+        trimmed = interval(values[:2, :2], observed[:2, :2], np.array(['a'] * 2), 1000, np.random.default_rng(23))
+        self.assertEqual(full, trimmed)
+        with self.assertRaisesRegex(ValueError, 'planned category'):
+            interval(values, observed, np.array(['a', 'a', 'b']), 100, np.random.default_rng(23))
+
+    def test_failed_trials_remain_in_precision_and_decision_denominators(self):
+        from relativebench.design_study import precision_summary
+        rows = [{'estimate': 10, 'lower': 8, 'upper': 12}] + [{'error': 'unsupported'}] * 9
+        result = precision_summary(rows, 10)
+        self.assertEqual(result['width_at_most_10_rate'], .1)
+        self.assertEqual(result['upgrade_rate_at_provisional_5'], .1)
+        self.assertEqual(result['coverage'], 1)
+        self.assertEqual(result['coverage_denominator'], 1)
+        failed = precision_summary(rows[1:], 10)
+        self.assertEqual(failed['width_at_most_10_rate'], 0)
+        self.assertIsNone(failed['coverage'])
+        self.assertIsNone(failed['mean_half_width'])
+
     def test_vectorized_engine_matches_reference_with_sparse_multiplicities(self):
         from relativebench.simulation import matrix_estimates
         values = np.array([[2., -1, 0], [0, 0, 1], [-2, 0, 2], [1, -2, 0]])
