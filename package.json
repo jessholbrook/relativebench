@@ -12,6 +12,7 @@
     "start": "wrangler dev --config dist/server/wrangler.json",
     "test": "node --experimental-strip-types --test lib/*.test.ts",
     "test:browser": "playwright test",
+    "test:production": "node scripts/smoke-production.mjs",
     "typecheck": "tsc --noEmit",
     "validate:data": "python3 -m unittest discover -s evals/tests -p 'test_*.py'",
     "check": "npm run test && npm run validate:data && npm run typecheck && npm run lint",

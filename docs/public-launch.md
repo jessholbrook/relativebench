@@ -14,6 +14,8 @@ buying a domain, inviting participants, or renting an execution host.
 - Conservative response headers: no MIME sniffing, restricted device permissions,
   and a cross-origin referrer policy. No untested CSP or frame restriction is added:
   the framework uses inline scripts and Sites has its own embedding/access behavior.
+  Headers run through request middleware: a production smoke test found the config-only
+  headers weren't applied by the Worker build. CI now checks the built server too.
 - A prebuild asset allowlist and packet gate. Only the reviewed rehearsal packet
   may ship; primary assignments cannot be added to `public/` unnoticed. This is a
   release tripwire, not authorization or a substitute for reviewing file contents.
@@ -57,7 +59,7 @@ default; unit tests cover the enabled sitemap and robots variants.
 1. Keep the current audience unchanged while preparing the release. Use the existing
    Site project `appgprj_6a9253360b108191ba014a1a87b3c396`; do not create a replacement.
 2. Run `npm ci`, install `requirements-validation.txt`, then run `npm run check`,
-   `npm run build`, and the existing browser suite in an isolated test environment.
+   `npm run build`, `npm run test:production`, and the existing browser suite in an isolated test environment.
    Confirm the full GitHub CI result for the same commit.
 3. Review the built public assets as well as the source allowlist. No primary packets,
    participant exports, reviewer rosters, role keys or credentials may be present.
