@@ -12,6 +12,10 @@ import { ExperienceDelta } from '@/components/experience-delta';
 import { BenchmarkDeltas } from '@/components/benchmark-deltas';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import exampleSnapshot from '@/data/snapshots/example-transition.json';
+import { pageMetadata } from '@/lib/site-metadata';
+
+export const metadata = pageMetadata('/demo', 'Example report | RelativeBench',
+  'Explore an example model-transition report with benchmark changes, task flips, and perceived differences.');
 
 const { experience, compatibility, benchmark_deltas: benchmarkDeltas } = exampleSnapshot;
 

@@ -1,9 +1,7 @@
-import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/site-metadata';
 
-export const metadata: Metadata = {
-  title: 'From benchmark scores to real-world changes | RelativeBench',
-  description: 'How benchmarks turn tasks into scores, why a higher average can hide regressions, and how relative comparisons help explain the experience of switching models.',
-};
+export const metadata = pageMetadata('/guide', 'From benchmark scores to real-world changes | RelativeBench',
+  'How benchmarks turn tasks into scores, why a higher average can hide regressions, and how relative comparisons help explain the experience of switching models.');
 
 const link = 'underline decoration-brand-coral/50 underline-offset-4 hover:decoration-brand-coral';
 const emphasis = 'bg-brand-coral/20 px-1 font-semibold text-[#171715] [box-decoration-break:clone]';

@@ -287,6 +287,7 @@ export default function Home() {
 
         <footer className="mx-auto flex max-w-[1304px] flex-col justify-between gap-5 px-6 py-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6b6761] sm:flex-row sm:px-12 lg:px-16 xl:px-28">
           <span>RelativeBench</span>
+          <a className="text-sm normal-case tracking-normal underline underline-offset-4" href="/privacy">Your data</a>
         </footer>
       </div>
     </main>
