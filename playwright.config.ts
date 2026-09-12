@@ -10,6 +10,7 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   use: { baseURL: 'http://localhost:3100', trace: 'retain-on-failure' },
   webServer: {
+    env: { SITE_ORIGIN: 'https://relativebench.jessh.chatgpt.site', SITE_INDEXABLE: 'false' },
     command: 'npm run dev -- --port 3100',
     url: 'http://localhost:3100/rate',
     reuseExistingServer: false,

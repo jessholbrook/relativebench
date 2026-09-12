@@ -142,7 +142,7 @@ test('storage read failure never starts a writer', async ({ page }) => {
     };
   });
   await enter(page);
-  await expect(page.getByText(/cannot access saved progress/)).toBeVisible();
+  await expect(page.getByText(/can’t access saved progress/)).toBeVisible();
   await expect(page.getByLabel('Reviewer code')).toBeEnabled();
   expect(await page.evaluate(() => Object.keys(localStorage).filter(key => key.startsWith('relativebench:rating:')))).toEqual([]);
 });
@@ -158,7 +158,7 @@ test('corrupt and mismatched progress is retained verbatim', async ({ page }) =>
     await page.reload();
     await page.getByLabel('Reviewer code').fill(codeFor('form-a'));
     await page.getByRole('button', { name: /Enter rating workspace/ }).click();
-    await expect(page.getByText(/cannot be safely resumed/)).toBeVisible();
+    await expect(page.getByText(/can’t be safely resumed/)).toBeVisible();
     expect(await page.evaluate(() => localStorage.getItem(Object.keys(localStorage).find(key => key.startsWith('relativebench:rating:'))!))).toBe(invalid);
   }
 });
@@ -215,6 +215,44 @@ test('real navigation, keyboard expansion, and confirmed fixture reset', async (
   expect(await storage(page)).toBeNull();
 });
 
+test('showcase metadata, crawler defaults, and recovery links are ready for launch', async ({ page, request }) => {
+  for (const path of ['/', '/guide', '/methodology', '/demo', '/rate', '/privacy']) {
+    const response = await page.goto(path);
+    expect(response?.status()).toBe(200);
+    await expect.poll(async () => new URL((await page.locator('link[rel="canonical"]').getAttribute('href')) ?? 'about:blank').href)
+      .toBe(`https://relativebench.jessh.chatgpt.site${path}`);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+    await expect.poll(async () => new URL((await page.locator('meta[property="og:url"]').getAttribute('content')) ?? 'about:blank').href)
+      .toBe(`https://relativebench.jessh.chatgpt.site${path}`);
+    expect(response?.headers()['x-content-type-options']).toBe('nosniff');
+  }
+  const robots = await request.get('/robots.txt');
+  expect(robots.status()).toBe(200);
+  expect(await robots.text()).toBe('User-agent: *\nDisallow: /\n');
+  const sitemap = await request.get('/sitemap.xml');
+  expect(sitemap.status()).toBe(200);
+  expect(sitemap.headers()['content-type']).toContain('application/xml');
+  expect(await sitemap.text()).not.toContain('<loc>');
+  const missing = await page.goto('/not-a-real-page');
+  expect(missing?.status()).toBe(404);
+  await page.getByRole('link', { name: /Back to RelativeBench/ }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await page.getByRole('navigation', { name: 'Site navigation' }).getByRole('link', { name: 'Methodology' }).click();
+  await expect(page).toHaveURL(/\/methodology$/);
+});
+
+test('example session explains local storage and never submits ratings', async ({ page }) => {
+  const writes: string[] = [];
+  page.on('request', request => { if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) writes.push(request.url()); });
+  await enter(page);
+  await choosePair(page);
+  expect(writes).toEqual([]);
+  await page.goto('/rate');
+  await expect(page.getByText(/example session, not a participant study/)).toBeVisible();
+  await page.getByRole('link', { name: 'How your data is handled' }).click();
+  await expect(page).toHaveURL(/\/privacy$/);
+});
+
 test('assigned packet requires explicit activation and matching code, not hash parity', async ({ page }) => {
   // Fabricated two-task fixture in an isolated context, not a study activation.
   const code = codeFor('form-b');
@@ -224,12 +262,12 @@ test('assigned packet requires explicit activation and matching code, not hash p
   assigned.stimulus_sha256 = await stimulusDigest(assigned);
   await page.route('**/rating/internal-rating-packet.json', route => route.fulfill({ json: assigned }));
   await page.goto('/rate');
-  await expect(page.getByText('This assigned session is not open for collection yet.')).toBeVisible();
+  await expect(page.getByText('This assigned session isn’t open for collection yet.')).toBeVisible();
   assigned.collection_authorized = true;
   await page.reload();
   await page.getByLabel('Reviewer code').fill('wrong-test-code');
   await page.getByRole('button', { name: /Enter rating workspace/ }).click();
-  await expect(page.getByText(/does not match the assigned session/)).toBeVisible();
+  await expect(page.getByText(/doesn’t match the assigned session/)).toBeVisible();
   await page.getByLabel('Reviewer code').fill(code);
   await page.getByRole('button', { name: /Enter rating workspace/ }).click();
   await expect(page.getByText('form-a', { exact: true })).toBeVisible();
@@ -281,14 +319,14 @@ test('multiline references preserve whitespace and changed text cannot restore o
   await page.reload();
   await page.getByLabel('Reviewer code').fill(codeFor('form-a'));
   await page.getByRole('button', { name: /Enter rating workspace/ }).click();
-  await expect(page.getByText(/cannot be safely resumed/)).toBeVisible();
+  await expect(page.getByText(/can’t be safely resumed/)).toBeVisible();
   expect(await storage(page)).toEqual(saved);
 });
 
 for (const width of [390, 1440]) {
   test(`routes and active workflow: no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    for (const route of ['/', '/guide', '/demo', '/rate']) {
+    for (const route of ['/', '/guide', '/methodology', '/demo', '/rate', '/privacy']) {
       await page.goto(route);
       await expect(page.locator('main')).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -299,7 +337,7 @@ for (const width of [390, 1440]) {
   });
 }
 
-for (const route of ['/', '/guide', '/demo', '/rate']) {
+for (const route of ['/', '/guide', '/methodology', '/demo', '/rate', '/privacy']) {
   test(`automated WCAG checks: ${route}`, async ({ page }) => {
     await page.goto(route);
     await expect(page.locator('main')).toBeVisible();

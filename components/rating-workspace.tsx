@@ -632,6 +632,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
               <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">
                 Score each response against the rubric before seeing the pair. Model names and which model is the replacement stay hidden.
               </p>
+              {packet.session_type === 'internal_interface_pilot' && <p className="mt-4 text-sm leading-6 text-muted-foreground">This is an example session, not a participant study. Your ratings stay in this browser and aren’t submitted. <a className="underline underline-offset-4" href="/privacy">How your data is handled</a></p>}
               <div className="mt-7 grid gap-3 text-sm text-muted-foreground">
                 <p className="flex gap-3"><EyeOff className="mt-0.5 size-4 shrink-0 text-foreground" /> {packet.session_type === 'primary_collection' ? 'Your task assignments and presentation order are fixed for this study.' : 'Left and right responses are counterbalanced across two forms.'}</p>
                 <p className="flex gap-3"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-foreground" /> Progress stays on this device until you export it.</p>
@@ -653,11 +654,11 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
                   disabled={starting}
                   onChange={(event) => setReviewerCode(event.target.value)}
                   onKeyDown={(event) => { if (event.key === 'Enter') void beginSession(); }}
-                  placeholder="e.g. internal-reviewer-01"
+                  placeholder="e.g. my-example-session"
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                  Only a SHA-256 hash of this code appears in exports.
+                  Use a made-up code, not personal information or a password. Only a SHA-256 hash of this code appears in exports.
                 </p>
                 {notice && <output className="mt-3 block text-sm text-rose-700">{notice}</output>}
                 <ActionButton className="mt-5 w-full" size="lg" aria-keyshortcuts="Enter" onClick={() => void beginSession()} disabled={starting}>

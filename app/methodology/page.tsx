@@ -1,10 +1,8 @@
-import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/site-metadata';
 
 // Content adapted for presentation from docs/methodology.md. Keep protocol changes in sync.
-export const metadata: Metadata = {
-  title: 'Methodology | RelativeBench',
-  description: 'The RelativeBench protocol: model transitions, capability and compatibility changes, Experience Delta, evaluation procedures, and limits.',
-};
+export const metadata = pageMetadata('/methodology', 'Methodology | RelativeBench',
+  'The RelativeBench protocol: model transitions, capability and compatibility changes, Experience Delta, evaluation procedures, and limits.');
 const linkStyle = 'underline decoration-brand-coral/50 underline-offset-4 hover:decoration-brand-coral';
 
 export default function Methodology() {

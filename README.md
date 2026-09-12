@@ -16,14 +16,17 @@ For every transition, RelativeBench reports three separate layers:
 2. **Compatibility delta** — positive and negative flips on identical items.
 3. **Experience Delta (ΔE)** — the direction and magnitude of change perceived by users.
 
-This repository is currently at **Protocol v0.1 / Milestone 4 internal blind-rating workflow**. The reviewed candidate manifest contains 120 scenarios for Qwen2.5-7B-Instruct → Qwen3-8B, both pinned revisions have independently reproduced 4-bit MLX artifacts across the entire corpus, and a counterbalanced owner-only rating workspace is ready for collection QA. The website uses illustrative data until the preregistered pilot is complete.
+The website is being prepared as a **public showcase**, separate from participant collection. It includes the homepage, practical benchmark guide, methodology, example report, and local-only rater experience. The current deployment remains private until explicit launch approval. No human preference results have been collected; the example report and rehearsal ratings aren't published model evidence.
+
+For deployment steps, launch gates, rollback, and the separate research-collection boundary, see [the public launch runbook](docs/public-launch.md).
 
 ## Local development
 
-Requirements: Node.js 22.13 or newer and Python 3.9 or newer.
+Requirements: Node.js 22.13 or newer and Python 3.13 (the version used in CI).
 
 ```bash
-npm install
+npm ci
+python3 -m pip install -r requirements-validation.txt
 npm run dev
 ```
 
@@ -33,6 +36,8 @@ Run all current checks:
 npm run check
 npm run build
 ```
+
+Copy `.env.example` to `.env.local` only if you need to override the canonical origin or indexing flag. Keep indexing disabled during private review. These settings never grant site access. The public build refuses unreviewed static assets or a primary participant packet.
 
 ## Repository map
 
@@ -57,7 +62,7 @@ schemas/              versioned JSON Schemas
 - The frozen local runtime, resumable runner, and rehearsal limitations are in [docs/inference-runtime.md](docs/inference-runtime.md).
 - The blinded packet, interface sequence, and internal QA boundary are in [docs/internal-rating-pilot.md](docs/internal-rating-pilot.md).
 - Mechanical end-to-end rating QA is complete for both mirrored forms. The exported choices were automated interface fixtures, not human judgments; independent human/domain review and primary collection remain pending.
-- The `/demo` route is a reader-facing example report; all displayed models, scores, ratings, and run records are synthetic.
+- The `/demo` route is a reader-facing example report; its model names, scores, and ratings are examples, not collected results.
 - No real model result should be presented as authoritative until the pilot gates pass.
 - The selected candidate and immutable model revisions are documented in [docs/first-pilot-transition.md](docs/first-pilot-transition.md).
 
