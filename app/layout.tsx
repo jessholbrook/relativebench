@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.SITE_ORIGIN ?? 'http://localhost:3000'),
   title: 'RelativeBench — Measure the model transition',
   description:
-    'Compare a new model with the one it replaces through standard benchmark deltas and blinded, paired judgments.',
+    'Compare a new model with the one it replaces through standard benchmark deltas and paired ratings with model names hidden.',
   openGraph: {
     title: 'RelativeBench — Measure the model transition',
     description:

@@ -150,7 +150,7 @@ function preferenceTone(value: SidePreference) {
 function SessionJudgmentTable({ judgments }: { judgments: Judgment[] }) {
   return (
     <div className="max-h-[38rem] overflow-auto">
-      <Table aria-label="Blinded session judgments">
+      <Table aria-label="Session ratings with model names hidden">
         <TableHeader className="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_var(--border)]">
           <TableRow>
             <TableHead className="w-14">#</TableHead>
@@ -196,7 +196,7 @@ function ShortcutGuide({ onClose }: { onClose: () => void }) {
     ['1–5', 'Choose the paired preference'],
     ['B / ←', 'Go back one step or task'],
     ['⇧1–6', 'Tag the previous judgment'],
-    ['E', 'Export the blinded session'],
+    ['E', 'Export the session with model names hidden'],
     ['⇧R', 'Reset the local session'],
     ['?', 'Toggle this guide'],
   ];
@@ -306,7 +306,7 @@ export function RatingWorkspace({ packetUrl }: { packetUrl: string }) {
         if (value.session_type === 'primary_collection' && value.stimulus_sha256 !== digest) throw new Error('Packet content changed.');
         if (active) setPacket({ ...value, stimulus_sha256: digest });
       })
-      .catch(() => { if (active) setError('The blinded rating packet could not be loaded.'); });
+      .catch(() => { if (active) setError('The rating tasks couldn’t be loaded.'); });
     return () => { active = false; };
   }, [packetUrl]);
 
@@ -323,12 +323,12 @@ export function RatingWorkspace({ packetUrl }: { packetUrl: string }) {
   if (!packet) {
     return (
       <main className="grid min-h-screen place-items-center bg-background px-5 text-foreground">
-        <p className="text-sm text-muted-foreground">Loading blinded rating packet…</p>
+        <p className="text-sm text-muted-foreground">Loading rating tasks…</p>
       </main>
     );
   }
   if (packet.session_type === 'primary_collection' && packet.collection_authorized !== true) {
-    return <main className="grid min-h-screen place-items-center bg-background px-5 text-foreground"><p>This assigned session is not open for collection yet.</p></main>;
+    return <main className="grid min-h-screen place-items-center bg-background px-5 text-foreground"><p>This assigned session isn’t open for collection yet.</p></main>;
   }
   return <RatingSession packet={packet} />;
 }
@@ -377,7 +377,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
     try {
     const reviewerCodeSha256 = await sha256(normalized);
     if (packet.session_type === 'primary_collection' && (packet.form_selector !== 'assigned-slot-v1' || reviewerCodeSha256 !== packet.assigned_reviewer_sha256)) {
-      setNotice('This code does not match the assigned session. Check your invitation.');
+      setNotice('This code doesn’t match the assigned session. Check your invitation.');
       return;
     }
     const key = storageKey(packet.packet_id, reviewerCodeSha256);
@@ -388,7 +388,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
       saved = localStorage.getItem(key);
     } catch {
       // Do not start a writer when an earlier session might exist but cannot be read.
-      setNotice('This browser cannot access saved progress. Enable browser storage and try again. Any saved session is unchanged.');
+      setNotice('This browser can’t access saved progress. Enable browser storage and try again. Your saved session hasn’t changed.');
       return;
     }
     if (saved) {
@@ -403,7 +403,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
         setNotice('Resumed the locally saved session.');
         return;
       }
-      setNotice('This saved session cannot be safely resumed. It has not been changed. Use a different reviewer code to start a separate session.');
+      setNotice('This saved session can’t be safely resumed. It hasn’t been changed. Use a different reviewer code to start a separate session.');
       return;
     }
     setSession({
@@ -627,10 +627,10 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
           <div className="mt-10 grid gap-6 md:grid-cols-[1fr_.72fr]">
             <div>
               <h1 className="text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
-                Blind rating workspace
+                Compare responses
               </h1>
               <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">
-                Score each response against the rubric before seeing the pair. Model identity and role are absent from this packet.
+                Score each response against the rubric before seeing the pair. Model names and which model is the replacement stay hidden.
               </p>
               <div className="mt-7 grid gap-3 text-sm text-muted-foreground">
                 <p className="flex gap-3"><EyeOff className="mt-0.5 size-4 shrink-0 text-foreground" /> {packet.session_type === 'primary_collection' ? 'Your task assignments and presentation order are fixed for this study.' : 'Left and right responses are counterbalanced across two forms.'}</p>
@@ -702,7 +702,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
           <Card className="overflow-hidden border-0 bg-card ring-1 ring-border">
             <CardHeader className="border-b border-border sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <CardTitle>Blinded response record</CardTitle>
+                <CardTitle>Your response ratings</CardTitle>
                 <CardDescription className="mt-1">Your task-level ratings, shown exactly as they will be exported. Model identities and aggregate preference remain hidden.</CardDescription>
               </div>
               <Badge variant="secondary">{completed} rows</Badge>
@@ -729,7 +729,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
       <output aria-live="polite" className="sr-only">Task {completed + 1} of {total}. {session.stage === 'pair' ? 'Compare the responses.' : `Score the ${session.stage} response.`}</output>
       <header className="border-b border-border bg-background/95">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-4 px-5 py-4 sm:px-8">
-          <a className="flex items-center gap-2 text-sm font-semibold" href="/"><EyeOff className="size-4" /> Blind rating</a>
+          <a className="flex items-center gap-2 text-sm font-semibold" href="/"><EyeOff className="size-4" /> Compare responses</a>
           <Badge variant="outline">{session.formId}</Badge>
           <div className="ml-auto flex flex-wrap items-center gap-2">
             <ActionButton variant="ghost" size="sm" aria-keyshortcuts="B ArrowLeft" onClick={goBack} disabled={session.stage === 'left' && session.currentIndex === 0}><ArrowLeft /> Back <ShortcutKey>B</ShortcutKey></ActionButton>
@@ -771,7 +771,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
             </CardContent>
           </Card>
           <p className="text-xs leading-5 text-muted-foreground">
-            Do not inspect repository artifacts or try to infer model identity while rating.
+            Don’t look through the repository files or try to work out which model wrote a response while rating.
           </p>
         </aside>
 

@@ -118,7 +118,7 @@ export function ExperienceDelta({ experience }: { experience: Experience }) {
       </CardContent>
       <div className="px-6 pb-6">
         <h3 className="text-base font-semibold">How strong was the change?</h3>
-        <p className="mt-2 text-sm leading-6 text-stone-600">The five weighted response bins produce the headline. “Better” alone does not reveal whether a change was slight or substantial.</p>
+        <p className="mt-2 text-sm leading-6 text-stone-600">The five weighted response groups make up the headline score. “Better” alone doesn’t tell you whether a change was small or substantial.</p>
         <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-5">
           {[
             ['-2', 'Much worse'], ['-1', 'Slightly worse'], ['0', 'Indistinguishable'],
@@ -130,7 +130,7 @@ export function ExperienceDelta({ experience }: { experience: Experience }) {
             </div>
           ))}
         </dl>
-        <p className="mt-4 text-sm leading-6 text-stone-600">ΔE = 50 × the weighted average rating (−2 to +2). A +11 here is not an 11% productivity gain. An interval cannot account for biased tasks or judges. <a href="/guide#uncertainty" className="underline underline-offset-4">How to read uncertainty</a></p>
+        <p className="mt-4 text-sm leading-6 text-stone-600">ΔE = 50 × the weighted average rating (−2 to +2). A +11 here isn’t an 11% productivity gain. An interval can’t account for biased tasks or judges. <a href="/guide#uncertainty" className="underline underline-offset-4">How to read uncertainty</a></p>
       </div>
     </Card>
   );

@@ -17,7 +17,7 @@ export function BenchmarkDeltas({ metrics }: { metrics: Metric[] }) {
   const ready = useSyncExternalStore(subscribeToHydration, clientReady, serverReady);
   return (
     <div>
-      <p className="mb-4 text-sm leading-6 text-muted-foreground">Example 95% confidence intervals and selected task comparisons. These illustrate the report format, not estimates from collected runs.</p>
+      <p className="mb-4 text-sm leading-6 text-muted-foreground">Example 95% confidence intervals and selected task comparisons.</p>
       <Accordion multiple className="grid items-start gap-4 md:grid-cols-2">
         {metrics.map((metric) => {
           const details = benchmarks[metric.label as keyof typeof benchmarks];

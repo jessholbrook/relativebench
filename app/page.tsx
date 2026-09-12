@@ -6,29 +6,34 @@ import {
 } from 'lucide-react';
 
 import exampleSnapshot from '@/data/snapshots/example-transition.json';
+import benchmarkDetails from '@/data/snapshots/example-benchmark-details.json';
 import { HomeSectionNav } from '@/components/home-section-nav';
 
 const { experience, compatibility, benchmark_deltas: benchmarkDeltas } = exampleSnapshot;
+const benchmarkLimit = Math.ceil(Math.max(...Object.values(benchmarkDetails.benchmarks).flatMap(({ lower, upper }) => [Math.abs(lower), Math.abs(upper)])) / 5) * 5;
+const benchmarkPosition = (value: number) => ((value + benchmarkLimit) / (2 * benchmarkLimit)) * 300;
+const signed = (value: number) => value > 0 ? `+${value}` : String(value);
 
 const navigation = [
   ['What it is', '#what'],
   ["Why it's needed", '#why'],
   ['How it works', '#how'],
+  ['Methodology', '/methodology'],
   ['Example', '#example'],
   ['Try it', '#rate'],
 ] as const;
 
 const steps = [
   {
-    title: 'Freeze the transition',
-    copy: 'Name the incumbent and candidate, lock the task set, and keep the evaluation conditions identical.',
+    title: 'Set the transition',
+    copy: 'Choose the incumbent and candidate releases, the task set, and evaluation conditions.',
   },
   {
-    title: 'Compare blind pairs',
+    title: 'Compare paired responses',
     copy: 'Raters score both responses against the same rubric before seeing the pair or either model identity.',
   },
   {
-    title: 'Publish the delta',
+    title: 'Review the relative changes',
     copy: 'Combine benchmark movement, response flips, preference, uncertainty, and protocol provenance in one report.',
   },
 ] as const;
@@ -41,9 +46,12 @@ export default function Home() {
           <GitCompareArrows className="size-4 text-brand-coral" />
           RelativeBench
         </a>
+        <nav className="flex items-center gap-4" aria-label="Mobile navigation">
+        <a className="text-xs" href="/methodology">Methodology</a>
         <a className="font-mono text-[10px] uppercase tracking-[0.14em]" href="/rate">
           Try it ↗
         </a>
+        </nav>
       </header>
 
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col justify-between border-r border-[#cbc8c1] bg-[#f3f1ec] px-6 py-7 lg:flex">
@@ -83,9 +91,7 @@ export default function Home() {
 
             <div>
               <p className="max-w-[65ch] text-pretty text-lg leading-7 sm:text-xl sm:leading-8">
-                RelativeBench compares a new model with the model it replaces. It joins standard
-                benchmark deltas with blinded, paired judgments from people who know the incumbent—so
-                a release can be understood as a transition, not just a point on a leaderboard.
+                RelativeBench is an additional way to evaluate model progress. It specifically compares a new model with the model it replaces. It joins standard benchmark deltas with paired ratings from people who know the incumbent, with model names hidden—so a release can be understood as a relative transition to the model that came before it, not only as two scores on a benchmark.
               </p>
             </div>
           </div>
@@ -99,20 +105,20 @@ export default function Home() {
               </div>
               <div>
                 <h2 className="max-w-5xl text-balance font-serif text-2xl leading-[1.15] tracking-[-0.035em] sm:text-3xl lg:text-4xl">
-                  People do not experience a model at a point in time. They experience the move from one model to the next.
+                  People don&apos;t experience a model as a decontextualized point in time. They experience the move from one model to the next.
                 </h2>
                 <div className="mt-8 max-w-[65ch] space-y-5 text-lg leading-8 text-[#514e49]">
                   <p>
-                    <strong className="bg-brand-coral/20 px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Scores miss direction.</strong>{' '}
-                      A stronger average can still conceal task-level regressions that break established workflows.
+                    <strong className="bg-brand-coral/20 px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Single scores miss direction.</strong>{' '}
+                      A better average score can still hide tasks that got worse and break workflows people rely on.
                   </p>
                   <p>
                     <strong className="bg-brand-coral/20 px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Users have memory.</strong>{' '}
-                      People compare every response with habits, expectations, and recovery strategies learned on the incumbent.
+                      People bring habits, expectations, and workarounds they’ve learned from the model they already use.
                   </p>
                   <p>
                     <strong className="bg-brand-coral/20 px-1 font-semibold text-[#171715] [box-decoration-break:clone]">Change has a shape.</strong>{' '}
-                      Better, same, and worse outcomes can coexist. A useful report makes that distribution visible.
+                      Some things get better, some stay the same, and others get worse. A useful report shows the whole mix.
                   </p>
                   <p className="text-base">
                     Benchmarks remain useful—but every score depends on what was tested and how.
@@ -132,7 +138,7 @@ export default function Home() {
               </div>
               <div>
                 <h2 className="max-w-4xl font-serif text-2xl leading-[1.15] tracking-[-0.035em] sm:text-4xl">
-                  Blinded, paired, and reproducible
+                  Model names hidden. Responses paired. Results reproducible.
                 </h2>
                 <div className="mt-8 max-w-[65ch] space-y-5 text-lg leading-8 text-[#514e49]">
                   {steps.map((step) => (
@@ -141,6 +147,7 @@ export default function Home() {
                       {step.copy}
                     </p>
                   ))}
+                  <p className="text-base"><a className="underline decoration-brand-coral/50 underline-offset-4 hover:decoration-brand-coral" href="/methodology">Read the full methodology →</a></p>
                 </div>
               </div>
             </div>
@@ -159,13 +166,10 @@ export default function Home() {
                     <p className="font-mono text-[10px] uppercase tracking-[0.17em] text-[#aaa69f]">Model A → Model B</p>
                     <h2 className="mt-2 font-serif text-2xl tracking-[-0.035em] sm:text-4xl">Relative changes</h2>
                   </div>
-                  <a className="group flex items-center gap-6 text-sm" href="/demo">
-                    See the full example <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-                  </a>
                 </div>
 
                 <p className="mt-5 max-w-3xl font-serif text-xl leading-8 text-[#d1cec8] sm:text-2xl">
-                  A transition report reads capability movement alongside the outcomes users actually notice: improvement, continuity, and regression.
+                  A transition report shows the capability improvements, continuities, and regressions people notice and feel the most from one release to the next.
                 </p>
 
                 <div className="grid gap-8 py-7 2xl:grid-cols-[.8fr_1.2fr] 2xl:gap-10">
@@ -194,22 +198,27 @@ export default function Home() {
                       <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#aaa59f]">percentage points</p>
                     </div>
                     <div className="mt-5 space-y-4">
-                      {benchmarkDeltas.map((metric) => (
+                      {benchmarkDeltas.map((metric) => {
+                        const interval = benchmarkDetails.benchmarks[metric.label as keyof typeof benchmarkDetails.benchmarks];
+                        const intervalLabel = `${benchmarkDetails.interval_level * 100}% confidence interval: ${signed(interval.lower)} to ${signed(interval.upper)} percentage points`;
+                        return (
                         <div key={metric.label} className="grid grid-cols-[116px_1fr_42px] items-center gap-3 text-xs sm:grid-cols-[150px_1fr_44px]">
                           <span className="text-[#d1cec8]">{metric.label}</span>
-                          <div className="relative h-px bg-white/20">
-                            <span className="absolute left-1/2 top-[-4px] h-[9px] w-px bg-white/35" />
-                            <span
-                              className={`absolute top-[-2px] h-[5px] ${metric.value >= 0 ? 'left-1/2 bg-brand-coral' : 'right-1/2 bg-[#ef5b48]'}`}
-                              style={{ width: `${Math.abs(metric.value) * 5.5}%` }}
-                            />
-                          </div>
+                          {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role -- Inline SVG needs a named image role; an img cannot contain chart geometry. */}
+                          <svg viewBox="0 0 300 24" preserveAspectRatio="none" className="h-6 w-full overflow-visible" role="img" aria-label={`${metric.label}: ${signed(metric.value)} percentage points. Example ${intervalLabel}.`}>
+                            <title>{`Example ${intervalLabel}`}</title>
+                            <path d="M0 12H300 M150 3V21" stroke="white" strokeOpacity="0.3" vectorEffect="non-scaling-stroke" />
+                            <rect x={benchmarkPosition(Math.min(0, metric.value))} y="9" width={Math.abs(metric.value) / (2 * benchmarkLimit) * 300} height="6" className={metric.value >= 0 ? 'fill-brand-coral' : 'fill-[#ef5b48]'} />
+                            <path d={`M${benchmarkPosition(interval.lower)} 12H${benchmarkPosition(interval.upper)} M${benchmarkPosition(interval.lower)} 6V18 M${benchmarkPosition(interval.upper)} 6V18`} stroke="#f3f1ec" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                            <circle cx={benchmarkPosition(metric.value)} cy="12" r="3" fill="#f3f1ec" />
+                          </svg>
                           <span className={`text-right font-mono ${metric.value >= 0 ? 'text-brand-coral' : 'text-[#ef7a6b]'}`}>
                             {metric.value > 0 ? '+' : ''}{metric.value}
                           </span>
                         </div>
-                      ))}
+                      );})}
                     </div>
+                    <p className="mt-3 text-xs leading-5 text-[#aaa69f]">Whiskers show example {benchmarkDetails.interval_level * 100}% confidence intervals. Shared scale: −{benchmarkLimit} to +{benchmarkLimit} percentage points.</p>
                     <div className="mt-7 flex gap-10">
                       <div>
                         <strong className="font-serif text-3xl">{(compatibility.negative_flip_rate * 100).toFixed(1)}%</strong>
@@ -225,6 +234,13 @@ export default function Home() {
                 <p className="text-xs leading-5 text-[#89857e]">
                   Example report format—not a published benchmark result.
                 </p>
+                <a
+                  className="group mt-6 inline-flex items-center gap-8 bg-brand-coral px-5 py-4 text-sm font-medium text-[#171715] transition-colors hover:bg-[#f3f1ec] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                  href="/demo"
+                >
+                  See the full example
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                </a>
               </div>
             </div>
           </div>
@@ -258,7 +274,7 @@ export default function Home() {
                   <Image
                     className="h-auto w-full"
                     src="/rater-preview.gif?v=20260907"
-                    alt="Animated preview of the RelativeBench blinded rating workflow"
+                    alt="Animated preview of the RelativeBench rating workflow with model names hidden"
                     width={960}
                     height={600}
                     unoptimized

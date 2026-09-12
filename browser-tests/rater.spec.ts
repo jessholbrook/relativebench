@@ -80,7 +80,7 @@ for (const form of ['form-a', 'form-b'] as const) {
     await page.keyboard.press('b');
     await expect(page.getByRole('button', { name: /Meaningfully indistinguishable/ })).toBeVisible();
     await page.keyboard.press('4');
-    await expect(page.getByRole('table', { name: 'Blinded session judgments' })).toBeVisible();
+    await expect(page.getByRole('table', { name: 'Session ratings with model names hidden' })).toBeVisible();
     const downloadEvent = page.waitForEvent('download');
     await page.keyboard.press('e');
     const download = await downloadEvent;

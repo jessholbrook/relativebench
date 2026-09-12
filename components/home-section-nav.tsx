@@ -8,6 +8,7 @@ export function HomeSectionNav({ items }: { items: readonly (readonly [string, s
 
   useEffect(() => {
     const sections = items.flatMap(([, href]) => {
+      if (!href.startsWith('#')) return [];
       const section = document.getElementById(href.slice(1));
       return section ? [section] : [];
     });
@@ -42,9 +43,9 @@ export function HomeSectionNav({ items }: { items: readonly (readonly [string, s
   }, [items]);
 
   return (
-    <nav className="space-y-2" aria-label="On this page">
+    <nav className="space-y-2" aria-label="Site navigation">
       {items.map(([label, href]) => {
-        const active = activeId === href.slice(1);
+        const active = href.startsWith('#') && activeId === href.slice(1);
         return (
           <a
             key={href}
