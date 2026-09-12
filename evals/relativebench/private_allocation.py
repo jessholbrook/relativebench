@@ -22,7 +22,7 @@ def private_destination(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--pilot', default='data/pilots/qwen2.5-to-qwen3/pilot.json')
+    parser.add_argument('--pilot', default='data/pilots/qwen2.5-to-qwen3/primary-candidate.json')
     parser.add_argument('--evaluator-slots', type=int, default=40)
     parser.add_argument('--output', required=True)
     args = parser.parse_args()

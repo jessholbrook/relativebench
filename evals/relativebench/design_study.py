@@ -65,11 +65,13 @@ def precision_summary(rows, truth):
     widths = [row['upper'] - row['lower'] for row in successful]
     hits = sum(width <= 10 for width in widths)
     result.update({
-        'mean_half_width': float(np.mean(widths) / 2),
-        'half_width_p90': float(np.quantile(widths, .9) / 2),
-        'width_at_most_10_rate': hits / len(successful),
-        'width_at_most_10_wilson95': wilson(hits, len(successful)),
-        'upgrade_wilson95': wilson(sum(row['lower'] > 5 for row in successful), len(successful)),
+        'mean_half_width': float(np.mean(widths) / 2) if widths else None,
+        'half_width_p90': float(np.quantile(widths, .9) / 2) if widths else None,
+        'width_at_most_10_rate': hits / len(rows),
+        'precision_rate_denominator': len(rows),
+        'width_at_most_10_conditional_rate': hits / len(successful) if successful else None,
+        'width_at_most_10_wilson95': wilson(hits, len(rows)),
+        'upgrade_wilson95': wilson(sum(row['lower'] > 5 for row in successful), len(rows)),
         'interpretation': 'Screening only; width success does not establish coverage, power, or lack of bias.',
     })
     return result

@@ -1,0 +1,30 @@
+{
+  "kind": "software_regression_comparison_not_human_results",
+  "publication_eligible": false,
+  "comparisons": [
+    {
+      "original_path": "data/validation/preparticipant-2026-09-10/simulation.json",
+      "rerun_path": "data/validation/review-fixes-2026-09-11/simulation-results.json",
+      "original_sha256": "4c4fdfa097f1612351b3e9851371e60448d532a46fdb07094566ab0ab80e38c2",
+      "rerun_sha256": "6d2ff9b9a2f7a1d65defb22e4ef1dfcd0d21b2b1617ee08af268d2a832ad6efa",
+      "cases": 8,
+      "trials": 1600,
+      "bootstrap_draws": 16000000,
+      "failed_trials": 0,
+      "all_trial_records_identical": true,
+      "max_absolute_estimate_or_bound_difference": 0
+    },
+    {
+      "original_path": "data/validation/study-design-2026-09-11/results.json",
+      "rerun_path": "data/validation/review-fixes-2026-09-11/design-results.json",
+      "original_sha256": "980d02faf8e49fcb32225de6a7d4afbbfa67b1dbaf4e0bec4a84ebb4b0f9db7c",
+      "rerun_sha256": "fdea123664de721faabf1cc9ba8facb36616155bc4b1d70cba3b6c0d004077d6",
+      "cases": 20,
+      "trials": 2000,
+      "bootstrap_draws": 20000000,
+      "failed_trials": 0,
+      "all_trial_records_identical": true,
+      "max_absolute_estimate_or_bound_difference": 0
+    }
+  ]
+}

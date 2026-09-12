@@ -14,6 +14,8 @@ import {
 
 import { Badge } from '@/components/ui/badge';
 import { ignoreRatingShortcut, isRestorableSession } from '@/lib/rating-session-guards';
+import { stimulusDigest } from '@/lib/rating-packet-identity';
+import { recordAssessment, type Assessment } from '@/lib/rating-history';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -51,6 +53,7 @@ type PacketForm = { form_id: 'form-a' | 'form-b'; assignments: Assignment[] };
 export type RatingPacket = {
   packet_version: string;
   packet_id: string;
+  stimulus_sha256?: string;
   session_type: 'internal_interface_pilot' | 'primary_collection';
   assigned_reviewer_sha256?: string;
   collection_authorized?: boolean;
@@ -71,6 +74,9 @@ type Judgment = {
   pair_id: string;
   scenario_id: string;
   category: string;
+  left_response_id: string;
+  right_response_id: string;
+  assessment_history: Assessment;
   pointwise_left: PointwiseScore;
   pointwise_right: PointwiseScore;
   side_preference: SidePreference;
@@ -80,6 +86,8 @@ type Judgment = {
 
 type SessionState = {
   packetId: string;
+  stimulusSha256: string;
+  assessmentHistory: Record<string, Assessment>;
   reviewerCodeSha256: string;
   formId: 'form-a' | 'form-b';
   startedAt: string;
@@ -293,7 +301,11 @@ export function RatingWorkspace({ packetUrl }: { packetUrl: string }) {
         if (!response.ok) throw new Error(`Packet request failed with ${response.status}.`);
         return response.json() as Promise<RatingPacket>;
       })
-      .then((value) => { if (active) setPacket(value); })
+      .then(async (value) => {
+        const digest = await stimulusDigest(value);
+        if (value.session_type === 'primary_collection' && value.stimulus_sha256 !== digest) throw new Error('Packet content changed.');
+        if (active) setPacket({ ...value, stimulus_sha256: digest });
+      })
       .catch(() => { if (active) setError('The blinded rating packet could not be loaded.'); });
     return () => { active = false; };
   }, [packetUrl]);
@@ -384,6 +396,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
       try { parsed = JSON.parse(saved); } catch { parsed = null; }
       if (isRestorableSession(parsed, {
         packetId: packet.packet_id, reviewerCodeSha256, formId,
+        stimulusSha256: packet.stimulus_sha256!,
         assignments: packet.forms.find((form) => form.form_id === formId)?.assignments ?? [],
       })) {
         setSession(parsed as SessionState);
@@ -395,6 +408,8 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
     }
     setSession({
       packetId: packet.packet_id,
+      stimulusSha256: packet.stimulus_sha256!,
+      assessmentHistory: {},
       reviewerCodeSha256,
       formId,
       startedAt: new Date().toISOString(),
@@ -417,11 +432,13 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
 
   function choosePointwise(value: PointwiseScore) {
     setSession((current) => {
-      if (!current || current.stage === 'pair') return current;
+      if (!current || !assignment || current.stage === 'pair') return current;
+      const assessmentHistory = { ...current.assessmentHistory,
+        [assignment.assignment_id]: recordAssessment(current.assessmentHistory[assignment.assignment_id], current.stage, value) };
       if (current.stage === 'left') {
-        return { ...current, pointwiseLeft: value, stage: 'right' };
+        return { ...current, assessmentHistory, pointwiseLeft: value, stage: 'right' };
       }
-      return { ...current, pointwiseRight: value, stage: 'pair' };
+      return { ...current, assessmentHistory, pointwiseRight: value, stage: 'pair' };
     });
     setNotice(null);
   }
@@ -444,8 +461,8 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
       currentIndex: session.currentIndex - 1,
       stage: 'pair',
       assignmentStartedAt: nowMilliseconds(),
-      pointwiseLeft: previousJudgment.pointwise_left,
-      pointwiseRight: previousJudgment.pointwise_right,
+      pointwiseLeft: previousJudgment.assessment_history.final_left,
+      pointwiseRight: previousJudgment.assessment_history.final_right,
       sidePreference: previousJudgment.side_preference,
       reasonTags: previousJudgment.reason_tags,
       judgments: session.judgments.slice(0, -1),
@@ -456,13 +473,18 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
   function choosePreference(value: SidePreference) {
     if (!session || !assignment || !pair) return;
     if (!session.pointwiseLeft || !session.pointwiseRight) return;
+    const assessment = session.assessmentHistory[assignment.assignment_id];
+    if (!assessment?.left || !assessment.right) return;
     const judgment: Judgment = {
       assignment_id: assignment.assignment_id,
       pair_id: pair.pair_id,
       scenario_id: pair.scenario_id,
       category: pair.category,
-      pointwise_left: session.pointwiseLeft,
-      pointwise_right: session.pointwiseRight,
+      left_response_id: assignment.left_response_id,
+      right_response_id: assignment.right_response_id,
+      assessment_history: assessment,
+      pointwise_left: assessment.left,
+      pointwise_right: assessment.right,
       side_preference: value,
       reason_tags: session.reasonTags,
       duration_ms: Math.max(0, nowMilliseconds() - session.assignmentStartedAt),
@@ -502,9 +524,11 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
   function exportSession() {
     if (!session) return;
     const payload = {
-      session_version: '0.1.0',
+      session_version: '0.2.0',
       session_type: packet.session_type,
       packet_id: packet.packet_id,
+      stimulus_sha256: session.stimulusSha256,
+      assessment_history: session.assessmentHistory,
       form_id: session.formId,
       reviewer_code_sha256: session.reviewerCodeSha256,
       started_at: session.startedAt,
@@ -742,7 +766,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
               </div>
               <div className="rounded-lg bg-lime-100/70 p-4 text-lime-950">
                 <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-lime-900">Rubric</p>
-                <p className="mt-2 text-sm leading-6">{pair.rubric}</p>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-6" data-testid="rating-rubric">{pair.rubric}</p>
               </div>
             </CardContent>
           </Card>
@@ -760,7 +784,7 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
                   Pointwise assessment · {session.stage === 'left' ? 'step 1 of 3' : 'step 2 of 3'}
                 </p>
                 <CardTitle className="text-2xl">Score the {visibleSide.toLowerCase()} response</CardTitle>
-                <CardDescription>The other response remains hidden until both pointwise scores are locked in.</CardDescription>
+                <CardDescription>Score each response separately before comparing them. Your first score is retained; going back records corrections separately.</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="max-h-[32rem] overflow-auto rounded-lg bg-ink p-5 text-sm leading-6 text-zinc-100 sm:p-6">
@@ -797,7 +821,8 @@ function RatingSession({ packet }: { packet: RatingPacket }) {
               <div>
                 <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Paired judgment · step 3 of 3</p>
                 <h2 className="mt-1 text-2xl font-semibold tracking-tight">Compare the responses</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Your pointwise scores are retained. Choosing a preference saves it and opens the next task.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Your first-pass scores are retained. Choosing a preference saves it and opens the next task.</p>
+                {pair.scoring_mode === 'objective' && <p className="mt-2 text-sm text-muted-foreground">Rate the difference you perceive in using these responses. Objective correctness is scored separately; if neither feels meaningfully better, choose indistinguishable.</p>}
               </div>
               <div className="grid gap-4 xl:grid-cols-2">
                 {([['Left', left], ['Right', right]] as const).map(([side, response]) => (

@@ -13,6 +13,8 @@ from .manifest import validate_pilot
 from .private_allocation import private_destination
 from .rating import FORBIDDEN_PUBLIC_FIELDS, _walk_field_names
 from .runner import verify_run
+from .execution_identity import artifact_fingerprint
+from .packet_identity import stimulus_digest, packet_receipt, validate_packet_structure
 
 
 def assigned_packet(assignments, scenarios, artifacts, reviewer_code, nonce):
@@ -29,6 +31,7 @@ def assigned_packet(assignments, scenarios, artifacts, reviewer_code, nonce):
             artifact = artifacts[(*key, role)]
             if artifact.get('adapter') != 'transformers-bf16' or artifact.get('adapter_metadata', {}).get('weight_format') != 'bfloat16' or artifact.get('status') != 'ok':
                 raise ValueError('Primary packets require verified BF16 artifacts, never rehearsal outputs.')
+            artifact_fingerprint(artifact)
             response_id = sha256_value({'packet': packet_id, 'pair': pair_id, 'artifact': artifact['artifact_id']})
             responses[role] = {'response_id': response_id, 'text': artifact['response_text']}
         left, right = ('new', 'previous') if assignment['new_on_left'] else ('previous', 'new')
@@ -39,7 +42,7 @@ def assigned_packet(assignments, scenarios, artifacts, reviewer_code, nonce):
         public_assignments.append({'assignment_id': assignment['assignment_id'], 'position': position,
                                    'pair_id': pair_id, 'left_response_id': responses[left]['response_id'],
                                    'right_response_id': responses[right]['response_id']})
-    packet = {'packet_version': '0.2.0', 'packet_id': packet_id, 'session_type': 'primary_collection',
+    packet = {'packet_version': '0.3.0', 'packet_id': packet_id, 'session_type': 'primary_collection',
               'protocol_version': '0.1.0', 'condition': 'frozen', 'form_selector': 'assigned-slot-v1',
               'assigned_reviewer_sha256': sha256(reviewer_code.encode()).hexdigest(),
               'collection_authorized': False, 'blinding': 'Private role key omitted; response text still requires independent review.',
@@ -50,12 +53,16 @@ def assigned_packet(assignments, scenarios, artifacts, reviewer_code, nonce):
               'pairs': pairs, 'forms': [{'form_id': 'form-a', 'assignments': public_assignments}]}
     if set(_walk_field_names(packet)) & FORBIDDEN_PUBLIC_FIELDS:
         raise ValueError('Primary packet contains forbidden role/identity fields.')
+    errors = validate_packet_structure(packet)
+    if errors:
+        raise ValueError('; '.join(errors))
+    packet['stimulus_sha256'] = stimulus_digest(packet)
     return packet
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--pilot', default='data/pilots/qwen2.5-to-qwen3/pilot.json')
+    parser.add_argument('--pilot', default='data/pilots/qwen2.5-to-qwen3/primary-candidate.json')
     parser.add_argument('--allocation', required=True)
     parser.add_argument('--execution-dir', required=True)
     parser.add_argument('--output', required=True)
@@ -93,12 +100,14 @@ def main():
         nonce = secrets.token_hex(32)
         packet = assigned_packet(rows, {row['id']: row for row in scenarios}, artifacts, code, nonce)
         packet['source_run_commitments'] = commitments
+        packet['stimulus_sha256'] = stimulus_digest(packet)
         bundle.append((person, code, nonce, packet))
     destination.mkdir(parents=True, mode=0o700)
     invitations = []
     for index, (person, code, nonce, packet) in enumerate(bundle):
         filename = f'packet-{index:03}.json'
         write_json(destination / filename, packet)
+        write_json(destination / f'private-receipt-{index:03}.json', packet_receipt(packet))
         invitations.append({'slot': person, 'private_reviewer_code': code, 'commitment_nonce': nonce, 'packet_file': filename})
     write_json(destination / 'private-invitation-map.json', invitations)
     print(json.dumps({'prepared_packets': len(bundle), 'collection_authorized': False,

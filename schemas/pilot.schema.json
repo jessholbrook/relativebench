@@ -6,6 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "protocol_version", "pilot_id", "status", "transition_id", "scenario_manifest", "models", "execution_profiles", "targets"],
   "properties": {
+    "objective_rules": { "type": "string", "minLength": 1 },
     "$schema": { "type": "string" },
     "schema_version": { "type": "string" },
     "protocol_version": { "type": "string" },

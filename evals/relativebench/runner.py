@@ -7,6 +7,7 @@ from pathlib import Path
 from .adapters.base import GenerationRequest
 from .artifacts import canonical_json_bytes, sha256_file, sha256_value, write_json, write_jsonl
 from .manifest import validate_pilot
+from .execution_identity import artifact_fingerprint, validate_fingerprint
 
 
 def _load_execution(pilot_path, profile_id, model_roles):
@@ -114,7 +115,7 @@ def _read_jsonl(path):
 def _run_manifest(validation, pilot, profile, selected_roles, adapter_name, artifacts, status):
     expected = _expected_requests(validation, pilot, profile, selected_roles)
     expected_count = len(expected)
-    return {
+    manifest = {
         "run_manifest_version": "0.3.0",
         "status": status,
         "pilot_id": pilot["pilot_id"],
@@ -140,6 +141,9 @@ def _run_manifest(validation, pilot, profile, selected_roles, adapter_name, arti
         "model_roles": list(selected_roles),
         "artifact_path": "responses.jsonl",
     }
+    if adapter_name == 'transformers-bf16':
+        manifest['execution_fingerprints'] = {row['model_role']: artifact_fingerprint(row) for row in artifacts}
+    return manifest
 
 
 def _write_manifest(output_dir, manifest):
@@ -185,6 +189,7 @@ def verify_run(pilot_path, profile_id, output_dir, model_roles=None, require_com
 
     seen = set()
     adapters = set()
+    fingerprints = {}
     for index, artifact in enumerate(artifacts, start=1):
         key = (artifact.get("scenario_id"), artifact.get("model_role"), artifact.get("seed"))
         label = f"artifact {index} ({key[0]}/{key[1]}/seed={key[2]})"
@@ -209,6 +214,17 @@ def verify_run(pilot_path, profile_id, output_dir, model_roles=None, require_com
             errors.append(f"{label} has non-ok status {artifact.get('status')}.")
         if artifact.get("adapter"):
             adapters.add(artifact["adapter"])
+        if artifact.get('adapter') == 'transformers-bf16':
+            try:
+                digest = artifact_fingerprint(artifact)
+                if artifact['adapter_metadata']['execution_fingerprint']['snapshot']['repository'] != expected_item['request'].repository:
+                    raise ValueError('Primary artifact snapshot repository mismatch.')
+                role = artifact['model_role']
+                if role in fingerprints and fingerprints[role] != digest:
+                    raise ValueError('Run mixes execution fingerprints for the same model role.')
+                fingerprints[role] = digest
+            except ValueError as error:
+                errors.append(f'{label}: {error}')
 
     missing = sorted(set(expected_by_key) - seen)
     complete = not missing and len(artifacts) == len(expected)
@@ -270,6 +286,12 @@ def verify_run(pilot_path, profile_id, output_dir, model_roles=None, require_com
         if adapters and manifest.get("adapter") not in adapters:
             errors.append("Run manifest adapter does not match response artifacts.")
 
+    if 'transformers-bf16' in adapters:
+        if manifest is None:
+            (errors if require_complete else warnings).append('Primary run manifest is missing; coherent artifact fingerprints must be rechecked against the adapter before resume.')
+        elif manifest.get('execution_fingerprints') != fingerprints:
+            errors.append('Primary run manifest execution fingerprints are missing or mismatched.')
+
     return {
         "verification_version": "0.1.0",
         "valid": not errors,
@@ -307,6 +329,9 @@ def run_pilot(
         raise ValueError(f"Output already exists; pass resume=True to continue: {output_dir}")
 
     artifacts = []
+    execution_digest = None
+    if adapter.name == 'transformers-bf16':
+        execution_digest = validate_fingerprint(getattr(adapter, 'execution_fingerprint', None))
     if resume and artifact_path.is_file():
         report = verify_run(
             pilot_path,
@@ -323,6 +348,8 @@ def run_pilot(
                 + ", ".join(report["adapters"])
             )
         artifacts = _read_jsonl(artifact_path)
+        if execution_digest and any(artifact_fingerprint(row) != execution_digest for row in artifacts):
+            raise ValueError('Cannot resume with a changed execution fingerprint; start a separate run.')
 
     completed_keys = {
         (item["scenario_id"], item["model_role"], item["seed"])
@@ -351,6 +378,8 @@ def run_pilot(
                     "adapter": adapter.name,
                     "adapter_metadata": result.metadata,
                 }
+                if execution_digest and artifact_fingerprint(artifact) != execution_digest:
+                    raise ValueError('Adapter returned a changed execution fingerprint.')
                 artifact["artifact_id"] = sha256_value(_artifact_identity(artifact))
                 handle.write(canonical_json_bytes(artifact).decode("utf-8") + "\n")
                 handle.flush()

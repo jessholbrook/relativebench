@@ -47,8 +47,13 @@ separately recalculates all-planned-rating lower/upper bounds with missing ratin
 at −2 and +2 under the planned weights. These are worst-case sensitivity bounds,
 not confidence intervals or replacement observations. They expose the fragility
 seen in the outcome-dependent-dropout simulation; they do not repair selection bias.
+If an entire planned category lacks retained ratings, the observed-only estimate
+is unavailable: redistributing its weight would change the target population.
+The report retains planned/observed category lists and full-plan sensitivity bounds.
 
-Freeze critical scenario IDs before scoring. The candidate guardrail tolerates
+Freeze critical scenario IDs and generation seeds before scoring. Pass the seed
+list explicitly as `expected_seeds` to `audit_critical_tasks`; every critical
+scenario × seed must have valid paired scores. The candidate guardrail tolerates
 zero new critical failures on previously passed tasks, and does not clear missing
 or malformed scores. Independently verify all scenario/seed artifacts as well;
 a guardrail check alone cannot establish completeness. Safety-category membership

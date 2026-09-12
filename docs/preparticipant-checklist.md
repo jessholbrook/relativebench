@@ -3,6 +3,11 @@
 Status: engineering and simulation work implemented; this is not permission to
 collect or a claim that the pilot is scientifically validated.
 
+September 11 review remediation is recorded in [the fixes and re-review log](review-fixes-2026-09-11.md).
+New primary planning uses `primary-candidate.json`; historical rehearsal inputs
+remain unchanged. The [correctness/preference separation](objective-scoring.md)
+and its equivalence rules are an additional unresolved approval gate.
+
 ## Completed locally
 
 - [x] Reproducible allocation generator and independent allocation audit: 120
