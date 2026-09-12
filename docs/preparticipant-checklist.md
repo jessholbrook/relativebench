@@ -35,10 +35,15 @@ collect or a claim that the pilot is scientifically validated.
 - [ ] Choose the final sample-size/precision target after reviewing the simulation
   report. The existing minimum of 40 is not automatically adequate; no recruitment
   target or importance threshold has been silently changed.
+  The September 11 [design comparison](study-design-proposal.md) screens five
+  prospective allocations against a ten-point interval-width target; it is a
+  proposal, not approval to expand the task manifest or recruit.
 - [ ] Approve a suitable full-precision execution host and lock its actual runtime.
   The current Mac was verified as Mac16,10 with 16 GiB memory. It cannot satisfy the
   candidate BF16 CUDA adapter's ≥32 GiB GPU preflight. No GPU was rented, no large
   model was downloaded, and no primary run was started.
+  The [host shortlist and cost scenarios](execution-host-proposal.md) propose a
+  separately approved, capped smoke test before budgeting full generation.
 - [ ] Independent review of scenarios, rubrics, critical-task selection, blinding,
   primary packet delivery, collection rules, and consent/recruitment materials.
   This requires a reviewer, but not recruited raters. An author or automated check
