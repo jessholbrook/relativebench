@@ -219,9 +219,11 @@ test('showcase metadata, crawler defaults, and recovery links are ready for laun
   for (const path of ['/', '/guide', '/methodology', '/demo', '/rate', '/privacy']) {
     const response = await page.goto(path);
     expect(response?.status()).toBe(200);
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://relativebench.jessh.chatgpt.site${path}`);
+    await expect.poll(async () => new URL((await page.locator('link[rel="canonical"]').getAttribute('href')) ?? 'about:blank').href)
+      .toBe(`https://relativebench.jessh.chatgpt.site${path}`);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
-    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', `https://relativebench.jessh.chatgpt.site${path}`);
+    await expect.poll(async () => new URL((await page.locator('meta[property="og:url"]').getAttribute('content')) ?? 'about:blank').href)
+      .toBe(`https://relativebench.jessh.chatgpt.site${path}`);
     expect(response?.headers()['x-content-type-options']).toBe('nosniff');
   }
   const robots = await request.get('/robots.txt');
